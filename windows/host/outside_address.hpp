@@ -1,4 +1,4 @@
-// W8 (outside the home), Phase A: the address rules of protocol v3 §8.0 and §8.3. A peer address is
+// Outside the home: the address rules of protocol v3 §8.0 and §8.3. A peer address is
 // unwrapped from IPv4-mapped IPv6 first; the local-source filter, the rate-limit key and the
 // carrier-NAT check all read the unwrapped address. Pure functions except adaptersOfThisPc and
 // overlayAddressesOfThisPc, which read this PC's adapters.

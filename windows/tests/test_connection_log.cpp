@@ -1,4 +1,4 @@
-// W8 Phase A: the connection log (v3 §8.6): device, time and address, coalesced per minute, kept 30 days and
+// The connection log (v3 §8.6): device, time and address, coalesced per minute, kept 30 days and
 // 20 MB, owner-only, never sent anywhere; appended to, with a line budget for unknown sources that never holds
 // back a device's lines; a file that can't be read is never written over. New temp folders.
 #include "kv_test.hpp"

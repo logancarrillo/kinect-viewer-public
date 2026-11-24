@@ -321,7 +321,7 @@ bool Recorder::canRecord(kv_view_mode_t mode) {
 
 bool Recorder::start(kv_view_mode_t mode, uint32_t width, uint32_t height, const RecorderOptions& opts, std::string* err) {
     stop();
-    // Colour is live only (phase 0): refused before anything, a folder included, is created.
+    // Colour is live only: refused before anything, a folder included, is created.
     if (!canRecord(mode)) {
         if (err) *err = kvhost::text::kColourLiveOnly;
         return false;

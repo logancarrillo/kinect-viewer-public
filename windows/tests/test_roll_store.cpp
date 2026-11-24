@@ -1122,7 +1122,7 @@ KV_TEST(a_junction_named_like_a_day_is_never_followed) {
     KV_CHECK(f.store->setStar("2020-01-01/14-03-22_motion", "o", PetRole::Owner, true) == RollError::NotFound);
 }
 
-// ---- W7 fix round 2 ------------------------------------------------------------------------------------------
+// ---- Storage cap, retention, deletes, the index and test-roll folders ----------------------------------------
 
 // storage_full is measured against the owner's cap only. A store whose cap was never set (the default, which
 // nobody chose) never raises it, however much is starred; once the owner's cap is set, it does.

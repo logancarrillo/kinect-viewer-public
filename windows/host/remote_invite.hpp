@@ -1,4 +1,4 @@
-// W8 (outside the home), Phase A: remote invites and endpoint links (protocol v3 §8.4, pet-camera.md §3).
+// Outside the home: remote invites and endpoint links (protocol v3 §8.4, pet-camera.md §3).
 // An invite is open for 10 minutes, works once, and one is open at a time; a wrong proof or a certificate
 // mismatch burns it. The store keeps it in invite.json in the host state folder, owner-only and written
 // atomically, and fails closed: a file that is there but can't be read or parsed means no invite can be
@@ -67,8 +67,8 @@ struct Invite {
 enum class RedeemResult {
     Accepted,     // add the device with invite.role; the invite is now used
     NoInvite,     // none open (never made, closed, or the store can't be read): closed, counted as a failure
-    ExpiredOrUsed,// accepted: false with the §9 "expired or used" sentence
-    WrongProof,   // counted (the tenth burns it: see redeem's burned); accepted: false with a §9 sentence
+    ExpiredOrUsed,// accepted: false with the "expired or used" sentence (v3 §9)
+    WrongProof,   // counted (the tenth burns it: see redeem's burned); accepted: false with its sentence (v3 §9)
     CertMismatch, // counted the same way; closed without a reply
     NotSaved,     // the invite was right but its use couldn't be saved: refused, and closed in memory
 };

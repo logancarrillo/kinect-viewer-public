@@ -48,7 +48,7 @@ function(kv_windows_target target)
     endif()
 endfunction()
 
-# ---- W5 stage 6: the app icon from phase 6's logo ------------------------------------------------
+# ---- The app icon, rendered from the logo --------------------------------------------------------
 # kv-render-icon draws design/logo.svg with Windows' Direct2D SVG renderer and WIC (no new dependency)
 # into kinect-viewer.ico at build time; both programs carry it as resource 1.
 add_library(kv_icon STATIC tools/icon_render.cpp)
@@ -84,7 +84,7 @@ function(kv_app_icon target description)
     add_dependencies(${target} kv_app_icon)
 endfunction()
 
-# ---- W1: CLI ----------------------------------------------------------------------------------
+# ---- The CLI ----------------------------------------------------------------------------------
 add_executable(kinect-cli cli/kinect_cli.cpp)
 kv_app_icon(kinect-cli "Kinect Viewer command line")
 kv_windows_target(kinect-cli)
@@ -92,7 +92,7 @@ target_include_directories(kinect-cli PRIVATE "${FREENECT2_INCLUDE_DIR}")
 target_link_libraries(kinect-cli PRIVATE kinect_core winmm)
 kv_copy_freenect2_runtime(kinect-cli)
 
-# ---- W1: tests --------------------------------------------------------------------------------
+# ---- Tests for the core and the CLI -----------------------------------------------------------
 add_executable(test_lock_guard tests/test_lock_guard.cpp)
 kv_windows_target(test_lock_guard)
 target_link_libraries(test_lock_guard PRIVATE kinect_core)
@@ -104,7 +104,7 @@ kv_windows_target(test_core_synthetic)
 target_link_libraries(test_core_synthetic PRIVATE kinect_core winmm)
 kv_copy_freenect2_runtime(test_core_synthetic)
 add_test(NAME core_synthetic COMMAND test_core_synthetic)
-# Its 30 fps row's inter-frame p95 is a timing floor judged against the desk (KV_FLOOR): skipped, never passed, when busy.
+# Its 30 fps row's inter-frame p95 is a timing floor judged against the PC's load (KV_FLOOR): skipped, never passed, when busy.
 set_tests_properties(core_synthetic PROPERTIES SKIP_RETURN_CODE 77)
 
 # v3 §10 "Test isolation": every test that launches the viewer or the CLI passes a state folder under
@@ -148,7 +148,7 @@ if(EXISTS "${CMAKE_SOURCE_DIR}/.git" AND EXISTS "${CMAKE_SOURCE_DIR}/docs/intern
             -P ${CMAKE_CURRENT_SOURCE_DIR}/tests/export_leaves_out_internal.cmake)
 endif()
 
-# ---- W2: viewer (Win32 + Direct3D 11) -----------------------------------------------------------
+# ---- The viewer (Win32 + Direct3D 11) -----------------------------------------------------------
 # host/host_power.cpp (the Kinect power model: viewer Start/Stop and phone On/Off) lives here, not in
 # kv_host, so the viewer's own Start/Stop uses it even without the streaming host. It needs only the
 # header-only enum from host/wire_protocol.hpp.
@@ -168,7 +168,7 @@ target_include_directories(kv_viewer_model PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/v
 target_link_libraries(kv_viewer_model PUBLIC kv_json)
 target_link_libraries(kv_viewer_model PUBLIC kinect_core)
 
-# Stage 5: the 3D point cloud on Direct3D 11 (offscreen 960x720, read back).
+# The 3D point cloud on Direct3D 11 (offscreen 960x720, read back).
 add_library(kv_point_cloud STATIC viewer/point_cloud_renderer.cpp)
 kv_windows_target(kv_point_cloud)
 target_link_libraries(kv_point_cloud PUBLIC kv_viewer_model d3d11 dxgi d3dcompiler)
@@ -238,7 +238,7 @@ add_test(NAME viewer_tools_screenshot
         -DTOOLS=1
         -P ${CMAKE_CURRENT_SOURCE_DIR}/tests/viewer_smoke.cmake)
 
-# Stage 5: the 3D point cloud on the synthetic source (depth-coloured points, Track me), and the same
+# The 3D point cloud on the synthetic source (depth-coloured points, Track me), and the same
 # frozen after an orbit with the camera still moving (the --test-tools hook in 3D).
 add_test(NAME viewer_3d_screenshot
     COMMAND ${CMAKE_COMMAND}
@@ -256,7 +256,7 @@ add_test(NAME viewer_3d_frozen_orbit_screenshot
         -DTOOLS=1
         -P ${CMAKE_CURRENT_SOURCE_DIR}/tests/viewer_smoke.cmake)
 
-# Stage 6: the icon follows the logo (rendered again and compared with the build's), its sizes and
+# The icon follows the logo (rendered again and compared with the build's), its sizes and
 # pixels, and kinect-viewer.exe carries it.
 add_executable(test_icon tests/test_icon.cpp)
 kv_windows_target(test_icon)
@@ -292,7 +292,7 @@ add_test(NAME render_icon_refuses_other_files
         -DSRC=${CMAKE_SOURCE_DIR}
         -P ${CMAKE_CURRENT_SOURCE_DIR}/tests/render_icon_refusal.cmake)
 
-# Stage 6: the second-display output (as a small window) shows the live view, and B blacks it out.
+# The second-display output (as a small window) shows the live view, and B blacks it out.
 add_test(NAME viewer_second_display_screenshot
     COMMAND ${CMAKE_COMMAND}
         -DVIEWER=$<TARGET_FILE:kinect-viewer>
@@ -318,7 +318,7 @@ add_test(NAME viewer_screenshot_refusals
         -DOUTDIR=${CMAKE_CURRENT_BINARY_DIR}
         -P ${CMAKE_CURRENT_SOURCE_DIR}/tests/viewer_screenshot_refusals.cmake)
 
-# ---- W3: iPhone streaming host (OpenSSL 3 mutual TLS 1.3, mDNS, Media Foundation H.264) -----------
+# ---- The iPhone streaming host (OpenSSL 3 mutual TLS 1.3, mDNS, Media Foundation H.264) -----------
 find_package(OpenSSL 3)
 if(NOT OpenSSL_FOUND)
     message(WARNING "OpenSSL 3 not found: skipping the iPhone streaming host. Build with windows/scripts/build.cmd (vcpkg).")
@@ -349,8 +349,8 @@ add_library(kv_host STATIC
     host/roll_thumbnail.cpp
     host/roll_recorder.cpp
     host/roll_playback.cpp
-    # W8 (outside the home): the address rules, the router mapping (NATUPnP behind a seam), remote invites, the
-    # admission limiter and the connection log (Phase A), wired into the host in Phase B, with the mapper's worker.
+    # Outside the home: the address rules, the router mapping (NATUPnP behind a seam), remote invites, the
+    # admission limiter and the connection log, wired into the host, with the mapper's worker.
     host/outside_address.cpp
     host/keep_running.cpp
     host/crash_recorder.cpp
@@ -364,10 +364,10 @@ kv_windows_target(kv_host)
 target_include_directories(kv_host PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/host" "${CMAKE_SOURCE_DIR}/core/include")
 target_link_libraries(kv_host PUBLIC kv_json OpenSSL::SSL OpenSSL::Crypto ws2_32 crypt32 advapi32 user32
     mfplat mfuuid mf strmiids ole32 oleaut32 dnsapi iphlpapi winhttp xmllite shlwapi)
-# W7 roll_media: the camera roll's IMFSinkWriter and IMFSourceReader live in mfreadwrite.
+# roll_media: the camera roll's IMFSinkWriter and IMFSourceReader live in mfreadwrite.
 target_link_libraries(kv_host PUBLIC mfreadwrite)
 
-# W8 (outside the home): the Phase A modules' own tests link this name; the modules now build into kv_host.
+# Outside the home: the modules' own tests link this name; the modules now build into kv_host.
 add_library(kv_outside INTERFACE)
 target_link_libraries(kv_outside INTERFACE kv_host)
 
@@ -383,19 +383,19 @@ target_link_libraries(test_protocol_golden PRIVATE kv_host)
 target_compile_definitions(test_protocol_golden PRIVATE "KV_WINDOWS_SOURCE_DIR=\"${CMAKE_CURRENT_SOURCE_DIR}\"")
 add_test(NAME protocol_golden COMMAND test_protocol_golden)
 
-# Timing floors are judged against the desk (tests/kv_desk.hpp): one missed while the rest of the PC was busy makes its
+# Timing floors are judged against the PC's load (tests/kv_load.hpp): one missed while the rest of the PC was busy makes its
 # runner exit 77, which SKIP_RETURN_CODE shows as "Not Run", never as passed. A row that uses KV_FLOOR sets it.
-add_executable(test_desk_floor tests/test_desk_floor.cpp)
-kv_windows_target(test_desk_floor)
-target_include_directories(test_desk_floor PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/tests")
-# Only test_desk_floor honours KV_TEST_DESK_FORCE; every other binary ignores it (desk_unforced checks that).
-target_compile_definitions(test_desk_floor PRIVATE KV_DESK_FORCE_ALLOWED)
-add_test(NAME desk_floor COMMAND test_desk_floor)
+add_executable(test_load_floor tests/test_load_floor.cpp)
+kv_windows_target(test_load_floor)
+target_include_directories(test_load_floor PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/tests")
+# Only test_load_floor honours KV_TEST_LOAD_FORCE; every other binary ignores it (load_unforced checks that).
+target_compile_definitions(test_load_floor PRIVATE KV_LOAD_FORCE_ALLOWED)
+add_test(NAME load_floor COMMAND test_load_floor)
 
-add_executable(test_desk_unforced tests/test_desk_unforced.cpp)
-kv_windows_target(test_desk_unforced)
-target_include_directories(test_desk_unforced PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/tests")
-add_test(NAME desk_unforced COMMAND test_desk_unforced)
+add_executable(test_load_unforced tests/test_load_unforced.cpp)
+kv_windows_target(test_load_unforced)
+target_include_directories(test_load_unforced PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/tests")
+add_test(NAME load_unforced COMMAND test_load_unforced)
 
 add_executable(test_json_lite tests/test_json_lite.cpp)
 kv_windows_target(test_json_lite)
@@ -409,7 +409,7 @@ target_include_directories(test_h264_encoder PRIVATE "${CMAKE_CURRENT_SOURCE_DIR
 target_link_libraries(test_h264_encoder PRIVATE kv_host kinect_core wmcodecdspuuid winmm)
 kv_copy_freenect2_runtime(test_h264_encoder)
 add_test(NAME h264_encoder COMMAND test_h264_encoder)
-# Its frame counts are timing floors judged against the desk (KV_FLOOR): skipped, never passed, when the PC was busy.
+# Its frame counts are timing floors judged against the PC's load (KV_FLOOR): skipped, never passed, when the PC was busy.
 set_tests_properties(h264_encoder PROPERTIES SKIP_RETURN_CODE 77)
 
 add_executable(test_live_tiers tests/test_live_tiers.cpp)
@@ -418,7 +418,7 @@ target_include_directories(test_live_tiers PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/
 target_link_libraries(test_live_tiers PRIVATE kv_host kinect_core wmcodecdspuuid winmm)
 kv_copy_freenect2_runtime(test_live_tiers)
 add_test(NAME live_tiers COMMAND test_live_tiers)
-# Its encoder-close time is a timing floor judged against the desk (KV_FLOOR): skipped, never passed, when busy.
+# Its encoder-close time is a timing floor judged against the PC's load (KV_FLOOR): skipped, never passed, when busy.
 set_tests_properties(live_tiers PROPERTIES SKIP_RETURN_CODE 77)
 
 add_executable(test_stream_e2e tests/test_stream_e2e.cpp)
@@ -427,7 +427,7 @@ target_include_directories(test_stream_e2e PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/
 target_link_libraries(test_stream_e2e PRIVATE kv_host kv_viewer_model kinect_core wmcodecdspuuid winmm)
 kv_copy_freenect2_runtime(test_stream_e2e)
 add_test(NAME stream_e2e_loopback COMMAND test_stream_e2e)
-# Its power-off floor is judged against the desk (KV_FLOOR): skipped, never passed, when the PC was busy.
+# Its power-off floor is judged against the PC's load (KV_FLOOR): skipped, never passed, when the PC was busy.
 set_tests_properties(stream_e2e_loopback PROPERTIES SKIP_RETURN_CODE 77)
 
 add_executable(test_mdns tests/test_mdns.cpp)
@@ -435,7 +435,7 @@ kv_windows_target(test_mdns)
 target_link_libraries(test_mdns PRIVATE kv_host)
 add_test(NAME mdns_register_browse COMMAND test_mdns)
 
-# W8 Phase A: the outside modules' tests. A fake router, an injected clock and new temp folders only.
+# The outside modules' own tests. A fake router, an injected clock and new temp folders only.
 add_executable(test_outside
     tests/test_outside_main.cpp
     tests/test_outside_address.cpp
@@ -459,7 +459,7 @@ target_link_libraries(test_keep_running PRIVATE kv_host)
 target_include_directories(test_keep_running PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/tests" "${CMAKE_CURRENT_SOURCE_DIR}/host")
 add_test(NAME keep_running COMMAND test_keep_running)
 
-# W8 Phase B: the outside listener, invites, the limiter and the router mapping end to end. Loopback only, new temp
+# The outside listener, invites, the limiter and the router mapping end to end. Loopback only, new temp
 # state folders, a fake router behind the RouterSession seam, and "outside" sources through the source seam.
 add_executable(test_outside_e2e tests/test_outside_e2e.cpp)
 kv_windows_target(test_outside_e2e)
@@ -467,34 +467,34 @@ target_include_directories(test_outside_e2e PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}
 target_link_libraries(test_outside_e2e PRIVATE kv_host kinect_core)
 add_test(NAME outside_e2e COMMAND test_outside_e2e)
 
-# W6: the device list (devices.json, reconciliation with pairing.json, the mirror) and pet-camera.json.
+# The device list (devices.json, reconciliation with pairing.json, the mirror) and pet-camera.json.
 add_executable(test_device_store tests/test_device_store.cpp)
 kv_windows_target(test_device_store)
 target_include_directories(test_device_store PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/tests")
 target_link_libraries(test_device_store PRIVATE kv_host)
 add_test(NAME device_store COMMAND test_device_store)
 
-# W7 A1: the camera roll's pass-through MP4 writer, pre-roll ring and reader (pet-camera.md §6.1).
+# The camera roll's pass-through MP4 writer, pre-roll ring and reader (pet-camera.md §6.1).
 # Synthetic frames, temp folders only.
 add_executable(test_roll_media tests/test_roll_media.cpp)
 kv_windows_target(test_roll_media)
 target_include_directories(test_roll_media PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/tests")
 target_link_libraries(test_roll_media PRIVATE kv_host wmcodecdspuuid)
 add_test(NAME roll_media COMMAND test_roll_media)
-# W7 A2: the camera roll's files (names, sidecars, index.json, listing and cursors, stars, retention,
+# The camera roll's files (names, sidecars, index.json, listing and cursors, stars, retention,
 # the disk floor, folder protection). Fake .mp4 bytes in temp folders only.
 add_executable(test_roll_store tests/test_roll_store.cpp)
 kv_windows_target(test_roll_store)
 target_include_directories(test_roll_store PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/tests")
 target_link_libraries(test_roll_store PRIVATE kv_host)
 add_test(NAME roll_store COMMAND test_roll_store)
-# W7: the camera-roll messages on the wire (0x12-0x19, the roll keys of 0x0B and 0x0C) and their checks.
+# The camera-roll messages on the wire (0x12-0x19, the roll keys of 0x0B and 0x0C) and their checks.
 add_executable(test_roll_wire tests/test_roll_wire.cpp)
 kv_windows_target(test_roll_wire)
 target_include_directories(test_roll_wire PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/tests")
 target_link_libraries(test_roll_wire PRIVATE kv_host)
 add_test(NAME roll_wire COMMAND test_roll_wire)
-# W7: the camera-roll triggers (depth motion detector, trigger set) and the WIC JPEG thumbnailer.
+# The camera-roll triggers (depth motion detector, trigger set) and the WIC JPEG thumbnailer.
 target_link_libraries(kv_host PUBLIC windowscodecs) # roll_thumbnail.cpp
 target_link_libraries(kv_host PUBLIC dbghelp) # crash_recorder.cpp: MiniDumpWriteDump
 add_executable(test_roll_triggers tests/test_roll_triggers.cpp)
@@ -503,7 +503,7 @@ target_include_directories(test_roll_triggers PRIVATE "${CMAKE_CURRENT_SOURCE_DI
 target_link_libraries(test_roll_triggers PRIVATE kv_host)
 add_test(NAME roll_triggers COMMAND test_roll_triggers)
 
-# W7 B1: the camera roll end to end on a fake v3 device (synthetic source, temp state and roll folders).
+# The camera roll end to end on a fake v3 device (synthetic source, temp state and roll folders).
 add_executable(test_roll_e2e tests/test_roll_e2e.cpp)
 kv_windows_target(test_roll_e2e)
 target_include_directories(test_roll_e2e PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/tests")
@@ -514,10 +514,10 @@ add_test(NAME roll_e2e COMMAND test_roll_e2e)
 find_package(unofficial-nayuki-qr-code-generator CONFIG REQUIRED)
 target_compile_definitions(kinect-cli PRIVATE KV_WITH_STREAMING)
 target_link_libraries(kinect-cli PRIVATE kv_host kv_viewer_model)
-# W7: the camera roll's browser, player and schedule editor (roll_ui.cpp) need the host's store and its Media
+# The camera roll's browser, player and schedule editor (roll_ui.cpp) need the host's store and its Media
 # Foundation helper, so they are part of the streaming viewer only.
 target_sources(kinect-viewer PRIVATE viewer/stream_hooks.cpp viewer/pet_test_device.cpp viewer/roll_ui.cpp)
-# W8: the outside-the-home windows (invite, re-share, connection log), the QR drawing they share with the pairing
+# The outside-the-home windows (invite, re-share, connection log), the QR drawing they share with the pairing
 # window, and the --test-outside hook's fake router (the host takes it through Options::router_factory).
 target_sources(kinect-viewer PRIVATE viewer/outside_ui.cpp viewer/qr_draw.cpp viewer/outside_test_router.cpp)
 target_compile_definitions(kinect-viewer PRIVATE KV_WITH_STREAMING)
@@ -531,7 +531,7 @@ add_test(NAME viewer_pairing_window_screenshot
         -DSTATE_DIR=${KV_TEST_STATE}/viewer-pairing
         -DPAIR=1
         -P ${CMAKE_CURRENT_SOURCE_DIR}/tests/viewer_smoke.cmake)
-# W6 (protocol v3 §10, pet-camera.md §4): a --state-dir seeded with two synthetic devices and sharing on
+# Multi-viewer and roles (protocol v3 §10, pet-camera.md §4): a --state-dir seeded with two synthetic devices and sharing on
 # is loaded; then the --test-pet-camera hook pairs a fake v3 device on loopback and drives the panel,
 # the "Watching now" banner, privacy, sharing and its schedule, and the Devices dialog (rename, revoke).
 add_test(NAME viewer_pet_camera_panel
@@ -555,19 +555,19 @@ add_test(NAME state_dir_refusals
         -DVIEWER=$<TARGET_FILE:kinect-viewer>
         -DOUTDIR=${CMAKE_CURRENT_BINARY_DIR}
         -P ${CMAKE_CURRENT_SOURCE_DIR}/tests/state_dir_refusals.cmake)
-# W7: kinect-cli serve --camera-roll-dir records only into the folder it names; without it there is no roll.
+# kinect-cli serve --camera-roll-dir records only into the folder it names; without it there is no roll.
 add_test(NAME cli_camera_roll_dir
     COMMAND ${CMAKE_COMMAND}
         -DCLI=$<TARGET_FILE:kinect-cli>
         -DOUTDIR=${CMAKE_CURRENT_BINARY_DIR}
         -P ${CMAKE_CURRENT_SOURCE_DIR}/tests/cli_camera_roll_dir.cmake)
-# W8: kinect-cli serve --outside-port. Needs sharing on; a test run binds 127.0.0.1 and uses no router (manual).
+# kinect-cli serve --outside-port. Needs sharing on; a test run binds 127.0.0.1 and uses no router (manual).
 add_test(NAME cli_outside_port
     COMMAND ${CMAKE_COMMAND}
         -DCLI=$<TARGET_FILE:kinect-cli>
         -DOUTDIR=${CMAKE_CURRENT_BINARY_DIR}
         -P ${CMAKE_CURRENT_SOURCE_DIR}/tests/cli_outside_port.cmake)
-# W7 (pet-camera.md §4, §6; v3 §10): the viewer's camera roll, synthetic only, with --state-dir and --camera-roll-dir
+# The viewer's camera roll (pet-camera.md §4, §6; v3 §10), synthetic only, with --state-dir and --camera-roll-dir
 # under the build tree: the panel's settings, motion and manual clips, the browser and its player (no frame of it
 # reaches the host), the screenshot rule while a clip is on screen; no roll without --camera-roll-dir; settings
 # refused while pet-camera.json can't be read; the real folders refused as --camera-roll-dir by their path alone.
@@ -594,7 +594,7 @@ add_test(NAME viewer_identity_reset
         -DOUT=${CMAKE_CURRENT_BINARY_DIR}/viewer-identity-reset.png
         -DSTATE_DIR=${KV_TEST_STATE}/viewer-identity
         -P ${CMAKE_CURRENT_SOURCE_DIR}/tests/viewer_identity_reset.cmake)
-# W8 (pet-camera.md §4; protocol v3 §8, §10): the Pet camera panel's "Outside the home" section and its windows,
+# The Pet camera panel's "Outside the home" section and its windows (pet-camera.md §4; protocol v3 §8, §10),
 # synthetic only, with a --state-dir under the build tree and the viewer's own fake router (never the real one):
 # every status's sentence, the manual address field, an invite shown (never its token) and cancelled, the
 # address-changed flow and re-share, the connection log window, and off disabling everything.
@@ -605,7 +605,7 @@ add_test(NAME viewer_outside_panel
         -DSTATE_DIR=${KV_TEST_STATE}/viewer-outside
         -P ${CMAKE_CURRENT_SOURCE_DIR}/tests/viewer_outside.cmake)
 
-# ---- W4: host-only recorder (16-bit IR/Depth only: FFV1 via ffmpeg, PNG16 via WIC; colour is live only) ----
+# ---- The host-only recorder (16-bit IR/Depth only: FFV1 via ffmpeg, PNG16 via WIC; colour is live only) ----
 add_library(kv_recorder STATIC recorder/recorder.cpp recorder/recordings.cpp)
 kv_windows_target(kv_recorder)
 target_include_directories(kv_recorder PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/recorder")
@@ -617,7 +617,7 @@ target_link_libraries(test_recorder PRIVATE kv_recorder kv_viewer_model kinect_c
 kv_copy_freenect2_runtime(test_recorder)
 add_test(NAME recorder COMMAND test_recorder)
 
-# Recordings in the app (phase 2): the list, the 7-day deletion and its log, the colour purge, the reader
+# Recordings in the app: the list, the 7-day deletion and its log, the colour purge, the reader
 # (PNG16 and FFV1 chunks, bit exact) and playback through the core's replay pipeline. Temp folders only.
 add_executable(test_recordings tests/test_recordings.cpp)
 kv_windows_target(test_recordings)
@@ -635,7 +635,7 @@ target_compile_definitions(kinect-viewer PRIVATE KV_WITH_RECORDER)
 target_link_libraries(kinect-viewer PRIVATE kv_recorder)
 target_compile_definitions(kinect-cli PRIVATE KV_WITH_RECORDER)
 target_link_libraries(kinect-cli PRIVATE kv_recorder)
-# Phase 0: the CLI refuses to record colour before it opens anything: exit 2, the sentence, and no
+# The CLI refuses to record colour before it opens anything: exit 2, the sentence, and no
 # --out folder (in the build tree, so a regression could never write into the real recordings folder).
 foreach(colour_mode color sbs)
     add_test(NAME cli_record_refuses_${colour_mode}

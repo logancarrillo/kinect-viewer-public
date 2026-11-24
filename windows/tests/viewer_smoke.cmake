@@ -11,7 +11,7 @@ file(REMOVE_RECURSE "${STATE_DIR}")
 set(BASE_ARGS --mode sbs --sbs-layout ir-depth --clock-overlay)
 set(EXPECT_FRAME "frame=1024x424")
 if(MODE3D)
-    # Stage 5: the 3D point cloud with depth-coloured points and Track me (no colour in the view).
+    # The 3D point cloud with depth-coloured points and Track me (no colour in the view).
     set(BASE_ARGS --mode 3d --track-me --point-size 3)
     set(EXPECT_FRAME "frame=960x720")
 endif()

@@ -233,9 +233,9 @@ KV_TEST(png16_sequence_is_bit_exact) {
     removeTree(base);
 }
 
-// Phase 0: colour is live only. Colour and every Side-by-Side layout are refused with the exact
+// Colour is live only. Colour and every Side-by-Side layout are refused with the exact
 // sentence, and nothing is created: not a session folder, not even the recordings folder.
-// W7: the viewer refuses the recordings folder for the camera roll by its path alone (a test's --camera-roll-dir,
+// The viewer refuses the recordings folder for the camera roll by its path alone (a test's --camera-roll-dir,
 // the PC's "Change..."), from kv_viewer_model, which can't link the recorder: the two must name the same folder.
 KV_TEST(the_viewer_knows_the_recordings_folder_the_recorder_uses) {
     KV_CHECK(kvwin::knownRecordingsDir() == kvrec::defaultRecordingsDir());

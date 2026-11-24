@@ -1,10 +1,10 @@
 // C++ port of macos/Streaming/HostStreamServer.swift, grown into the protocol v3 pet-camera host
-// (docs/protocol-v3-pet-camera.md, W6): the pinned mutual-TLS 1.3 stream listener, now admitting every
+// (docs/protocol-v3-pet-camera.md): the pinned mutual-TLS 1.3 stream listener, now admitting every
 // device on the paired-device list (DeviceStore) with many sessions side by side; the 120 s one-try
 // pairing listener (QR token or 8-digit code) that adds a device with the role picked on the PC; mDNS;
 // per-session negotiation (v1/v2/v3), roles, availability, watcher slots, per-session 0x07 and 0x0B,
 // 0x0C commands, 0x0E live-view requests, 0x0F notices; and the per-session live-video fan-out of the
-// encoder tiers (LiveTierSet, driven through LiveVideoControl) with per-session back-pressure. W7 adds
+// encoder tiers (LiveTierSet, driven through LiveVideoControl) with per-session back-pressure. It adds
 // the camera roll on the wire: the roll fields of 0x0B, the roll actions of 0x0C, listing (0x12/0x13),
 // thumbnails (0x14/0x15) and playback (0x16-0x19), with the recorder (RollRecorder) doing the recording.
 #pragma once
@@ -63,7 +63,7 @@ struct ActivePairingOffer {
     bool shortCodeAllowed = false;
 };
 
-// W8, outside the home (v3 §8; a fixed interface with the PC app). What the PC panel shows,
+// Outside the home (v3 §8; a fixed interface with the PC app). What the PC panel shows,
 // read cheaply and never waiting on the router.
 struct OutsideView {
     bool allowed = false;   // the setting (allowOutside)
@@ -161,7 +161,7 @@ public:
         // §5.9 "Pacing": the backlog past which a playback waits. Tests lower it.
         size_t playback_backlog_bytes = kPlaybackBacklogBytes;
 
-        // ---- W8, outside the home (v3 §8) ----
+        // ---- outside the home (v3 §8) ----
         // The router (§8.2). Empty: no router is ever used, and the status is manual with the steps. Only
         // HostController passes the real NATUPnP session, and never in a test run (v3 §10).
         outside::RouterOpener router_opener;
@@ -204,7 +204,7 @@ public:
         int outside_redeem_timeout_ms = 10000;   // §8.1: the one redemption frame within 10 s
         outside::LimiterConfig outside_limits;   // §8.5 (tests may tighten them)
         outside::OutsideLimiter::Clock outside_limiter_clock = nullptr; // tests: an injected clock
-        // Test seam (v3 §10 W8): every listener's peer address, unwrapped, goes through this at accept with the
+        // Test seam (v3 §10): every listener's peer address, unwrapped, goes through this at accept with the
         // listener's name ("stream", "pairing", "outside"); a non-empty answer replaces it. A test on loopback
         // stands in an outside source this way. Empty: the address accept() read.
         std::function<std::string(const char* listener, const std::string& peer)> test_source_address;
@@ -346,10 +346,10 @@ public:
     std::vector<PetWatcher> watchingNow() const;
     int sessionsOnTier(LiveTier t) const;
 
-    // ---- the camera roll (W7; pet-camera.md §4, §6; v3 §5.1-§5.2, §5.6-§5.9) ------------------------
+    // ---- the camera roll (pet-camera.md §4, §6; v3 §5.1-§5.2, §5.6-§5.9) ----------------------------
     // Set before start(), already started on its folder. Without one (every host given no roll folder, a
-    // test's included) the roll is off: hello says cameraRoll false, 0x0B keeps the "Before W7" values and
-    // every roll request gets unsupported, exactly as a W6 host (v3 §5.1, §10 "Test isolation").
+    // test's included) the roll is off: hello says cameraRoll false, 0x0B keeps its defaults and
+    // every roll request gets unsupported, exactly as a host without a roll (v3 §5.1, §10 "Test isolation").
     void setRollRecorder(RollRecorder* roll);
     // A camera-roll folder is set but couldn't be used (HostController's rollError() says why). There is no
     // roll on the wire (cameraRoll false, rollAvailable false), but 0x0B carries rollBlockedReason
@@ -434,7 +434,7 @@ public:
     // Pet-camera state changed (devices, sessions, settings): the PC refreshes its panel. No lock held.
     std::function<void()> onPetStateChanged;
 
-    // ---- outside the home (W8, v3 §8; pet-camera.md §3, §4, §7) ----------------------------------------
+    // ---- outside the home (v3 §8; pet-camera.md §3, §4, §7) --------------------------------------------
     OutsideView outsideView() const;
     // Refused, with err, unless sharing is on, and while pet-camera.json can't be read. On: the outside
     // listener opens on the outside port (a default one is picked once and saved) and the mapping is made.
@@ -524,7 +524,7 @@ private:
     // m_ held. Takes one of the session's device's 0x08 command tokens: false when it has none left.
     bool takeCommandTokenLocked(Session& s);
     void handlePetCommandLocked(Session& s, const PetCameraCommandMessage& cmd);
-    // W7 requests. Each checks roles, availability and privacy under m_ and answers a refusal at once; the
+    // Camera roll requests. Each checks roles, availability and privacy under m_ and answers a refusal at once; the
     // roll's file work (listing, reading a thumbnail, star, delete, opening a clip) is returned as a task
     // that the caller runs after m_ is released, on the same connection thread, so a slow disk never holds
     // up the fan-out or another session, and this session's answers keep their order.
@@ -547,7 +547,7 @@ private:
     bool canTakeSlotLocked(const Session& s, PetRole role) const;
     bool playingLocked(const Session& s) const;
     void pushRollSettingsLocked();
-    // Ends the session's playback: with 0x17 stopped and the §9 sentence for `reason` (a host-initiated stop,
+    // Ends the session's playback: with 0x17 stopped and the user-facing sentence for `reason` (v3 §9; a host-initiated stop,
     // §5.9), or with nothing sent (silent: the session is going). The stream's thread is joined later, outside
     // m_ (joinRetiredPlaybacks).
     void endPlaybackLocked(Session& s, const char* reason, bool silent);
@@ -603,7 +603,7 @@ private:
     void notifyPetStateChanged();
     void notifyOutsideChanged();
 
-    // ---- W8 (v3 §8) ----
+    // ---- outside the home (v3 §8) ----
     // The peer's address, unwrapped (§8.0), through the test seam.
     outside::IpAddress sourceOf(const sockaddr* peer, const char* listener) const;
     // Reads the home prefixes (§8.0) into on_link_, unless a read finished since asked_ns; a read that fails keeps
@@ -724,10 +724,10 @@ private:
     // again (back-off as for saves). A privacy-on asked for meanwhile is kept and wins after the read.
     bool settings_unread_ = false;
     bool privacy_on_asked_while_unread_ = false;
-    // W7 retention (pet-camera.md §5 fail closed): settings_.rollLimitsKnown. The roll's keep days and cap
+    // Camera roll retention (pet-camera.md §5 fail closed): settings_.rollLimitsKnown. The roll's keep days and cap
     // are the user's only once a pet-camera.json holding them was read and parsed (at start or on a retry), or
     // the owner set or confirmed them on the PC. A file that is missing, unreadable, kept as .bad, gone since
-    // start, or from W6 (no roll keys) leaves them unknown, and retention doesn't run: defaults never delete.
+    // start, or from before the roll (no roll keys) leaves them unknown, and retention doesn't run: defaults never delete.
     // The PC player's pins (pinRollClipForPc), by token.
     struct PcPin {
         std::string clipId;
@@ -767,7 +767,7 @@ private:
     std::unique_ptr<CryptoIdentity> identity_;
     std::shared_ptr<TlsContext> stream_ctx_;
     std::shared_ptr<TlsContext> pairing_ctx_;
-    // ---- W8 (v3 §8) ----
+    // ---- outside the home (v3 §8) ----
     std::shared_ptr<TlsContext> outside_ctx_; // its own verify callback: a listed device, or any leaf while an invite is open
     std::unique_ptr<TcpListener> outside_listener_; // open while outside listening is on
     void* power_request_ = nullptr; // the system-required power request (HANDLE), made the first time it is held

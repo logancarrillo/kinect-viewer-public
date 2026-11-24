@@ -1,6 +1,6 @@
 // Media Foundation H.264 encoder tests on synthetic frames: AVCC repacking, SPS/PPS extraction, GOP 30,
 // no frame reordering, and a full encode -> decode -> clock-barcode round trip.
-#include "kv_desk.hpp"
+#include "kv_load.hpp"
 #include "kv_test.hpp"
 
 #include "frame_mapper.hpp"
@@ -103,13 +103,13 @@ KV_TEST(annexb_to_avcc_moves_parameter_sets_out) {
 
 // What the encoder promises is checked in every run: the first access unit an IDR, SPS and PPS, no reordering, an IDR
 // at least every 30 encoded frames, and every decoded frame's clock barcode right. How many of the 90 frames come back
-// is a timing floor (KV_FLOOR, judged against the desk): a 30 fps source outruns a hardware MFT that asks for input
+// is a timing floor (KV_FLOOR, judged against the PC's load): a 30 fps source outruns a hardware MFT that asks for input
 // late, the latest frame then wins (MfH264Encoder::encode), and fewer frames come out with nothing wrong in the
 // encoder. So the GOP is counted in frames the encoder encoded (output order), not in submitted tokens: a frame
 // replaced before the MFT asked for it never reached its GOP counter.
 KV_TEST(encode_ir_stream_gop30_no_reorder_and_barcode_round_trip) {
     CoInitializeEx(nullptr, COINIT_MULTITHREADED);
-    kvtest::DeskSampler desk;
+    kvtest::LoadSampler load;
     MfH264Encoder enc;
     Collector col;
     EncoderOptions opts;
@@ -133,7 +133,7 @@ KV_TEST(encode_ir_stream_gop30_no_reorder_and_barcode_round_trip) {
         std::this_thread::sleep_for(std::chrono::milliseconds(33));
     }
     col.waitFor(kFrames, 3000);
-    const kvtest::DeskSnapshot timed = desk.snapshot(); // the stretch the floors time ends here
+    const kvtest::LoadSnapshot timed = load.snapshot(); // the stretch the floors time ends here
     const std::vector<uint8_t> seq_hdr = enc.sequenceHeader();
     enc.close();
 
@@ -211,10 +211,10 @@ KV_TEST(encode_ir_stream_gop30_no_reorder_and_barcode_round_trip) {
 }
 
 // Each size opens and encodes: a frame comes back (within a generous 10 s), in every run. That 4 of the 6 frames are
-// back within 2 s of the last is a timing floor, judged against the desk.
+// back within 2 s of the last is a timing floor, judged against the PC's load.
 KV_TEST(encoder_opens_colour_and_side_by_side_sizes) {
     CoInitializeEx(nullptr, COINIT_MULTITHREADED);
-    kvtest::DeskSampler desk;
+    kvtest::LoadSampler load;
     const uint32_t sizes[][2] = {{1920, 1080}, {1280, 424}, {1024, 424}};
     for (const auto& s : sizes) {
         MfH264Encoder enc;
@@ -233,7 +233,7 @@ KV_TEST(encoder_opens_colour_and_side_by_side_sizes) {
         }
         const std::string size = std::to_string(s[0]) + "x" + std::to_string(s[1]);
         const bool four = col.waitFor(4, 2000);
-        const kvtest::DeskSnapshot timed = desk.snapshot();
+        const kvtest::LoadSnapshot timed = load.snapshot();
         const size_t back = col.size();
         KV_CHECK_MSG(col.waitFor(1, 10000), size + ": no frame came back in 10 s");
         std::printf("  %s: %zu of 6 back within 2 s; %s\n", size.c_str(), back, timed.r.line().c_str());

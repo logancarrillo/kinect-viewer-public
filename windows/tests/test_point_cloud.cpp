@@ -1,5 +1,5 @@
-// Stage 5: the 3D point cloud. The orbit camera's math (the Mac's PointCloudCameraState), the
-// projection with col + 0.5 - cx (phase 7), the D3D11 renderer on made-up depth (where a patch lands,
+// The 3D point cloud. The orbit camera's math (the Mac's PointCloudCameraState), the
+// projection with col + 0.5 - cx, the D3D11 renderer on made-up depth (where a patch lands,
 // mirror and rotate, the depth test, point size and round points, no fallback intrinsics), the core's
 // 3D inputs on the synthetic source (cut-off, colour sources), and the 3D frame rate there.
 // Synthetic only: no sensor, nothing read from or written to disk.

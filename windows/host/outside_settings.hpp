@@ -1,6 +1,6 @@
-// W8 (outside the home), Phase A: the outside settings in a struct of their own (pet-camera.md §4, v3 §8.1).
-// Phase B adds them to pet-camera.json as new keys after W7's, with no reordering and under the same
-// fail-closed rules; until then nothing reads or writes them.
+// Outside the home: the outside settings in a struct of their own (pet-camera.md §4, v3 §8.1).
+// pet-camera.json holds them as new keys after the camera roll's, with no reordering and under the same
+// fail-closed rules.
 #pragma once
 
 #include "crypto_identity.hpp"

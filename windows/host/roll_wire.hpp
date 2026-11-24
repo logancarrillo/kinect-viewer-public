@@ -1,4 +1,4 @@
-// W7 camera roll on the wire (docs/protocol-v3-pet-camera.md §5.1, §5.2, §5.6-5.9, §7.1, §9): the
+// The camera roll on the wire (docs/protocol-v3-pet-camera.md §5.1, §5.2, §5.6-5.9, §7.1, §9): the
 // checks on what a device sends, after its JSON has decoded.
 //
 // The split follows v3 §5.10. wire_protocol's fromJson checks shape only: bad JSON, a wrong type or
@@ -87,7 +87,7 @@ struct RollCommand {
 bool isRollAction(const std::string& action);
 
 // For a 0x0C whose action is a roll action: the 0x0D code, or nullptr with out filled in.
-//  - set_roll without enabled: invalid (as W6 answers set_sharing and set_privacy without it);
+//  - set_roll without enabled: invalid (as set_sharing and set_privacy are answered without it);
 //  - set_motion with neither key, or with sensitivity outside 1-10: invalid (§5.2);
 //  - star_clip without clipId or starred, delete_clip without clipId: invalid;
 //  - star_clip or delete_clip with a clip id that isn't valid: not_found (§7.1);
@@ -97,7 +97,7 @@ const char* parseRollCommand(const PetCameraCommandMessage& m, RollCommand& out)
 
 // ---- answers ----------------------------------------------------------------------------------
 
-// A failed 0x0D: ok false, the code, and the code's §9 sentence when it has one.
+// A failed 0x0D: ok false, the code, and the code's user-facing sentence (v3 §9) when it has one.
 CommandResultMessage makeCommandError(uint64_t requestId, const std::string& code);
 
 // 0x0B (§5.1): sets rollBlockedReason and its §9 rollBlockedText together, or clears both when

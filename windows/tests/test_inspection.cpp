@@ -1,4 +1,4 @@
-// Inspection tools and presets (the Mac's phase 1) as pure logic: region stats, the 3D ruler with
+// Inspection tools and presets (as on the Mac) as pure logic: region stats, the 3D ruler with
 // given intrinsics, the viewport, display-to-sensor mapping, the drop banner, health lines,
 // shortcuts, and the presets store in a temp folder. No sensor, no window.
 #include "kv_test.hpp"
@@ -127,7 +127,7 @@ KV_TEST(ruler_uses_the_ir_intrinsics_and_refuses_without_them_or_without_depth) 
     KV_CHECK_MSG(approx(*m.distance_mm, 300.0 / 365.0 * 1000.0, 1.0), std::to_string(*m.distance_mm));
     KV_CHECK(m.error.empty() && m.label().find(L" mm (") != std::wstring::npos);
 
-    // No intrinsics: never a fallback (phase 7 fix 7).
+    // No intrinsics: never a fallback.
     kv_ir_intrinsics_t none{};
     RulerMeasurement::evaluate(m, none, d);
     KV_CHECK(!m.distance_mm && m.error == L"Intrinsics unavailable" && m.label() == L"Intrinsics unavailable");
@@ -329,7 +329,7 @@ KV_TEST(presets_store_saves_loads_refuses_built_in_names_and_remembers_the_last_
         std::ofstream(dir + L"\\presets.json", std::ios::trunc) << "{not json";
         PresetsStore st(dir);
         KV_CHECK(st.custom().empty() && !st.lastUsed());
-        // A file can't claim a built-in. The 3D mode (4) exists since stage 5; a mode this viewer
+        // A file can't claim a built-in. The 3D mode (4) exists since the 3D point cloud; a mode this viewer
         // doesn't have falls back to IR.
         std::vector<ViewerPreset> c;
         std::optional<ViewerPreset> l;
@@ -351,7 +351,7 @@ KV_TEST(presets_store_saves_loads_refuses_built_in_names_and_remembers_the_last_
     RemoveDirectoryW(dir.c_str());
 }
 
-// Stage 6: which display the projector output goes to (the Mac's refreshAvailableDisplays).
+// The second display: which display the projector output goes to (the Mac's refreshAvailableDisplays).
 KV_TEST(second_display_choice_keeps_the_pick_else_prefers_a_projector) {
     auto disp = [](const wchar_t* dev, const wchar_t* name, LONG x, LONG w, LONG h, bool primary) {
         DisplayTarget d;
@@ -412,7 +412,7 @@ KV_TEST(presets_keep_the_cutoff_and_point_cloud_but_never_the_blend) {
     KV_CHECK(approx(target.point_size, 4.5, 1e-3) && target.point_color_source == KV_POINT_COLOR_IR);
     KV_CHECK(target.depth_color_blend_enabled);
 
-    // A preset from before phase 3 (a built-in, or an old file) leaves the cut-off and points as they are.
+    // A preset from before the point cloud (a built-in, or an old file) leaves the cut-off and points as they are.
     ViewerSettings mine;
     applyTrackMe(mine);
     mine.point_size = 6.0f;
@@ -427,13 +427,13 @@ KV_TEST(presets_keep_the_cutoff_and_point_cloud_but_never_the_blend) {
     }
     KV_REQUIRE(PresetsStore::fromJson(old, c, l));
     KV_REQUIRE(c.size() == 1);
-    KV_CHECK(!c[0].phase3.cutoff_enabled && !c[0].phase3.point_size);
+    KV_CHECK(!c[0].cutoff_points.cutoff_enabled && !c[0].cutoff_points.point_size);
     ViewerSettings kept;
     kept.point_size = 7.0f;
     applyPreset(c[0], kept);
     KV_CHECK(approx(kept.point_size, 7.0, 1e-3) && !kept.cutoff_enabled);
 
-    // A phase 3 field of the wrong type makes that entry bad (skipped), not the file.
+    // A point cloud field of the wrong type makes that entry bad (skipped), not the file.
     std::string bad = j;
     const auto n = bad.find("\"cutoffNearMm\":");
     KV_REQUIRE(n != std::string::npos);

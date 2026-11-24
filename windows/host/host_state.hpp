@@ -24,7 +24,7 @@ struct HostPersistedState {
     std::string serviceId;
     std::optional<std::vector<uint8_t>> pinnedClientCertSHA256;
     bool allowPhoneModeSwitch = true;
-    // Phase 7: power control has its own setting, on by default, apart from mode switching.
+    // Power control has its own setting, on by default, apart from mode switching.
     bool allowPhoneSensorPowerControl = true;
     // "Turn the Kinect off when the iPhone disconnects", off by default.
     bool turnOffKinectOnPhoneDisconnect = false;

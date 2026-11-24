@@ -1,4 +1,4 @@
-// HostPowerModel (protocol v2 power, phase 5.7 and phase 7 fixes 8 and 13) on the synthetic source:
+// HostPowerModel (protocol v2 power) on the synthetic source:
 // On/Off round trips, a lock held by another process, a recording running when Off comes, quick
 // toggles in order, and the resume generation (an Off during the reopen delay wins). Synthetic only:
 // no real frames, and the recording goes to a temp folder as 16-bit PNGs of the synthetic source.
@@ -62,7 +62,7 @@ void removeTree(const std::wstring& dir) {
 class SyntheticBackend final : public SensorBackend {
 public:
     // The engine is created with a temp lock path: the synthetic source then takes that lock (the
-    // core's contract since the Mac's phase PRs), so On and Off can be checked against a real lock file
+    // core's contract since kv_engine_start_ex), so On and Off can be checked against a real lock file
     // without touching ~\\KINECT-IN-USE.
     // Each test's path is its own (name and pid); one test writes another process's lock there first.
     explicit SyntheticBackend(std::string lock_path) : lock_path_(std::move(lock_path)) {

@@ -1,6 +1,6 @@
 # Protocol v3: the pet camera (Windows host)
 
-Status: **spec, before any code.** It covers stages W6 to W8 on the Windows host and phase 9 on the Mac and iOS side. Each stage implements its part of this document. If code and this document disagree, fix one of them in the same PR and say which.
+Status: **implemented.** The Windows host implements the host side, and the iPhone app and the Mac's "Watch a camera" mode the device side. If code and this document disagree, fix one of them in the same PR and say which.
 
 The feature plan and the PC-side design are in [`pet-camera.md`](pet-camera.md). The v1 and v2 protocol is in [`protocol-changes.md`](protocol-changes.md) and in `shared/WireProtocol.swift` / `windows/host/wire_protocol.{hpp,cpp}`. This document adds to them and never changes what a v1 or v2 peer sees, except where §2.4 says so.
 
@@ -12,7 +12,7 @@ Everything else stands:
 - Raw colour, depth and IR frames and point clouds never leave the PC.
 - The depth/IR recorder, its folder and its rules are untouched.
 - The screenshot test hook still refuses colour and the real source.
-- Agents and tests use the synthetic source only.
+- Development and tests use the synthetic source only.
 
 Words used below:
 - **host**: the Windows PC app.
@@ -50,7 +50,7 @@ Rules:
    - A v3 device must skip unknown types too, and must decode every **v3 enum string leniently**: an unknown value becomes `unknown` and is ignored. This avoids the v2 trap, where one new `powerState` value dropped the whole `0x07`.
    - The host answers an unknown v3 `action` with `0x0D` `error: "unsupported"`.
 7. **Type bytes:** this spec takes `0x0B`–`0x0F` and `0x12`–`0x19`; `0x1A` and up stay free.
-   - `windows/tests/test_protocol_golden.cpp` uses `0x0B` as its "nobody knows this type" sentinel. W6 moves it to `0x7E`, the value the Swift test uses.
+   - `windows/tests/test_protocol_golden.cpp` uses `0x7E` as its "nobody knows this type" sentinel, the value the Swift test uses.
 
 **Unchanged:**
 - the 8-byte `KV` header;
@@ -103,7 +103,7 @@ The single `pinnedClientCertSHA256` becomes a **device list** (storage: `pet-cam
 
 **Becoming a session.** `on_ready` looks the leaf hash up in the device list again under the server lock that revoke holds (§3.2), and closes the connection if the device is gone. It also reads the device's role then. Every later permission check reads the device's **current** role, never a cached copy.
 
-**Limits:** at most **16 paired devices**. A 17th pairing is refused with the §9 sentence.
+**Limits:** at most **16 paired devices**. A 17th pairing is refused with its sentence (§9).
 
 **Replacement.** A new session from a device that already has one replaces the older one. This is today's rule, now per device:
 - the replacement is not reported as a disconnect;
@@ -146,7 +146,7 @@ Sessions from **different** devices run side by side.
 | Version | What the host does |
 |---|---|
 | v3 | It sends `0x0B` with `liveAllowed: false` and `liveUnavailableReason`. The session stays open for browsing and commands, and no `0x03` is sent. |
-| v2 | It sends that session's `0x07` with `powerState: "off"`, `allowPhoneSensorPower: false`, and `sensorPowerDisabledReason` = the §9 sentence for the reason. No `0x03` is sent. The phone shows its "Kinect is off" card, with the sentence under the disabled switch. When the session becomes available again, it gets a `0x07` with the real state, then a `0x02` and a keyframe. |
+| v2 | It sends that session's `0x07` with `powerState: "off"`, `allowPhoneSensorPower: false`, and `sensorPowerDisabledReason` = the reason's sentence (§9). No `0x03` is sent. The phone shows its "Kinect is off" card, with the sentence under the disabled switch. When the session becomes available again, it gets a `0x07` with the real state, then a `0x02` and a keyframe. |
 | v1 | It is closed, because a v1 phone can't be told why. This happens at its first ping if it is already unavailable, and **immediately** if it becomes unavailable later. It reconnects on its own and is closed again until it is available (§2.4). |
 
 - Until a session's first ping, the host sends it video only if it is available. An available v1/v2 session therefore streams from its first keyframe, as today.
@@ -246,8 +246,8 @@ The other hello keys are unchanged.
 |---|---|---|---|---|---|
 | `specVersion` | int | `Int` | `int` | Req | `1` (this document) |
 | `maxWatchers` | int | `Int` | `int` | Req | `4` |
-| `cameraRoll` | bool | `Bool` | `bool` | Req | `true` from W7 (W6 sends `false`) |
-| `outside` | bool | `Bool` | `bool` | Req | `true` from W8 (W6/W7 send `false`) |
+| `cameraRoll` | bool | `Bool` | `bool` | Req | `true` while the host has a camera roll it can use (§7.3) |
+| `outside` | bool | `Bool` | `bool` | Req | `true`: the host can listen outside the home, whether or not that is on (`0x0B`'s `outsideEnabled` says) |
 | `qualities` | array of string | `[String]` | `vector<string>` | Req | `["auto","high","medium","low"]` |
 
 No role or settings travel in hello. They come in `0x0B` once the connection is v3.
@@ -368,7 +368,7 @@ Sent:
 | `watching` | bool | `Bool` | `bool` | Req | Receiving live `0x03` now |
 | `liveQuality` | `LiveQuality` | `String` | `string` | Req | Requested |
 | `liveTier` | `LiveTier` | `String` | `string` | Req | Being sent (`high` when not watching) |
-| `rollAvailable` | bool | `Bool` | `bool` | Req | This session may list the camera roll now (role, sharing, PC not replaying for viewers, W7 shipped). Thumbnails and playback also need privacy mode off. |
+| `rollAvailable` | bool | `Bool` | `bool` | Req | This session may list the camera roll now (role, sharing, PC not replaying for viewers, a camera roll on the host). Thumbnails and playback also need privacy mode off. |
 | `playbackAvailable` | bool | `Bool` | `bool` | Req | It may start a playback now: `rollAvailable`, privacy mode off, and a watcher slot free or takeable (§2.3). Thumbnails need only `rollAvailable` and privacy mode off. |
 | `rollEnabled` | bool | `Bool` | `bool` | Req | "Record to the camera roll", the master switch |
 | `motionEnabled` | bool | `Bool` | `bool` | Req | |
@@ -380,8 +380,8 @@ Sent:
 | `clipTrigger` | `ClipTrigger` | `String?` | `optional<string>` | Opt | While recording: the trigger that started the clip |
 | `clipManualActive` | bool | `Bool` | `bool` | Req | A manual trigger is active, so `stop_clip` will work |
 | `clipElapsedSec` | number | `Double` | `double` | Req | `0` when idle |
-| `rollBlockedReason` | string enum | `String?` | `optional<string>` | Opt | Why recording can't run now: `privacy_mode`, `roll_disabled`, `roll_preparing`, `folder_unavailable`, `sensor_off`, `view_frozen`, `pc_replaying`, `disk_floor`, `storage_full`. Absent when it can. `roll_preparing` (additive, W7 fix round 2) means the roll is on and its folder is being prepared; a device that doesn't know the value shows `rollBlockedText`. `folder_unavailable` means a camera-roll folder is set on the PC but can't be used (a missing drive, or a folder `pet-camera.md` §6.5 refuses); `cameraRoll` and `rollAvailable` are then false, and the PC shows why. |
-| `rollBlockedText` | string | `String?` | `optional<string>` | Opt | The §9 sentence for `rollBlockedReason` |
+| `rollBlockedReason` | string enum | `String?` | `optional<string>` | Opt | Why recording can't run now: `privacy_mode`, `roll_disabled`, `roll_preparing`, `folder_unavailable`, `sensor_off`, `view_frozen`, `pc_replaying`, `disk_floor`, `storage_full`. Absent when it can. `roll_preparing` (additive) means the roll is on and its folder is being prepared; a device that doesn't know the value shows `rollBlockedText`. `folder_unavailable` means a camera-roll folder is set on the PC but can't be used (a missing drive, or a folder `pet-camera.md` §6.5 refuses); `cameraRoll` and `rollAvailable` are then false, and the PC shows why. |
+| `rollBlockedText` | string | `String?` | `optional<string>` | Opt | The sentence for `rollBlockedReason` (§9) |
 | `outsideEndpoint` | object | `PetEndpoint?` | `optional<PetEndpoint>` | Opt | The address to use from outside, when outside listening is on and an address is known (§8.3). Sent to **both** roles, so a device on the home network learns a new address automatically. |
 | `outsideCandidates` | array of `PetEndpoint` | `[PetEndpoint]?` | `optional<vector<PetEndpoint>>` | Opt | Every address a device may dial from outside, in order: `outsideEndpoint` (when there is one), then this PC's own overlay (Tailscale) IPv4 address in `100.64.0.0/10` at the outside port, `verified: false`. That address is read from the PC's own interfaces when the message is built (at most 5 s old) and is never typed in, and only while outside listening is on. Sent to **both** roles in **every** 0x0B, empty (`[]`) when there is nothing to dial, so a device clears its stored list. An older host leaves it out: a device then uses `outsideEndpoint` alone. |
 | `outsideStatus` | string enum | `String?` | `optional<string>` | Opt | **Owners only:** `off`, `mapping`, `mapped`, `manual`, `carrier_nat`, `address_changed`, `error` |
@@ -421,12 +421,12 @@ Sent:
 
 **Owner-only keys** are left out of a viewer's message entirely; they are not sent as empty values. Nesting is at most 3 levels, well under `json_lite`'s 32.
 
-**Before W7 and W8.** A W6 host sends:
+**A host without a camera roll** (no roll folder, `cameraRoll: false`) sends:
 - `rollAvailable`, `playbackAvailable`, `rollEnabled`, `motionEnabled`, `motionAvailable`, `scheduleEnabled`, `clipRecording` and `clipManualActive` all `false`;
 - `motionSensitivity: 5` and `clipElapsedSec: 0`;
 - no roll-blocked keys.
 
-It answers the roll and clip actions with `unsupported`. Before W8, `outsideEnabled` is `false` and no outside keys are sent.
+It answers the roll and clip actions with `unsupported`.
 
 ### 5.2 `0x0C petCameraCmd` (device → host)
 
@@ -446,7 +446,7 @@ It answers the roll and clip actions with `unsupported`. Before W8, `outsideEnab
 | `set_privacy` | owner | Privacy mode on or off (§6.4) |
 | `set_roll` | owner | "Record to the camera roll", the master switch |
 | `set_motion` | owner | Motion trigger on/off (`enabled`) and/or `sensitivity`; either may be left out |
-| `start_clip` | owner, viewer | Adds the **manual** trigger (`pet-camera.md` §6.2). If a clip is already recording, it is extended rather than restarted, and the answer is `ok: true`. If recording is blocked, the answer is a `0x0D` error with the `rollBlockedReason` code and its §9 sentence (`privacy_mode`, `roll_disabled`, `roll_preparing`, `folder_unavailable`, `sensor_off`, `view_frozen`, `pc_replaying`, `disk_floor` or `storage_full`; when several apply, the first in this order, as in §5.1), and no trigger is added. A viewer is checked for roll access (§3.1) right after `privacy_mode` and before the rest: during a PC replay, with sharing off or scheduled off, it gets `pc_replaying`, `sharing_off` or `sharing_schedule` whatever else blocks recording. |
+| `start_clip` | owner, viewer | Adds the **manual** trigger (`pet-camera.md` §6.2). If a clip is already recording, it is extended rather than restarted, and the answer is `ok: true`. If recording is blocked, the answer is a `0x0D` error with the `rollBlockedReason` code and its sentence (§9; `privacy_mode`, `roll_disabled`, `roll_preparing`, `folder_unavailable`, `sensor_off`, `view_frozen`, `pc_replaying`, `disk_floor` or `storage_full`; when several apply, the first in this order, as in §5.1), and no trigger is added. A viewer is checked for roll access (§3.1) right after `privacy_mode` and before the rest: during a PC replay, with sharing off or scheduled off, it gets `pc_replaying`, `sharing_off` or `sharing_schedule` whatever else blocks recording. |
 | `stop_clip` | owner, viewer | Removes the manual trigger, and the clip ends when no trigger is left active. `ok` when a manual trigger was active, and also `ok` (a no-op) when nothing is recording, since a clip can end by itself just before the request arrives. `busy` only while a motion or schedule clip is recording with no manual trigger, which the manual stop doesn't apply to. |
 | `star_clip` | owner, viewer | `starred: true` adds the caller's star, if it isn't already there. `starred: false` from an owner (or the PC) clears every star on the clip. From a viewer it removes only that viewer's own star, and if the viewer has none on the clip the answer is `not_allowed_for_role`. |
 | `delete_clip` | owner | Deletes the clip's `.mp4`, `.json` and `.jpg`, and logs it. A playing clip is stopped first (`0x17 stopped`). |
@@ -478,7 +478,7 @@ The answer is always the next `0x0B`. When live video starts, or the tier change
 |---|---|---|---|---|
 | `reason` | string enum | `String` | `string` | Req |
 | `closing` | bool | `Bool` | `bool` | Req |
-| `message` | string | `String?` | `optional<string>` | Opt (the §9 sentence) |
+| `message` | string | `String?` | `optional<string>` | Opt (the sentence, §9) |
 
 | `reason` | Sent when | `closing` |
 |---|---|---|
@@ -789,9 +789,9 @@ Anything else gets `not_found`. Nothing a device sends (clip id, day, cursor) is
 `rollAvailable` is false in these cases:
 - for a viewer, while sharing is off or scheduled off, or while the PC is replaying (§2.3);
 - for everyone, when a camera-roll folder is set on the PC but can't be used (`rollBlockedReason` `folder_unavailable`: a missing drive, a refused folder, one that couldn't be prepared, or a test run's refusal); `cameraRoll` is false then too;
-- for everyone, before W7.
+- for everyone, on a host without a camera roll.
 
-While it is false, `0x12`, `0x14` and `0x16` get `0x0D` with `sharing_off`, `sharing_schedule`, `pc_replaying` or `unsupported` (`unsupported` for `folder_unavailable` and before W7). In privacy mode, `0x14` and `0x16 start` get `privacy_mode` (§6.4).
+While it is false, `0x12`, `0x14` and `0x16` get `0x0D` with `sharing_off`, `sharing_schedule`, `pc_replaying` or `unsupported` (`unsupported` for `folder_unavailable` and on a host without a camera roll). In privacy mode, `0x14` and `0x16 start` get `privacy_mode` (§6.4).
 
 While the folder is being prepared (`roll_preparing`), the roll stays available: listing shows what the folder already holds (nothing, for a new folder), and only `start_clip` is refused, with `roll_preparing`.
 
@@ -1020,7 +1020,7 @@ kv2://endpoint?v=3&s=<serviceId>&fp=<b64url(hostCertSHA256)>&h=<outsideEndpoint.
 | New TCP connections per source (§8.0 keys) | A token bucket with a burst of 4, refilling 1 every 10 s. When it is empty, the socket is closed **before TLS**. |
 | Unauthenticated connections at once, all sources (in handshake or redemption) | 8. When all 8 are taken, a handshake that **hasn't completed** gives up its slot to the newcomer, counting nothing, and is logged as `disconnected` "dropped for a newer connection". It comes from the IPv6 /48 with the most of them first, then the oldest. A completed handshake is never evicted (it is marked only once the client's CertificateVerify has proved its key, never at its Certificate message), and neither is a reserved slot. One IPv6 /48 holds at most 4 of the 8. Established sessions of paired devices don't count. |
 | Unauthenticated connections at once, per source (§8.0 key: an IPv4 address or an IPv6 /64) | 2, inside the 8, so one source can't take them all. A connection counts only until its handshake (or redemption) ends; paired sessions never count, so strangers sharing a carrier address can't lock a paired device out. Decided at accept, before any thread or TLS. |
-| Reserve for a recently paired source (a change, W8 review) | A source key (IPv4 address or /64) that completed a paired handshake in the last 24 h gets its own unauthenticated slots outside the global 8, still held to its own bucket, its per-source 2 and its failures. A shared carrier IPv4 keeps the reserve too, which is acceptable: strangers behind it still have to pass TLS with a pinned certificate. The limiter learns it from `noteAuthenticated`. |
+| Reserve for a recently paired source | A source key (IPv4 address or /64) that completed a paired handshake in the last 24 h gets its own unauthenticated slots outside the global 8, still held to its own bucket, its per-source 2 and its failures. A shared carrier IPv4 keeps the reserve too, which is acceptable: strangers behind it still have to pass TLS with a pinned certificate. The limiter learns it from `noteAuthenticated`. |
 | New unauthenticated connections, all sources | No cap. A cap of 30 a minute let about five addresses spend the whole budget and lock out everyone else. The per-source buckets and the in-flight caps hold the load. |
 | Failures per source | 5 within 1 hour blocks that source for 1 hour, counted from the fifth failure. Nothing during a block extends it or counts. A blocked source is still let in under its bucket, its 2 and the 8, with blocked sources together holding at most 4 of the 8 and never a reserved slot. Past those it is closed before TLS. A blocked source's handshake takes **only a certificate the device list holds at that moment** (proved by the handshake, never a fingerprint the client states). No invite is ever looked at for it, and anything else is refused inside the verify step, before any application byte, and logged as `refused_blocked` (a phone behind a carrier address that strangers' failures blocked still gets in). Only two things are a **failure**: a **completed** handshake whose client certificate matches no listed device while no invite is open; and a **failed or malformed invite redemption** after a completed handshake (wrong proof, certificate mismatch, another method, a frame over 16 KiB, bad JSON, no frame within 10 s, or the invite running out, or being used or burned by another device, during the handshake). An invite **the PC closes** while a device is connecting (cancelled, replaced by a new one, or closed with the endpoint) is not that device's failure: it is told "This invite was closed. Ask for a new one." and nothing is counted (§8.1). This covers only a certificate the verify callback took because an invite was open: one that arrives while no invite is open is still refused inside the handshake and counted. Nothing else counts: a peer that closes, resets or stalls past the handshake timeout, or sends something that isn't TLS, before its certificate arrives, or closes before sending its redemption frame (with a TLS `close_notify`, a reset, or a bare TCP close with no `close_notify`, which OpenSSL 3 reports as "unexpected eof"). A weak mobile link must never block the owner's own phone. |
 | Success | A paired device's successful handshake refills that source's bucket and **clears no failure**: a phone on a shared address can't keep strangers' guesses fresh. Failures age out by time only. |
@@ -1058,7 +1058,7 @@ kv2://endpoint?v=3&s=<serviceId>&fp=<b64url(hostCertSHA256)>&h=<outsideEndpoint.
 | `repeat` | int | Opt, coalesced count (on `suppressed`, how many lines were held back) |
 | `detail` | string | Opt, e.g. the session length on `disconnected` |
 
-### 8.7 What the Windows host decided where §8 is silent (W8)
+### 8.7 What the Windows host decided where §8 is silent
 
 - **The certificate's name.** A new identity's certificate (a first run, or a reset) has 16 random hex characters as its common name, never a fixed one an internet scan could look for. Devices pin the certificate's hash and never read the name. An existing identity keeps its certificate, and with it the fixed name `kv2-host` it was made with: a new certificate would change the hash every device pinned.
 - **Handshakes.** The outside listener's handshakes and redemptions run on a fixed pool of 12 threads: 8 for the global cap, and 4 for the reserve of a recently paired source (§8.5), whose connections run before any queued ones. A paired device's session then gets a thread of its own, as on the LAN.
@@ -1077,7 +1077,7 @@ kv2://endpoint?v=3&s=<serviceId>&fp=<b64url(hostCertSHA256)>&h=<outsideEndpoint.
 - **A router that is stuck.** A removal that can't run because an earlier router call hasn't returned (turning off, or the clean-up after a status other than `mapped`) is kept, and runs on the mapper's worker as soon as that call returns. Shutdown never waits for it.
 - **An invite closed while a device connects.** The outside verify callback runs on the pool thread that runs the handshake, so it records for that handshake which invite it admitted the certificate for (a serial each invite gets in memory when it is made or loaded, never saved). On classifying, and again under the server lock just before the redemption is checked, the host asks what became of that invite: still open → redeemed as usual; closed by the PC or replaced by a newer one → the `accepted: false` "This invite was closed" reply, neither success nor failure, and the newer invite is never checked against (so a device can't burn the next invite with the old one's proof); ran out, used or burned → as before. A malformed frame, or none within 10 s, still counts, as for any redemption; a device that closes first is logged and not counted.
 - **A committed redemption.** Once a redemption is accepted (the device added, the invite used), its reply is sent even if outside listening turns off, the port changes or the app exits meanwhile, within 2 s. Every redemption reply is closed the way a session's close-after-flush is: `close_notify`, then the FIN, then what the device still sends is read and dropped until it closes, for at most 2 s and 1 MiB, so a ping it sends while it waits can't turn the close into a reset that loses the reply. If it still can't be delivered, the device stays listed (it holds a valid pairing; the PC can revoke it) and the log says the reply wasn't delivered.
-- **A forward left on the router.** The port this PC's forward may still be on is saved as `outsideMappedPort` in `pet-camera.json` (an additive key, after the W8 keys: written when mapped, cleared once removed). A clean exit still only posts the removal and never waits, so it often doesn't finish. At the next start with outside listening off (or on another port) and the key set, the host removes that mapping best effort on the mapper's worker, **only if** its internal client is this PC and its description is "Kinect viewer pet camera" (never someone else's mapping on that port), notes the attempt in the private debug log only (`OutputDebugString`), and clears the key. It uses the real router only on a real launch, never in a test run.
+- **A forward left on the router.** The port this PC's forward may still be on is saved as `outsideMappedPort` in `pet-camera.json` (an additive key: written when mapped, cleared once removed). A clean exit still only posts the removal and never waits, so it often doesn't finish. At the next start with outside listening off (or on another port) and the key set, the host removes that mapping best effort on the mapper's worker, **only if** its internal client is this PC and its description is "Kinect viewer pet camera" (never someone else's mapping on that port), notes the attempt in the private debug log only (`OutputDebugString`), and clears the key. It uses the real router only on a real launch, never in a test run.
 - **Remove mapping now** (`pet-camera.md` §4). The forward is removed on the mapper's worker; the outside listener stays as it is; the status becomes `manual` with the steps (no `outsideEndpoint` unless an address was entered, so an open invite closes). **It stays removed**: the 10-minute check doesn't map it again, and makes no router call while it is removed, since the public address is read from the mapping (§8.3) and there is none. A port change keeps it removed. The PC saves it as `outsideMappingRemoved: true` in `pet-camera.json`, so it stays removed across a restart too: a start with outside listening on and the key true opens the listener and adds no mapping (and removes a forward of ours an earlier exit left on that port). It ends when the PC user turns outside viewing off (which clears the key, so the next turn-on maps; sharing turning off does the same) or presses **Map the port again** (which clears it and maps now). `outsideMappedPort` is cleared once the removal is confirmed, never set again by a check while removed, and set again when "Map the port again" or a turn-on maps.
 - **Statuses.** Owners always get `outsideStatus` (`off` while outside listening is off), and `mapping` until the first check after the listener opens has finished. While the status is `manual`, `error` or `carrier_nat`, the 10-minute check tries the whole mapping again, so UPnP turned on later is found; except while the PC user has removed the mapping (above), when it stays `manual` and nothing is tried.
 - **A new outside port** moves the listener and the mapping, and closes the open invite (it carries the old port). Outside sessions already connected stay, and learn the new endpoint from `0x0B`. A connection that finished its handshake on the old listener but isn't a session yet is closed instead, as it is when outside listening turns off, or turns off and on again, before it becomes one: only a connection from the listener open now becomes a session. It reconnects, as a device does after any close.
@@ -1135,7 +1135,7 @@ kv2://endpoint?v=3&s=<serviceId>&fp=<b64url(hostCertSHA256)>&h=<outsideEndpoint.
 | invite: expired or used | "This invite has expired or was already used. Ask for a new one." |
 | invite: wrong code, counted (the invite stays open) | "That invite didn't match. Check that you used the whole link you were sent." |
 | invite: wrong code, the tenth (burned) | "That invite didn't match. It can't be used again; ask for a new one." |
-| invite: closed by the PC while the device was connecting (W8) | "This invite was closed. Ask for a new one." |
+| invite: closed by the PC while the device was connecting | "This invite was closed. Ask for a new one." |
 
 ---
 
@@ -1143,19 +1143,17 @@ kv2://endpoint?v=3&s=<serviceId>&fp=<b64url(hostCertSHA256)>&h=<outsideEndpoint.
 
 ### Windows host
 
-| Stage | Covers |
+| Part | Covers |
 |---|---|
-| W6 (multi-viewer and roles) | §1–§6 and §9 for those messages |
-| W7 (camera roll) | §5.6–5.9, §6.4's roll parts, §7, and the roll fields of §5.1 |
-| W8 (outside the home) | §8, and the invite parts of §4.4 |
+| Multi-viewer and roles | §1–§6 and §9 for those messages |
+| Camera roll | §5.6–5.9, §6.4's roll parts, §7, and the roll fields of §5.1 |
+| Outside the home | §8, and the invite parts of §4.4 |
 
-Each stage sets its `petCamera` flag and changes nothing ahead of its stage.
-
-**Test isolation (every stage).** Whenever the viewer runs with `--synthetic` or any test hook, every piece of pet-camera state lives in temp folders the test passes in (`--state-dir`, `--camera-roll-dir`): the state directory, `devices.json`, `pet-camera.json`, the connection log and the camera roll. That process never opens the real camera roll and never loads real paired devices. It may start the outside listener, but only on `127.0.0.1`, and it never uses a real router: no UPnP session is ever created, only a fake one the test injects, or none (§8.7).
-- **Today's starting point:** `viewer_smoke.cmake` already launches the viewer against the real `.host-state`, and W6 fixes that.
+**Test isolation.** Whenever the viewer runs with `--synthetic` or any test hook, every piece of pet-camera state lives in temp folders the test passes in (`--state-dir`, `--camera-roll-dir`): the state directory, `devices.json`, `pet-camera.json`, the connection log and the camera roll. That process never opens the real camera roll and never loads real paired devices. It may start the outside listener, but only on `127.0.0.1`, and it never uses a real router: no UPnP session is ever created, only a fake one the test injects, or none (§8.7).
+- **The smoke test:** `viewer_smoke.cmake` launches the viewer with a temp `--state-dir`, never the real `.host-state`.
 - **Screenshots:** `screenshotAllowed`, and the second-display capture, also refuse while a camera-roll clip or any replay is on screen. Test hooks never capture the invite window or show a live token.
 
-### Mac and iOS (phase 9)
+### Mac and iOS
 
 - **Gating:** check `hello.protocolVersion >= 3` and `hello.petCamera`, and ping with 3.
 - **Decoding:** decode §5 leniently.
@@ -1175,9 +1173,9 @@ Each stage sets its `petCamera` flag and changes nothing ahead of its stage.
 
 Privacy mode never makes the host unreachable (§8.1), so the device shows it from `0x0B`.
 
-### Tests the stages must include (synthetic only, loopback, temp folders)
+### Tests each part includes (synthetic only, loopback, temp folders)
 
-**W6:**
+**Multi-viewer and roles:**
 - **Mixed versions:** two fake v3 devices and one v1 phone at once.
   - The v1 phone never gets `0x07` or a v3 type.
   - Both v3 devices get `0x0B`.
@@ -1206,16 +1204,16 @@ Privacy mode never makes the host unreachable (§8.1), so the device shows it fr
   - an unpair on a downgraded build, followed by an upgrade, leaves that device refused;
   - a crash between the two file writes doesn't re-admit a revoked device, and doesn't drop a listed device. Three cases are tested: revoking the last device (`serviceId` rotates), revoking all devices, and pairing the first owner;
   - after the owner is revoked, a remaining viewer still connects and `_kv2s` is still advertised.
-- **Re-scoped tests.** These existing `test_stream_e2e.cpp` assertions are re-scoped, not deleted, and the PR says so:
+- **Re-scoped tests.** These `test_stream_e2e.cpp` assertions were re-scoped for v3, not deleted:
   - the hello and `0x07` version checks at `:454`, `:630`, `:652` and `:662` (now `== 3` from the host, still read correctly by the v1/v2 fakes);
   - the "unknown type" sends at `:790-791`, which use `0x0B` and `0x0C`. They move to unused bytes (`0x7E`, `0x1A`+), plus a separate check that a v2 connection's `0x0C` is ignored under §1 rule 3;
   - "only one phone is pinned" at `:551-565` (now "a second pairing adds a device").
 - **Golden sentinel:** the golden test's unknown-type sentinel moves to `0x7E`.
 - **Isolation:** a `--synthetic` launch with a `pet-camera.json` that has everything on opens no roll folder, makes no UPnP call and loads no real devices.
 
-**W7:** see `pet-camera.md` §8.
+**Camera roll:** see `pet-camera.md` §8.
 
-**W8:**
+**Outside the home:**
 - **Admission:**
   - With no invite open, an unpaired certificate is refused before any application byte.
   - An open invite admits a redemption-only connection, which gets no hello and can do nothing else.

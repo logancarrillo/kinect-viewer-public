@@ -1,4 +1,4 @@
-// Inspection tools for the Windows viewer (the Mac's phase 1, macos/App/InspectionModels.swift):
+// Inspection tools for the Windows viewer (as on the Mac, macos/App/InspectionModels.swift):
 // cursor readout, region depth stats, the 3D ruler, the zoom/pan viewport, the
 // display-to-sensor pixel mapping, the dropped-frames banner, the health lines and the shortcuts.
 // Pure logic, no window, so it is unit-tested.
@@ -61,7 +61,7 @@ struct RulerMeasurement {
     // "1234.5 mm (1.235 m)", the error, or a prompt for the second point.
     std::wstring label() const;
     // The real 3D distance through libfreenect2's IR camera parameters (kv_measure_3d_distance_mm):
-    // never hard-coded intrinsics (phase 7 fix 7); "no depth here" if either end has none.
+    // never hard-coded intrinsics; "no depth here" if either end has none.
     static void evaluate(RulerMeasurement& m, const kv_ir_intrinsics_t& intrinsics, const std::vector<float>& depth_mm,
                          int width = 512, int height = 424);
 };

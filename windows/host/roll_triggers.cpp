@@ -54,7 +54,7 @@ MotionResult DepthMotionDetector::process(const uint16_t* depth, uint32_t width,
     if (!depth || width != kDepthWidth || height != kDepthHeight) return r;
     r.frameUsed = true;
 
-    // Consecutive means the next frame: not one after a dropped frame (W7: the
+    // Consecutive means the next frame: not one after a dropped frame (the
     // sequence number must be the last plus 1), a repeat, a stall, or from before a clock step.
     const bool nextSeq = haveLastSeq_ && seq == lastSeq_ + 1;
     const bool nextTime = haveLastTs_ && timestampNs > lastTsNs_ && timestampNs - lastTsNs_ <= kMaxFrameGapNs;
@@ -113,7 +113,7 @@ MotionResult DepthMotionDetector::process(const uint16_t* depth, uint32_t width,
 
     r.threshold = thresholdCells(r.validCells, sensitivity_);
 
-    // W7: over 60 % of the cells at once, held for a run, is the camera or the
+    // Over 60 % of the cells at once, held for a run, is the camera or the
     // scene, not a pet. Re-learn everything instead of reporting motion.
     const bool wholeScene = r.validCells > 0 && static_cast<int64_t>(r.changedCells) * 100 >
                                                     static_cast<int64_t>(r.validCells) * kGlobalRelearnPercent;

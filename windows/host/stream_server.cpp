@@ -14,7 +14,7 @@ namespace kvhost {
 
 namespace {
 
-// A 0x0D for a request: ok, or the code with its §9 sentence (defined with the roll's helpers below).
+// A 0x0D for a request: ok, or the code with its user-facing sentence, v3 §9 (defined with the roll's helpers below).
 void sendCommandResult(const std::shared_ptr<TlsConnection>& conn, uint64_t requestId, const char* error);
 
 uint64_t monotonicNs() {
@@ -113,7 +113,7 @@ struct HostStreamServer::Session {
     bool endpoint_logged = false;
     bool force_0b = false;
     bool resend_hello = false; // role change: hello, 0x07 and 0x0B again
-    // W7 playback (v3 §5.9): at most one stream per session; it holds the session's slot while allocated.
+    // Camera roll playback (v3 §5.9): at most one stream per session; it holds the session's slot while allocated.
     std::shared_ptr<RollPlayback> playback;
     uint32_t last_stream_id = 0; // stream ids are unique per session, from 1
 };
@@ -260,7 +260,7 @@ bool HostStreamServer::start(const Options& opts, std::string* err, bool* identi
     if (privacy_marker_may_exist_) applyPrivacyMarkerLocked();
     settings_read_retry_ms_ = kFirstRetryMs;
     next_settings_read_ns_ = monotonicNs() + settings_read_retry_ms_ * kMs;
-    // W8 (pet-camera.md §4, v3 §8.1 "picked once and saved"): the outside port is picked once, the first of up to
+    // The outside port (pet-camera.md §4, v3 §8.1 "picked once and saved") is picked once, the first of up to
     // 20 random ports in 20000-44999 that binds (§8.7), and written as soon as pet-camera.json can be written (the
     // start's own flush below), so every later start keeps it. Never over a file that couldn't be read; one that
     // couldn't be parsed (kept as .bad, privacy on) gets it with its next save, so its error stays on the status
@@ -270,7 +270,7 @@ bool HostStreamServer::start(const Options& opts, std::string* err, bool* identi
         if (outside::isValidOutsidePort(settings_.outsidePort) && settings_load_error_.empty()) markSettingsDirtyLocked();
     }
     last_schedule_off_ = scheduleOffNowLocked();
-    // W7: the recorder records only once it knows the settings (privacy first: a pet-camera.json that couldn't
+    // The recorder records only once it knows the settings (privacy first: a pet-camera.json that couldn't
     // be read has privacy on, so nothing records).
     roll_store_ = roll_ ? roll_->store() : nullptr;
     pushRollSettingsLocked();
@@ -288,7 +288,7 @@ bool HostStreamServer::start(const Options& opts, std::string* err, bool* identi
                                    err);
     // Pairing listener: accept the self-signed client leaf; the proof is the transcript-bound HMAC.
     auto pctx = TlsContext::create(true, *identity_, [](const Bytes&, const Bytes&) { return true; }, err);
-    // W8, the outside listener (v3 §8.1): its own context and verify callback. A listed device's hash, or any
+    // The outside listener (v3 §8.1): its own context and verify callback. A listed device's hash, or any
     // leaf while an invite is open (that connection can then only redeem it); anything else fails inside the
     // handshake, before any application byte. The LAN contexts above never admit an unknown certificate.
     auto octx = TlsContext::create(true, *identity_,
@@ -389,7 +389,7 @@ void HostStreamServer::shutdown() {
         shutting_down_ = true;
         closePairingWindowLocked();
         stream_listener_.requestStop();
-        // W8: the outside listener and its handshakes stop; its sessions get host_shutting_down below, as every
+        // The outside listener and its handshakes stop; its sessions get host_shutting_down below, as every
         // v3 session does. The mapping is removed best effort by the mapper's worker (below, never waited on).
         if (outside_listener_) {
             outside_listener_->requestStop();
@@ -893,8 +893,8 @@ HelloServerMessage HostStreamServer::helloForLocked(const Session& s) {
     h.allowPhoneModeSwitch = roleOfLocked(s) == PetRole::Owner && state_.allowPhoneModeSwitch;
     h.codecRaw = static_cast<uint8_t>(CodecKind::H264);
     h.petCamera = PetCameraHello{};
-    // W7: the roll is offered when this host has one (a roll folder). W8: this host can listen outside the home
-    // (v3 §4.1: true from W8, whether or not it is switched on; 0x0B's outsideEnabled says that).
+    // The roll is offered when this host has one (a roll folder). This host can listen outside the home
+    // (v3 §4.1: true whether or not it is switched on; 0x0B's outsideEnabled says that).
     h.petCamera->cameraRoll = rollConfiguredLocked();
     h.petCamera->outside = true;
     return h;
@@ -949,7 +949,7 @@ PetCameraStateMessage HostStreamServer::petStateForLocked(const Session& s, bool
     m.path = s.path;
     m.sharingEnabled = settings_.sharingEnabled;
     m.sharingScheduleOff = sched_off;
-    // W8 (v3 §5.1, §8.3): outsideEnabled and outsideEndpoint for both roles; the status for owners below.
+    // v3 §5.1, §8.3: outsideEnabled and outsideEndpoint for both roles; the status for owners below.
     m.outsideEnabled = outsideListeningLocked();
     m.outsideEndpoint = outsideEndpointLocked();
     m.outsideCandidates = outsideCandidatesLocked(m.outsideEndpoint); // every 0x0B, empty when none
@@ -959,7 +959,7 @@ PetCameraStateMessage HostStreamServer::petStateForLocked(const Session& s, bool
     m.watching = s.watching;
     m.liveQuality = toWire(s.quality);
     m.liveTier = s.watching ? toWire(s.tier) : "high";
-    // W7 roll keys (v3 §5.1). A host without a roll keeps their "Before W7 and W8" values: the defaults.
+    // The roll keys (v3 §5.1). A host without a roll keeps their defaults.
     if (rollConfiguredLocked()) {
         const RollRecorderStatus st = roll_->status();
         m.rollEnabled = settings_.rollEnabled;
@@ -1588,7 +1588,7 @@ size_t HostStreamServer::revokeAllDevices(std::string* err) {
         if (refuseDeviceChangeLocked(err)) return 0;
         shutting_down = shutting_down_;
         // The old whole-PC unpair: it still ends the last available session, so the disconnect rule
-        // applies as before (phase 7 fix 10); a single revoke doesn't fire it (v3 §2.3).
+        // applies as before; a single revoke doesn't fire it (v3 §2.3).
         fire = anyAvailableLocked();
         for (const auto& d : store_.devices()) star_drops_.push_back(d.deviceId); // v3 §3.2 step 5
         n = store_.revokeAll();
@@ -2169,7 +2169,7 @@ void HostStreamServer::handleClientFrame(TlsConnection& conn, MsgType type, std:
                 pet_changed = true;
                 break;
             }
-            // W7, the camera roll: v3 types, read only from a v3 session (§1 rule 3), and a malformed one is
+            // The camera roll: v3 types, read only from a v3 session (§1 rule 3), and a malformed one is
             // ignored without an answer (§5.10).
             case MsgType::RollListReq: {
                 if (s.version < kProtocolV3 || !list_msg) return;
@@ -2895,7 +2895,7 @@ std::vector<uint8_t> HostStreamServer::processPairRequest(TlsConnection& conn, c
     return packFrame(MsgType::PairResponse, 0, toJson(resp));
 }
 
-// ---- outside the home (W8, v3 §8) ----------------------------------------------------------------------
+// ---- outside the home (v3 §8) --------------------------------------------------------------------------
 
 namespace {
 
@@ -4134,14 +4134,14 @@ int HostStreamServer::outsideHandshakesRunningForTest() const {
     return static_cast<int>(hs_live_.size());
 }
 
-// ---- the camera roll (W7) ------------------------------------------------------------------------------
+// ---- the camera roll -----------------------------------------------------------------------------------
 
 namespace {
 
 void sendCommandResult(const std::shared_ptr<TlsConnection>& conn, uint64_t requestId, const char* error) {
     CommandResultMessage r;
     if (error) {
-        r = makeCommandError(requestId, error); // ok false, the code and its §9 sentence
+        r = makeCommandError(requestId, error); // ok false, the code and its user-facing sentence (v3 §9)
     } else {
         r.requestId = requestId;
         r.ok = true;
@@ -4291,7 +4291,7 @@ void HostStreamServer::rollStatusChanged() {
 }
 
 const char* HostStreamServer::rollAccessLocked(const Session&, PetRole role) const {
-    if (!rollConfiguredLocked()) return pet_error::kUnsupported; // as a W6 host (§7.3)
+    if (!rollConfiguredLocked()) return pet_error::kUnsupported; // as a host without a roll (§7.3)
     if (role == PetRole::Owner) return nullptr;
     // §3.1 "While sharing is on" also means the sharing schedule allows it and the PC isn't replaying.
     if (pc_replaying_) return pet_error::kPcReplaying;
@@ -4663,7 +4663,7 @@ std::function<void()> HostStreamServer::handleRollCommandLocked(Session& s, cons
     const std::shared_ptr<TlsConnection> conn = s.conn;
     const uint64_t rid = cmd.requestId;
     if (!rollConfiguredLocked()) {
-        // A host without a roll answers as W6 (§5.1); with a roll folder set that can't be used, start_clip is
+        // A host without a roll answers unsupported (§5.1); with a roll folder set that can't be used, start_clip is
         // refused with the block instead, so the device can say why (§5.2). A viewer without roll access
         // hears that first, after privacy mode, as it would with a roll.
         const char* block = cmd.action == pet_action::kStartClip ? rollFolderBlockLocked() : nullptr;
@@ -4914,7 +4914,7 @@ std::function<void()> HostStreamServer::handleRollThumbLocked(Session& s, const 
     const std::shared_ptr<TlsConnection> conn = s.conn;
     const PetRole role = roleOfLocked(s);
     if (!rollConfiguredLocked()) {
-        sendCommandResult(conn, m.requestId, pet_error::kUnsupported); // as a W6 host (§7.3)
+        sendCommandResult(conn, m.requestId, pet_error::kUnsupported); // as a host without a roll (§7.3)
         return {};
     }
     // §6.4: privacy mode refuses thumbnails, for every role, and comes first, as for a 0x16 start and

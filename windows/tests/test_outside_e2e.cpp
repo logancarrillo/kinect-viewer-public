@@ -1,4 +1,4 @@
-// W8 Phase B (outside the home), end to end on loopback (protocol v3 §10 "W8"): the host's LAN listeners take
+// Outside the home, end to end on loopback (protocol v3 §8, §10): the host's LAN listeners take
 // local sources only, the outside listener admits paired devices and redeems invites, the limiter decides at
 // accept, the router mapping runs on its own worker, and turning it off closes everything. Synthetic only:
 // listeners bind 127.0.0.1, every state folder is new and removed, the router is a fake behind the RouterSession
@@ -502,7 +502,7 @@ HostDeviceInfo deviceNamed(HostStreamServer& srv, const std::string& name) {
 
 // ---- §8.0, §8.1: the LAN listeners take local sources only ----------------------------------------------
 
-KV_TEST(w8_lan_stream_listener_and_pairing_window_refuse_a_non_local_source_before_tls) {
+KV_TEST(outside_lan_stream_listener_and_pairing_window_refuse_a_non_local_source_before_tls) {
     Rig r(L"lan-local");
     KV_REQUIRE(r.start());
     FakePhone owner(3);
@@ -543,7 +543,7 @@ KV_TEST(w8_lan_stream_listener_and_pairing_window_refuse_a_non_local_source_befo
 // A source on an overlay network (Tailscale's IPv4 or IPv6 block) is refused on the home
 // stream listener and the pairing window, closed before TLS, even when an on-link prefix covers it. It may come in
 // only through the outside listener, under its rules.
-KV_TEST(w8_a_tailnet_source_is_refused_on_the_home_listener) {
+KV_TEST(outside_a_tailnet_source_is_refused_on_the_home_listener) {
     Rig r(L"tailnet-home");
     KV_REQUIRE(r.start([](HostStreamServer::Options& o) {
         std::vector<outside::OnLinkPrefix> covering(2);
@@ -580,7 +580,7 @@ KV_TEST(w8_a_tailnet_source_is_refused_on_the_home_listener) {
 // holds the default route doesn't change home: a phone on the Wi-Fi card's network still reaches the LAN listeners.
 // A source on a virtual adapter's network (a virtual switch's vEthernet) or the VPN's own is refused before TLS, and
 // so is a private address no adapter holds.
-KV_TEST(w8_home_is_the_physical_adapters_networks_whatever_holds_the_default_route) {
+KV_TEST(outside_home_is_the_physical_adapters_networks_whatever_holds_the_default_route) {
     using Kind = outside::AdapterInfo::Kind;
     auto adapter = [](Kind kind, bool hardware, bool tunnel, bool gateway, const char* addr, int len) {
         outside::AdapterInfo a;
@@ -633,7 +633,7 @@ KV_TEST(w8_home_is_the_physical_adapters_networks_whatever_holds_the_default_rou
 }
 
 // A failed adapter read keeps the last list it read: a passing failure never turns the home phones away.
-KV_TEST(w8_a_failed_adapter_read_keeps_the_home_network_it_had) {
+KV_TEST(outside_a_failed_adapter_read_keeps_the_home_network_it_had) {
     auto fail = std::make_shared<std::atomic<bool>>(false);
     Rig r(L"home-read-fails");
     KV_REQUIRE(r.start([fail](HostStreamServer::Options& o) {
@@ -959,7 +959,7 @@ KV_TEST(lan_pairing_connections_have_a_deadline_close_with_the_window_and_are_ca
 }
 // ---- §8.1: the outside listener ---------------------------------------------------------------------------
 
-KV_TEST(w8_outside_session_for_a_paired_device_has_path_outside) {
+KV_TEST(outside_session_for_a_paired_device_has_path_outside) {
     Rig r(L"outside-session");
     KV_REQUIRE(r.start());
     FakePhone owner(3);
@@ -991,7 +991,7 @@ KV_TEST(w8_outside_session_for_a_paired_device_has_path_outside) {
     KV_CHECK(r.srv.outsideHandshakeWorkersForTest() == 12);
 }
 
-KV_TEST(w8_an_unknown_certificate_is_refused_in_the_handshake_with_no_application_byte) {
+KV_TEST(outside_an_unknown_certificate_is_refused_in_the_handshake_with_no_application_byte) {
     Rig r(L"outside-unknown");
     KV_REQUIRE(r.start());
     KV_REQUIRE(r.enableOutside());
@@ -1010,7 +1010,7 @@ KV_TEST(w8_an_unknown_certificate_is_refused_in_the_handshake_with_no_applicatio
 
 // ---- §8.4: invites -----------------------------------------------------------------------------------------
 
-KV_TEST(w8_an_invite_adds_the_device_with_the_invites_role_once) {
+KV_TEST(outside_an_invite_adds_the_device_with_the_invites_role_once) {
     Rig r(L"invite-ok");
     KV_REQUIRE(r.start());
     KV_REQUIRE(r.enableOutside());
@@ -1061,7 +1061,7 @@ KV_TEST(w8_an_invite_adds_the_device_with_the_invites_role_once) {
     KV_CHECK(deviceNamed(r.srv, "Viewer phone").role == PetRole::Viewer);
 }
 
-KV_TEST(w8_an_invite_used_meanwhile_gets_the_expired_or_used_sentence) {
+KV_TEST(outside_an_invite_used_meanwhile_gets_the_expired_or_used_sentence) {
     Rig r(L"invite-race");
     KV_REQUIRE(r.start());
     KV_REQUIRE(r.enableOutside());
@@ -1090,7 +1090,7 @@ KV_TEST(w8_an_invite_used_meanwhile_gets_the_expired_or_used_sentence) {
 // One wrong proof from outside spoils nothing: it is told the invite didn't match, counted as a failure for its
 // source, and the invite stays open for the person it was sent to. The tenth wrong attempt burns it. (One source is
 // blocked after five failures, so the ten come from ten sources.)
-KV_TEST(w8_a_wrong_proof_is_counted_and_the_tenth_burns_the_invite) {
+KV_TEST(outside_a_wrong_proof_is_counted_and_the_tenth_burns_the_invite) {
     Rig r(L"invite-wrong");
     KV_REQUIRE(r.start());
     KV_REQUIRE(r.enableOutside());
@@ -1140,7 +1140,7 @@ KV_TEST(w8_a_wrong_proof_is_counted_and_the_tenth_burns_the_invite) {
     KV_CHECK(r.srv.devices().size() == 1);
 }
 
-KV_TEST(w8_a_certificate_mismatch_is_counted_and_gets_no_reply) {
+KV_TEST(outside_a_certificate_mismatch_is_counted_and_gets_no_reply) {
     Rig r(L"invite-mismatch");
     KV_REQUIRE(r.start());
     KV_REQUIRE(r.enableOutside());
@@ -1159,7 +1159,7 @@ KV_TEST(w8_a_certificate_mismatch_is_counted_and_gets_no_reply) {
     KV_CHECK(r.logHas("invite_failed", "outside"));
 }
 
-KV_TEST(w8_another_method_on_the_outside_listener_counts_a_failure_and_burns_nothing) {
+KV_TEST(outside_another_method_on_the_outside_listener_counts_a_failure_and_burns_nothing) {
     Rig r(L"invite-method");
     KV_REQUIRE(r.start());
     KV_REQUIRE(r.enableOutside());
@@ -1194,7 +1194,7 @@ KV_TEST(w8_another_method_on_the_outside_listener_counts_a_failure_and_burns_not
     KV_CHECK_MSG(ok.ok, ok.error);
 }
 
-KV_TEST(w8_an_expired_invite_is_refused) {
+KV_TEST(outside_an_expired_invite_is_refused) {
     Rig r(L"invite-expired");
     // The invites' clock is the test's (Options::invite_clock_for_test), so expiry needs no real wait.
     auto clock = std::make_shared<std::atomic<uint64_t>>(unixMs());
@@ -1256,7 +1256,7 @@ KV_TEST(outside_a_connection_that_says_nothing_is_dropped_at_its_first_record_de
 
 // The per-source 2 is refused before TLS; a full global 8 evicts the oldest stranger that has shown no certificate
 // (counting nothing) and lets the newcomer in, so a handful of addresses can't keep everyone else out.
-KV_TEST(w8_per_source_two_is_refused_and_a_full_global_eight_evicts_the_oldest_stranger) {
+KV_TEST(outside_per_source_two_is_refused_and_a_full_global_eight_evicts_the_oldest_stranger) {
     Rig r(L"limits");
     KV_REQUIRE(r.start([](HostStreamServer::Options& o) {
         o.outside_handshake_timeout_ms = 15000;
@@ -1285,7 +1285,7 @@ KV_TEST(w8_per_source_two_is_refused_and_a_full_global_eight_evicts_the_oldest_s
     KV_CHECK(waitFor([&] { return lim->inFlight() == 0; }, 8000));
 }
 
-KV_TEST(w8_the_per_source_bucket_refuses_the_fifth_quick_connection) {
+KV_TEST(outside_the_per_source_bucket_refuses_the_fifth_quick_connection) {
     Rig r(L"bucket");
     KV_REQUIRE(r.start([](HostStreamServer::Options& o) {
         o.outside_handshake_timeout_ms = 15000;
@@ -1306,7 +1306,7 @@ KV_TEST(w8_the_per_source_bucket_refuses_the_fifth_quick_connection) {
 // Five failures block a source for the hour, and a paired device's success clears
 // nothing: a phone on a shared carrier address can't keep strangers' guesses from it fresh. A blocked source is
 // still let in, but only a listed device's certificate gets past the TLS verify step for it.
-KV_TEST(w8_five_failures_block_a_source_and_a_paired_handshake_clears_nothing) {
+KV_TEST(outside_five_failures_block_a_source_and_a_paired_handshake_clears_nothing) {
     Rig r(L"block");
     KV_REQUIRE(r.start([](HostStreamServer::Options& o) { o.outside_limits.burst = 30; }));
     FakePhone owner(3);
@@ -1356,7 +1356,7 @@ bool blockSource(Rig& r, const std::string& src) {
 
 // The owner's own paired phone gets in from an address strangers' failures blocked, and the block, its
 // clock and the failure count stay exactly as they were.
-KV_TEST(w8_a_paired_device_gets_in_from_a_blocked_source_and_the_block_stays) {
+KV_TEST(outside_a_paired_device_gets_in_from_a_blocked_source_and_the_block_stays) {
     Rig r(L"block-paired");
     KV_REQUIRE(r.start([](HostStreamServer::Options& o) { o.outside_limits.burst = 30; }));
     FakePhone owner(3);
@@ -1376,7 +1376,7 @@ KV_TEST(w8_a_paired_device_gets_in_from_a_blocked_source_and_the_block_stays) {
 
 // A blocked source never reaches an invite: its redemption is refused in the TLS verify step, before the token is
 // read, and the invite stays open and unburned. Even after a paired device from the same source got in.
-KV_TEST(w8_an_invite_from_a_blocked_source_is_refused_before_its_token_is_read) {
+KV_TEST(outside_an_invite_from_a_blocked_source_is_refused_before_its_token_is_read) {
     Rig r(L"block-invite");
     KV_REQUIRE(r.start([](HostStreamServer::Options& o) { o.outside_limits.burst = 30; }));
     r.router->wan = "203.0.113.142";
@@ -1412,7 +1412,7 @@ KV_TEST(w8_an_invite_from_a_blocked_source_is_refused_before_its_token_is_read) 
 }
 
 // A device removed from the list is a stranger: from a blocked source it is refused like any other.
-KV_TEST(w8_a_removed_device_from_a_blocked_source_is_refused) {
+KV_TEST(outside_a_removed_device_from_a_blocked_source_is_refused) {
     Rig r(L"block-removed");
     KV_REQUIRE(r.start([](HostStreamServer::Options& o) { o.outside_limits.burst = 30; }));
     FakePhone owner(3), old(3);
@@ -1437,7 +1437,7 @@ KV_TEST(w8_a_removed_device_from_a_blocked_source_is_refused) {
 
 // A blocked source's handshake that stalls is dropped at the handshake deadline and frees its slot, so a stranger
 // can't sit on the source's 2, and blocked sources hold at most their share of the 8.
-KV_TEST(w8_a_stalled_blocked_handshake_is_dropped_at_the_deadline) {
+KV_TEST(outside_a_stalled_blocked_handshake_is_dropped_at_the_deadline) {
     Rig r(L"block-stall");
     KV_REQUIRE(r.start([](HostStreamServer::Options& o) {
         o.outside_limits.burst = 30;
@@ -1459,7 +1459,7 @@ KV_TEST(w8_a_stalled_blocked_handshake_is_dropped_at_the_deadline) {
 
 // §8.2: after the router's error (this port forwarded to another machine) a typed address is not
 // told, so devices aren't sent to that other machine; the PC shows the error and offers no invite.
-KV_TEST(w8_a_typed_address_is_not_told_after_the_routers_error) {
+KV_TEST(outside_a_typed_address_is_not_told_after_the_routers_error) {
     Rig r(L"typed-error");
     KV_REQUIRE(r.start());
     FakePhone owner(3);
@@ -1479,7 +1479,7 @@ KV_TEST(w8_a_typed_address_is_not_told_after_the_routers_error) {
     KV_CHECK_MSG(!v.endpointKnown && !v.canInvite, v.endpointHost);
 }
 
-KV_TEST(w8_a_recently_paired_source_has_its_own_slots_beside_the_global_eight) {
+KV_TEST(outside_a_recently_paired_source_has_its_own_slots_beside_the_global_eight) {
     Rig r(L"reserve");
     KV_REQUIRE(r.start([](HostStreamServer::Options& o) {
         o.outside_handshake_timeout_ms = 15000;
@@ -1524,7 +1524,7 @@ KV_TEST(w8_a_recently_paired_source_has_its_own_slots_beside_the_global_eight) {
 // or a TLS-only connection that never says hello, and raw sockets that stall past the handshake deadline (each held
 // open across the rounds until the host drops it).
 // The host stays up, and the phone still gets in at the end. KV_STRESS_ROUNDS sets the count (200 by default).
-KV_TEST(w8_outside_session_churn_leaves_the_host_up) {
+KV_TEST(outside_session_churn_leaves_the_host_up) {
     Rig r(L"churn");
     KV_REQUIRE(r.start([](HostStreamServer::Options& o) {
         o.outside_limits.burst = 100000;
@@ -1587,7 +1587,7 @@ KV_TEST(w8_outside_session_churn_leaves_the_host_up) {
 }
 // Reachable from any network for as long as the PC is left running: while viewing from outside the
 // home is on the PC is asked not to sleep; turned off, or the host stopping, lets it go. Asked once each way.
-KV_TEST(w8_the_pc_is_kept_awake_while_outside_viewing_is_on) {
+KV_TEST(outside_the_pc_is_kept_awake_while_outside_viewing_is_on) {
     Rig r(L"awake");
     auto told = std::make_shared<std::vector<bool>>();
     auto told_m = std::make_shared<std::mutex>();
@@ -1616,7 +1616,7 @@ KV_TEST(w8_the_pc_is_kept_awake_while_outside_viewing_is_on) {
     for (size_t i = 1; i < seen().size(); ++i) KV_CHECK_MSG(seen()[i] != seen()[i - 1], "asked the same way twice");
 }
 // Outside listening that can't bind its port asks for no keep-awake, and holds none after.
-KV_TEST(w8_a_port_that_wont_bind_takes_no_keep_awake) {
+KV_TEST(outside_a_port_that_wont_bind_takes_no_keep_awake) {
     Rig r(L"awake-bind");
     auto told = std::make_shared<std::vector<bool>>();
     auto told_m = std::make_shared<std::mutex>();
@@ -1646,7 +1646,7 @@ KV_TEST(w8_a_port_that_wont_bind_takes_no_keep_awake) {
 }
 
 // A PORT CHANGE that fails to bind lets the keep-awake go (the old listener is gone).
-KV_TEST(w8_a_port_change_that_wont_bind_lets_the_keep_awake_go) {
+KV_TEST(outside_a_port_change_that_wont_bind_lets_the_keep_awake_go) {
     Rig r(L"awake-move");
     auto told = std::make_shared<std::vector<bool>>();
     auto told_m = std::make_shared<std::mutex>();
@@ -1684,7 +1684,7 @@ KV_TEST(w8_a_port_change_that_wont_bind_lets_the_keep_awake_go) {
 // Reachable from any network: an address the PC user typed
 // is told to every device when the router has given no checked address, not only in the manual case: a gateway
 // with no UPnP, one behind carrier NAT, and one that hasn't answered yet. Not after the router's error (the port
-// forwarded to another machine): w8_a_typed_address_is_not_told_after_the_routers_error. Phones paired at home
+// forwarded to another machine): outside_a_typed_address_is_not_told_after_the_routers_error. Phones paired at home
 // then know where to dial from outside. The address stays "entered by you, not checked" (verified false).
 static bool typedAddressReachesAPhone(Rig& r, FakePhone& owner, const auto& pr, const std::string& addr) {
     std::string e2;
@@ -1704,7 +1704,7 @@ static bool typedAddressReachesAPhone(Rig& r, FakePhone& owner, const auto& pr, 
 // this PC's own overlay (Tailscale) IPv4 address at the outside port, verified false. Only an address on one of the
 // PC's own interfaces is told, only one in 100.64.0.0/10, and only while it is there. The typed field's carrier-NAT
 // refusal is unchanged: an overlay address can't be typed.
-KV_TEST(w8_outside_candidates_are_in_every_0x0B_and_hold_this_pcs_own_overlay_address) {
+KV_TEST(outside_candidates_are_in_every_0x0B_and_hold_this_pcs_own_overlay_address) {
     Rig r(L"candidates");
     r.router->wan = "100.64.1.2"; // the router's own address is carrier NAT: never a candidate, it isn't this PC's
     auto ifs = std::make_shared<std::vector<std::string>>(
@@ -1767,7 +1767,7 @@ KV_TEST(w8_outside_candidates_are_in_every_0x0B_and_hold_this_pcs_own_overlay_ad
         KV_CHECK_MSG(l.detail.find("100.100") == std::string::npos && l.detail.find("203.0.113") == std::string::npos, l.detail);
     }
 }
-KV_TEST(w8_a_typed_address_is_told_behind_carrier_nat) {
+KV_TEST(outside_a_typed_address_is_told_behind_carrier_nat) {
     Rig r(L"typed-cgnat");
     r.router->wan = "100.64.1.2"; // the router's own WAN address is carrier NAT
     KV_REQUIRE(r.start());
@@ -1794,7 +1794,7 @@ KV_TEST(w8_a_typed_address_is_told_behind_carrier_nat) {
 
 // A server with the product's policy, the default, as every real launch has. A router reporting a documentation
 // address is behind carrier NAT, and the PC user can't type one; a pet-camera.json holding one loads without it.
-KV_TEST(w8_the_products_policy_refuses_a_documentation_address_end_to_end) {
+KV_TEST(outside_the_products_policy_refuses_a_documentation_address_end_to_end) {
     {
         PetSettings saved;
         saved.sharingEnabled = true;
@@ -1829,7 +1829,7 @@ KV_TEST(w8_the_products_policy_refuses_a_documentation_address_end_to_end) {
     }
 }
 
-KV_TEST(w8_a_typed_address_is_told_while_the_router_has_not_answered) {
+KV_TEST(outside_a_typed_address_is_told_while_the_router_has_not_answered) {
     Rig r(L"typed-unanswered");
     r.router->blocked = true; // a router that never answers: no check finishes
     KV_REQUIRE(r.start());
@@ -1850,7 +1850,7 @@ KV_TEST(w8_a_typed_address_is_told_while_the_router_has_not_answered) {
     r.router->cv.notify_all();
 }
 
-KV_TEST(w8_a_router_read_address_still_wins_over_a_typed_one) {
+KV_TEST(outside_a_router_read_address_still_wins_over_a_typed_one) {
     Rig r(L"typed-mapped");
     KV_REQUIRE(r.start());
     FakePhone owner(3);
@@ -1864,7 +1864,7 @@ KV_TEST(w8_a_router_read_address_still_wins_over_a_typed_one) {
     KV_CHECK_MSG(v.endpointKnown && v.endpointHost == "203.0.113.142" && v.endpointVerified, v.endpointHost);
 }
 
-KV_TEST(w8_manual_status_with_and_without_an_entered_address) {
+KV_TEST(outside_manual_status_with_and_without_an_entered_address) {
     Rig r(L"manual");
     r.router->present = false; // no UPnP router answers
     KV_REQUIRE(r.start());
@@ -1916,7 +1916,7 @@ KV_TEST(w8_manual_status_with_and_without_an_entered_address) {
     KV_CHECK(r.logHas("invite_closed", "outside"));
 }
 
-KV_TEST(w8_a_port_taken_on_the_router_is_an_error_and_left_alone) {
+KV_TEST(outside_a_port_taken_on_the_router_is_an_error_and_left_alone) {
     Rig r(L"taken");
     const uint16_t port = freeLoopbackPort();
     r.router->maps[port] = outside::RouterMapping{"192.168.1.99", port, true, std::string()};
@@ -1930,7 +1930,7 @@ KV_TEST(w8_a_port_taken_on_the_router_is_an_error_and_left_alone) {
     KV_CHECK(r.router->maps.size() == 1 && r.router->maps[port].internalClient == "192.168.1.99");
 }
 
-KV_TEST(w8_carrier_nat_removes_the_forward_and_allows_no_invite) {
+KV_TEST(outside_carrier_nat_removes_the_forward_and_allows_no_invite) {
     Rig r(L"cgnat");
     r.router->wan = "100.64.3.4";
     KV_REQUIRE(r.start());
@@ -1946,7 +1946,7 @@ KV_TEST(w8_carrier_nat_removes_the_forward_and_allows_no_invite) {
     KV_CHECK(r.waitStatus(outside::OutsideStatus::Error));
 }
 
-KV_TEST(w8_the_mapping_is_removed_when_outside_listening_turns_off) {
+KV_TEST(outside_the_mapping_is_removed_when_outside_listening_turns_off) {
     Rig r(L"remove");
     KV_REQUIRE(r.start());
     KV_REQUIRE(r.enableOutside());
@@ -1960,7 +1960,7 @@ KV_TEST(w8_the_mapping_is_removed_when_outside_listening_turns_off) {
     KV_CHECK(r.srv.outsideListeningPort() == 0);
 }
 
-KV_TEST(w8_an_address_change_tells_every_v3_session_and_closes_the_invite) {
+KV_TEST(outside_an_address_change_tells_every_v3_session_and_closes_the_invite) {
     Rig r(L"address");
     KV_REQUIRE(r.start());
     FakePhone owner(3), viewer(3);
@@ -2023,7 +2023,7 @@ KV_TEST(w8_an_address_change_tells_every_v3_session_and_closes_the_invite) {
     KV_CHECK(inv->uri.find("h=203.0.113.143") != std::string::npos);
 }
 
-KV_TEST(w8_a_test_run_never_builds_the_real_router) {
+KV_TEST(outside_a_test_run_never_builds_the_real_router) {
     // The decision itself, with nothing started: test_run alone (even off loopback) means no real router; only
     // a host that is neither a test run nor loopback-only, with no router of the caller's, uses NATUPnP.
     {
@@ -2090,7 +2090,7 @@ KV_TEST(w8_a_test_run_never_builds_the_real_router) {
 
 // ---- §8.1: turning it off, and privacy mode ----------------------------------------------------------------
 
-KV_TEST(w8_turning_outside_off_tells_outside_sessions_and_closes_the_invite) {
+KV_TEST(outside_turning_outside_off_tells_outside_sessions_and_closes_the_invite) {
     Rig r(L"off");
     KV_REQUIRE(r.start());
     FakePhone owner(3), home(3);
@@ -2119,7 +2119,7 @@ KV_TEST(w8_turning_outside_off_tells_outside_sessions_and_closes_the_invite) {
     KV_CHECK(!late.connectStream("127.0.0.1", r.outsidePort, po.serverHash, &err)); // the listener is closed
 }
 
-KV_TEST(w8_an_owner_turning_sharing_off_from_outside_gets_its_answer_first) {
+KV_TEST(outside_an_owner_turning_sharing_off_from_outside_gets_its_answer_first) {
     Rig r(L"sharing-off");
     KV_REQUIRE(r.start());
     FakePhone owner(3);
@@ -2152,7 +2152,7 @@ KV_TEST(w8_an_owner_turning_sharing_off_from_outside_gets_its_answer_first) {
     KV_CHECK(r.srv.outsideListeningPort() == 0 && !r.srv.outsideView().allowed);
 }
 
-KV_TEST(w8_sharing_off_on_the_pc_turns_outside_off_and_privacy_keeps_it_up) {
+KV_TEST(outside_sharing_off_on_the_pc_turns_outside_off_and_privacy_keeps_it_up) {
     Rig r(L"privacy");
     KV_REQUIRE(r.start());
     FakePhone owner(3);
@@ -2177,7 +2177,7 @@ KV_TEST(w8_sharing_off_on_the_pc_turns_outside_off_and_privacy_keeps_it_up) {
 
 // ---- pet-camera.json fails closed --------------------------------------------------------------------------
 
-KV_TEST(w8_an_unreadable_pet_camera_json_keeps_outside_off_and_refuses_changes) {
+KV_TEST(outside_an_unreadable_pet_camera_json_keeps_outside_off_and_refuses_changes) {
     Rig r(L"failclosed");
     const uint16_t port = freeLoopbackPort();
     const std::string json = "{\"sharingEnabled\":true,\"privacyMode\":false,\"allowOutside\":true,\"outsidePort\":" +
@@ -2198,7 +2198,7 @@ KV_TEST(w8_an_unreadable_pet_camera_json_keeps_outside_off_and_refuses_changes) 
     KV_CHECK(waitFor([&] { return r.srv.outsideListeningPort() == port; }, 8000));
 }
 
-KV_TEST(w8_a_pet_camera_json_with_outside_on_but_sharing_off_doesnt_listen) {
+KV_TEST(outside_a_pet_camera_json_with_outside_on_but_sharing_off_doesnt_listen) {
     Rig r(L"needs-sharing");
     const uint16_t port = freeLoopbackPort();
     KV_REQUIRE(kvtest::writeRaw(r.state.file(L"pet-camera.json"),
@@ -2210,7 +2210,7 @@ KV_TEST(w8_a_pet_camera_json_with_outside_on_but_sharing_off_doesnt_listen) {
 
 // ---- shutdown never waits on the router -----------------------------------------------------------------------
 
-KV_TEST(w8_shutdown_does_not_wait_on_a_router_that_doesnt_answer) {
+KV_TEST(outside_shutdown_does_not_wait_on_a_router_that_doesnt_answer) {
     Rig r(L"stuck");
     KV_REQUIRE(r.start([](HostStreamServer::Options& o) { o.router_timing.callDeadlineMs = 60000; }));
     r.router->block(true);
@@ -2229,7 +2229,7 @@ KV_TEST(w8_shutdown_does_not_wait_on_a_router_that_doesnt_answer) {
 
 // ---- §8.6: the log -------------------------------------------------------------------------------------------
 
-KV_TEST(w8_the_connection_log_is_newest_first_and_kept_on_the_pc) {
+KV_TEST(outside_the_connection_log_is_newest_first_and_kept_on_the_pc) {
     Rig r(L"log");
     KV_REQUIRE(r.start());
     KV_REQUIRE(r.enableOutside());
@@ -2250,7 +2250,7 @@ KV_TEST(w8_the_connection_log_is_newest_first_and_kept_on_the_pc) {
     KV_CHECK(readWholeFile(r.state.file(outside::kConnectionLogFile), text) && text.find("\"path\":\"outside\"") != std::string::npos);
 }
 
-// ---- review fixes (W8): races, the invite following the endpoint, the log, failures, the mapping ---------------
+// ---- Races, the invite following the endpoint, the log, failures, the mapping ----------------------------------
 
 namespace {
 
@@ -2320,7 +2320,7 @@ std::optional<outside::InviteLink> inviteOf(HostStreamServer& srv, PetRole role)
 } // namespace
 
 // A connection the outside pool handed off just before outside listening turned off never becomes a session.
-KV_TEST(w8_a_connection_handed_off_as_outside_turns_off_never_becomes_a_session) {
+KV_TEST(outside_a_connection_handed_off_as_outside_turns_off_never_becomes_a_session) {
     Rig r(L"h1-race");
     KV_REQUIRE(r.start());
     FakePhone owner(3);
@@ -2344,7 +2344,7 @@ KV_TEST(w8_a_connection_handed_off_as_outside_turns_off_never_becomes_a_session)
 }
 
 // An invite closes when the router check stops giving an endpoint, and can't be redeemed after.
-KV_TEST(w8_an_invite_closes_when_a_check_reads_manual) {
+KV_TEST(outside_an_invite_closes_when_a_check_reads_manual) {
     Rig r(L"h2-manual");
     KV_REQUIRE(r.start());
     KV_REQUIRE(r.enableOutside());
@@ -2363,7 +2363,7 @@ KV_TEST(w8_an_invite_closes_when_a_check_reads_manual) {
 }
 
 // Why the invite ended, as the PC's window says it.
-KV_TEST(w8_the_pc_learns_why_an_invite_ended) {
+KV_TEST(outside_the_pc_learns_why_an_invite_ended) {
     Rig r(L"h2-why");
     KV_REQUIRE(r.start());
     KV_REQUIRE(r.enableOutside());
@@ -2396,7 +2396,7 @@ KV_TEST(w8_the_pc_learns_why_an_invite_ended) {
 }
 
 // An address change after a failed check is still an address change (§8.3), with its notices.
-KV_TEST(w8_an_address_change_after_a_failed_check_is_still_address_changed) {
+KV_TEST(outside_an_address_change_after_a_failed_check_is_still_address_changed) {
     Rig r(L"h3-addr");
     KV_REQUIRE(r.start());
     FakePhone owner(3);
@@ -2442,7 +2442,7 @@ KV_TEST(w8_an_address_change_after_a_failed_check_is_still_address_changed) {
 }
 
 // The default port is picked once and saved (§8.1), so the next start keeps it.
-KV_TEST(w8_the_default_outside_port_is_saved_and_kept_across_restarts) {
+KV_TEST(outside_the_default_outside_port_is_saved_and_kept_across_restarts) {
     Rig r(L"h4-port");
     KV_REQUIRE(r.start());
     const uint16_t port = r.srv.petSettings().outsidePort;
@@ -2519,7 +2519,7 @@ const char* const kNoBindablePortSentence =
 
 // (a) The probe refuses the first three ports: the fourth is the default, saved in pet-camera.json, and the
 // outside listener opens on it when outside viewing turns on.
-KV_TEST(w8_the_default_port_is_the_first_random_port_that_binds) {
+KV_TEST(outside_the_default_port_is_the_first_random_port_that_binds) {
     for (int run = 0; run < 3; ++run) {
         auto probe = std::make_shared<FakeProbe>();
         probe->reject_first = 3;
@@ -2546,7 +2546,7 @@ KV_TEST(w8_the_default_port_is_the_first_random_port_that_binds) {
 
 // (b) No port binds: 20 tries, then an error on the PC's status line, nothing listening and no port saved. The
 // next turn-on tries again, and a port that binds is then picked, saved and listened on.
-KV_TEST(w8_no_port_that_binds_is_an_error_saves_none_and_is_tried_again) {
+KV_TEST(outside_no_port_that_binds_is_an_error_saves_none_and_is_tried_again) {
     for (int run = 0; run < 3; ++run) {
         auto probe = std::make_shared<FakeProbe>();
         probe->reject_all = true;
@@ -2596,7 +2596,7 @@ KV_TEST(w8_no_port_that_binds_is_an_error_saves_none_and_is_tried_again) {
 }
 
 // (c) Every port the picker asks about is in 20000-44999, and none twice.
-KV_TEST(w8_the_default_port_picker_asks_only_about_ports_in_its_range) {
+KV_TEST(outside_the_default_port_picker_asks_only_about_ports_in_its_range) {
     auto probe = std::make_shared<FakeProbe>();
     probe->reject_first = 15;
     Rig r(L"probe-range");
@@ -2610,7 +2610,7 @@ KV_TEST(w8_the_default_port_picker_asks_only_about_ports_in_its_range) {
 
 // (d) A port the PC user chose is taken as given (the probe isn't asked), and one that can't be bound gets the
 // existing sentence.
-KV_TEST(w8_a_chosen_port_that_cant_be_bound_gets_the_existing_sentence) {
+KV_TEST(outside_a_chosen_port_that_cant_be_bound_gets_the_existing_sentence) {
     winsockInit();
     SOCKET holder = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP); // holds a loopback port, so it can't be bound
     KV_REQUIRE(holder != INVALID_SOCKET);
@@ -2652,7 +2652,7 @@ KV_TEST(w8_a_chosen_port_that_cant_be_bound_gets_the_existing_sentence) {
 }
 
 // A slow connection log write holds up nothing else.
-KV_TEST(w8_a_slow_connection_log_write_never_holds_up_the_server) {
+KV_TEST(outside_a_slow_connection_log_write_never_holds_up_the_server) {
     Rig r(L"h5-log");
     auto gate = std::make_shared<Gate>();
     KV_REQUIRE(r.start([gate](HostStreamServer::Options& o) {
@@ -2690,7 +2690,7 @@ KV_TEST(w8_a_slow_connection_log_write_never_holds_up_the_server) {
 }
 
 // A flaky link never blocks a source; five unknown certificates do.
-KV_TEST(w8_a_flaky_link_never_blocks_a_source_and_five_unknown_certificates_do) {
+KV_TEST(outside_a_flaky_link_never_blocks_a_source_and_five_unknown_certificates_do) {
     Rig r(L"flaky-link");
     KV_REQUIRE(r.start([](HostStreamServer::Options& o) {
         o.outside_handshake_timeout_ms = 400; // the stall case, quickly
@@ -2749,7 +2749,7 @@ KV_TEST(w8_a_flaky_link_never_blocks_a_source_and_five_unknown_certificates_do) 
 }
 
 // The outside handshake deadline is 5 s, and a timeout isn't a failure: five slow sockets don't block a source.
-KV_TEST(w8_the_outside_handshake_deadline_is_five_seconds_and_not_a_failure) {
+KV_TEST(outside_the_outside_handshake_deadline_is_five_seconds_and_not_a_failure) {
     Rig r(L"t1-deadline");
     KV_REQUIRE(r.start([](HostStreamServer::Options& o) {
         KV_CHECK(o.outside_handshake_timeout_ms == 5000); // the default, unchanged here
@@ -2877,7 +2877,7 @@ KV_TEST(outside_eviction_takes_from_the_most_represented_48_first) {
 }
 
 // A late report for the old port never shows the new port as mapped.
-KV_TEST(w8_a_late_report_for_the_old_port_never_shows_the_new_one_as_mapped) {
+KV_TEST(outside_a_late_report_for_the_old_port_never_shows_the_new_one_as_mapped) {
     Rig r(L"h7-stale");
     KV_REQUIRE(r.start([](HostStreamServer::Options& o) { o.router_timing.callDeadlineMs = 20000; }));
     const auto ports = twoFreePorts();
@@ -2902,7 +2902,7 @@ KV_TEST(w8_a_late_report_for_the_old_port_never_shows_the_new_one_as_mapped) {
 }
 
 // A port change while listening moves the listener and the mapping; sessions stay; the invite closes.
-KV_TEST(w8_a_port_change_while_listening_keeps_sessions_and_closes_the_invite) {
+KV_TEST(outside_a_port_change_while_listening_keeps_sessions_and_closes_the_invite) {
     Rig r(L"t6-port");
     KV_REQUIRE(r.start());
     FakePhone owner(3);
@@ -2935,7 +2935,7 @@ KV_TEST(w8_a_port_change_while_listening_keeps_sessions_and_closes_the_invite) {
 }
 
 // A forward added while the router was stuck is removed once the router answers, after outside turned off.
-KV_TEST(w8_a_forward_added_while_the_router_was_stuck_is_removed_once_it_answers) {
+KV_TEST(outside_a_forward_added_while_the_router_was_stuck_is_removed_once_it_answers) {
     Rig r(L"h8-stuck");
     KV_REQUIRE(r.start([](HostStreamServer::Options& o) { o.router_timing.callDeadlineMs = 300; }));
     const uint16_t port = freeLoopbackPort();
@@ -2951,7 +2951,7 @@ KV_TEST(w8_a_forward_added_while_the_router_was_stuck_is_removed_once_it_answers
 }
 
 // A committed redemption gets its reply, even when outside turns off meanwhile.
-KV_TEST(w8_a_committed_redemption_gets_its_reply_while_outside_turns_off) {
+KV_TEST(outside_a_committed_redemption_gets_its_reply_while_outside_turns_off) {
     Rig r(L"h9-commit");
     HostStreamServer* srv = &r.srv;
     auto gate = std::make_shared<Gate>();
@@ -2986,7 +2986,7 @@ KV_TEST(w8_a_committed_redemption_gets_its_reply_while_outside_turns_off) {
 }
 
 // A forward an earlier run left (outsideMappedPort) is removed at the next start, only if it is ours.
-KV_TEST(w8_a_forward_left_by_an_earlier_run_is_removed_at_start_only_if_ours) {
+KV_TEST(outside_a_forward_left_by_an_earlier_run_is_removed_at_start_only_if_ours) {
     for (const bool ours : {true, false}) {
         Rig r(ours ? L"h10-ours" : L"h10-theirs");
         const uint16_t port = freeLoopbackPort();
@@ -3025,7 +3025,7 @@ KV_TEST(w8_a_forward_left_by_an_earlier_run_is_removed_at_start_only_if_ours) {
 
 // "Remove mapping now" removes the forward and keeps the listener. This replaces
 // "the next check maps it again while on": it stays removed, and the 10-minute check doesn't add it back.
-KV_TEST(w8_remove_mapping_now_removes_the_forward_and_keeps_listening) {
+KV_TEST(outside_remove_mapping_now_removes_the_forward_and_keeps_listening) {
     Rig r(L"v3-remove");
     KV_REQUIRE(r.start());
     std::string err;
@@ -3059,7 +3059,7 @@ KV_TEST(w8_remove_mapping_now_removes_the_forward_and_keeps_listening) {
 // ---- "Remove mapping now" stays removed --------------------------------------------------------------------
 
 // "Map the port again" maps it now, sets outsideMappedPort again and clears the flag; refused when nothing was removed.
-KV_TEST(w8_map_the_port_again_maps_a_removed_forward) {
+KV_TEST(outside_map_the_port_again_maps_a_removed_forward) {
     Rig r(L"r2-remap");
     KV_REQUIRE(r.start());
     std::string err;
@@ -3088,7 +3088,7 @@ KV_TEST(w8_map_the_port_again_maps_a_removed_forward) {
 }
 
 // Turning outside viewing off clears the flag, so turning it on again maps.
-KV_TEST(w8_turning_outside_off_and_on_maps_a_removed_forward_again) {
+KV_TEST(outside_turning_outside_off_and_on_maps_a_removed_forward_again) {
     Rig r(L"r2-offon");
     KV_REQUIRE(r.start());
     KV_REQUIRE(r.enableOutside());
@@ -3114,7 +3114,7 @@ KV_TEST(w8_turning_outside_off_and_on_maps_a_removed_forward_again) {
 
 // Across a restart it stays removed: with outside viewing on and the flag set, the listener opens and nothing is
 // mapped. A value that isn't a bool reads as removed (never map on a bad value); a real false maps.
-KV_TEST(w8_a_removed_forward_stays_removed_across_a_restart) {
+KV_TEST(outside_a_removed_forward_stays_removed_across_a_restart) {
     struct Case {
         const wchar_t* tag;
         const char* value;
@@ -3154,7 +3154,7 @@ KV_TEST(w8_a_removed_forward_stays_removed_across_a_restart) {
 }
 
 // A port change while removed keeps it removed (the listener moves; nothing is mapped on the new port).
-KV_TEST(w8_a_port_change_keeps_a_removed_forward_removed) {
+KV_TEST(outside_a_port_change_keeps_a_removed_forward_removed) {
     Rig r(L"r2-port");
     KV_REQUIRE(r.start());
     const auto ports = twoFreePorts();
@@ -3173,7 +3173,7 @@ KV_TEST(w8_a_port_change_keeps_a_removed_forward_removed) {
 
 // test_run alone (no loopback_only) binds the outside listener to 127.0.0.1, read from the socket, and uses
 // the fixed test LAN address instead of this PC's adapters.
-KV_TEST(w8_a_test_run_alone_binds_the_outside_listener_to_loopback) {
+KV_TEST(outside_a_test_run_alone_binds_the_outside_listener_to_loopback) {
     kvtest::OutsideTempState state(L"t2-bind");
     auto router = std::make_shared<FakeRouter>();
     HostController ctl;
@@ -3201,7 +3201,7 @@ KV_TEST(w8_a_test_run_alone_binds_the_outside_listener_to_loopback) {
 }
 
 // The LAN stream listener refuses an unknown certificate even while an invite is open.
-KV_TEST(w8_the_lan_listener_refuses_an_unknown_certificate_while_an_invite_is_open) {
+KV_TEST(outside_the_lan_listener_refuses_an_unknown_certificate_while_an_invite_is_open) {
     Rig r(L"t3-lan");
     KV_REQUIRE(r.start());
     KV_REQUIRE(r.enableOutside());
@@ -3222,7 +3222,7 @@ KV_TEST(w8_the_lan_listener_refuses_an_unknown_certificate_while_an_invite_is_op
 }
 
 // Redemption failures each count, and burn nothing.
-KV_TEST(w8_redemption_failures_count_and_burn_nothing) {
+KV_TEST(outside_redemption_failures_count_and_burn_nothing) {
     Rig r(L"t4-redeem");
     auto gate = std::make_shared<Gate>();
     auto closing = std::make_shared<std::atomic<bool>>(false);
@@ -3302,7 +3302,7 @@ bool logHasExactly(HostStreamServer& srv, const char* event, const std::string& 
 // An invite the PC closes while a device is mid-handshake isn't
 // that device's failure. Only a certificate the verify callback took because an invite was open counts: one that
 // arrives while no invite is open is still refused inside the handshake and counted.
-KV_TEST(w8_an_invite_closed_while_a_device_connects_is_not_its_failure) {
+KV_TEST(outside_an_invite_closed_while_a_device_connects_is_not_its_failure) {
     Rig r(L"r1-closed");
     auto closing = std::make_shared<std::atomic<bool>>(false);
     HostStreamServer* srv = &r.srv;
@@ -3403,7 +3403,7 @@ int logCount(HostStreamServer& srv, const char* event, const std::string& addr, 
 
 // A device that completes the handshake and then just drops its TCP connection (no close_notify) before its
 // redemption frame is a disconnect, never a failure (a weak mobile link never blocks the owner's own phone).
-KV_TEST(w8_a_plain_tcp_close_before_the_redemption_frame_is_not_a_failure) {
+KV_TEST(outside_a_plain_tcp_close_before_the_redemption_frame_is_not_a_failure) {
     Rig r(L"eof-drop");
     KV_REQUIRE(r.start([](HostStreamServer::Options& o) { o.outside_limits.burst = 30; }));
     KV_REQUIRE(r.enableOutside());
@@ -3429,7 +3429,7 @@ KV_TEST(w8_a_plain_tcp_close_before_the_redemption_frame_is_not_a_failure) {
 // The redemption reply's close drains as a session's does (SSL_shutdown, the FIN, then read and drop until the peer
 // closes), so a device still sending after its pairRequest (pings while it waits) gets the whole accepted reply,
 // not a reset that throws it away.
-KV_TEST(w8_a_device_that_keeps_sending_after_its_pair_request_still_reads_the_reply) {
+KV_TEST(outside_a_device_that_keeps_sending_after_its_pair_request_still_reads_the_reply) {
     Rig r(L"reply-drain");
     KV_REQUIRE(r.start([](HostStreamServer::Options& o) {
         // Held after the commit, before the reply goes out: the device's pings land unread meanwhile.
@@ -3474,7 +3474,7 @@ KV_TEST(w8_a_device_that_keeps_sending_after_its_pair_request_still_reads_the_re
 
 // A connection the outside pool handed off, then outside turned off AND on again before its on_ready runs,
 // never becomes a session: it was accepted by a listener that is gone (the outside generation moved).
-KV_TEST(w8_a_connection_handed_off_before_off_then_on_never_becomes_a_session) {
+KV_TEST(outside_a_connection_handed_off_before_off_then_on_never_becomes_a_session) {
     Rig r(L"off-on-handoff");
     KV_REQUIRE(r.start());
     FakePhone owner(3);
@@ -3498,7 +3498,7 @@ KV_TEST(w8_a_connection_handed_off_before_off_then_on_never_becomes_a_session) {
 }
 
 // An outside session the host ends (outside turned off here) is logged as disconnected exactly once, with why.
-KV_TEST(w8_an_outside_session_the_host_ends_is_logged_once_as_disconnected) {
+KV_TEST(outside_an_outside_session_the_host_ends_is_logged_once_as_disconnected) {
     Rig r(L"end-log");
     KV_REQUIRE(r.start());
     FakePhone owner(3);
@@ -3526,7 +3526,7 @@ KV_TEST(w8_an_outside_session_the_host_ends_is_logged_once_as_disconnected) {
 
 // A mapping on our port to this PC's address with someone else's description is never adopted (the port is in use
 // on the router) and never removed: not by turning off, not by Remove mapping now, not by a port change or the exit.
-KV_TEST(w8_a_mapping_to_this_pc_with_another_description_is_never_adopted_or_removed) {
+KV_TEST(outside_a_mapping_to_this_pc_with_another_description_is_never_adopted_or_removed) {
     Rig r(L"foreign-mapping");
     const uint16_t port = freeLoopbackPort();
     r.router->maps[port] = outside::RouterMapping{kTestLanIPv4, port, true, std::string(), "Someone else's game"};
@@ -3855,7 +3855,7 @@ bool upOnLoopback(GatewayRig& g, const LoopbackIgd& igd) {
 // address NATUPnP read, in the same pass) is told to every device at once, with no click at the PC: a new lease or a
 // router restart while the owner is away keeps outside viewing working. Only the pinned gateway is asked, for the
 // forward's interface. Retries are once a minute unless a test says otherwise.
-KV_TEST(w8_a_new_address_the_pinned_gateway_confirms_is_told_with_no_click) {
+KV_TEST(outside_a_new_address_the_pinned_gateway_confirms_is_told_with_no_click) {
     KV_CHECK((HostStreamServer::Options{}.gateway_retry_ms == std::vector<uint64_t>{60'000}));
     GatewayRig g(L"gw-confirmed");
     KV_REQUIRE(g.up());
@@ -3878,7 +3878,7 @@ KV_TEST(w8_a_new_address_the_pinned_gateway_confirms_is_told_with_no_click) {
 // differs from what NATUPnP read (contradicted), or the gateway itself is another device (its hardware address or its
 // address differs). Devices keep the address they were told, with no notice; invites wait; and no re-share is offered,
 // since no check has confirmed the address.
-KV_TEST(w8_a_new_address_the_gateway_doesnt_confirm_is_held) {
+KV_TEST(outside_a_new_address_the_gateway_doesnt_confirm_is_held) {
     struct Case {
         const wchar_t* tag;
         outside::GatewayIdentity gateway;
@@ -3906,7 +3906,7 @@ KV_TEST(w8_a_new_address_the_gateway_doesnt_confirm_is_held) {
 // An address the pinned gateway contradicts (another device answered as the router) is never acknowledged: no
 // re-share is offered, and an acknowledgement for it is refused. The host keeps checking; once the gateway agrees
 // with NATUPnP, the PC user may re-share that address (still not told without them), and then it is told.
-KV_TEST(w8_an_address_the_gateway_contradicts_is_never_acknowledged) {
+KV_TEST(outside_an_address_the_gateway_contradicts_is_never_acknowledged) {
     GatewayRig g(L"gw-contradicted");
     KV_REQUIRE(g.up());
     g.gw->set(kHomeGateway, "203.0.113.142");
@@ -3928,7 +3928,7 @@ KV_TEST(w8_an_address_the_gateway_contradicts_is_never_acknowledged) {
 
 // A hold on another gateway is sticky: later checks that would confirm the address don't tell it. Only the PC user's
 // re-share does (or turning outside viewing off and on).
-KV_TEST(w8_a_hold_stays_until_the_pc_user_acknowledges) {
+KV_TEST(outside_a_hold_stays_until_the_pc_user_acknowledges) {
     GatewayRig g(L"gw-sticky");
     KV_REQUIRE(g.up());
     g.gw->set(kOtherGateway, "203.0.113.143");
@@ -3949,7 +3949,7 @@ KV_TEST(w8_a_hold_stays_until_the_pc_user_acknowledges) {
 
 // The re-share acknowledges only the address the PC user was shown, and only while it is still the address read now
 // and a check confirmed it.
-KV_TEST(w8_an_acknowledgement_applies_only_to_the_address_shown) {
+KV_TEST(outside_an_acknowledgement_applies_only_to_the_address_shown) {
     GatewayRig g(L"gw-ack-shown");
     KV_REQUIRE(g.up());
     g.gw->set(kHomeGateway, "203.0.113.142");
@@ -3971,7 +3971,7 @@ KV_TEST(w8_an_acknowledgement_applies_only_to_the_address_shown) {
 // v3 §8.3: with a gateway pinned, only an address a check CONFIRMED is ever re-shared or acknowledged. Contradicted,
 // then confirmed (re-share offered for that address), then NATUPnP reads another address while the gateway can't be
 // read (its UPnP made to look unreadable): that address is neither offered nor acknowledged, and devices keep theirs.
-KV_TEST(w8_only_a_confirmed_address_is_ever_re_shared) {
+KV_TEST(outside_only_a_confirmed_address_is_ever_re_shared) {
     GatewayRig g(L"gw-confirmed-only");
     KV_REQUIRE(g.up());
     g.gw->set(kHomeGateway, "203.0.113.142");
@@ -3992,7 +3992,7 @@ KV_TEST(w8_only_a_confirmed_address_is_ever_re_shared) {
 
 // A held change through another gateway (a replaced router, or another device) is never confirmed, so it can't be
 // re-shared; turning outside viewing off and on starts afresh with the gateway there now, and its address is told.
-KV_TEST(w8_another_gateway_is_accepted_by_turning_outside_viewing_off_and_on) {
+KV_TEST(outside_another_gateway_is_accepted_by_turning_outside_viewing_off_and_on) {
     GatewayRig g(L"gw-toggle");
     KV_REQUIRE(g.up());
     g.gw->set(kOtherGateway, "203.0.113.143");
@@ -4012,7 +4012,7 @@ KV_TEST(w8_another_gateway_is_accepted_by_turning_outside_viewing_off_and_on) {
 // The address devices were last told is saved, so a restart checks a first address that differs instead of telling
 // it at once: held when the gateway's own answer differs, told with no click when it confirms it. The pin comes back
 // from pet-camera.json too.
-KV_TEST(w8_a_restart_checks_a_first_address_that_differs_from_the_one_announced) {
+KV_TEST(outside_a_restart_checks_a_first_address_that_differs_from_the_one_announced) {
     for (const bool confirmed : {false, true}) {
         GatewayRig g(confirmed ? L"gw-restart-confirmed" : L"gw-restart-held");
         KV_REQUIRE(g.up());
@@ -4041,7 +4041,7 @@ KV_TEST(w8_a_restart_checks_a_first_address_that_differs_from_the_one_announced)
 
 // A retry reads everything again: NATUPnP's address included, so the address a pass announces is the one read in
 // that pass, never one read earlier.
-KV_TEST(w8_a_retry_reads_the_address_again_and_never_announces_an_earlier_one) {
+KV_TEST(outside_a_retry_reads_the_address_again_and_never_announces_an_earlier_one) {
     GatewayRig g(L"gw-retry-fresh");
     KV_REQUIRE(g.up(kHomeGateway, {1500}));
     g.gw->set(kHomeGateway, ""); // its UPnP doesn't answer yet
@@ -4056,7 +4056,7 @@ KV_TEST(w8_a_retry_reads_the_address_again_and_never_announces_an_earlier_one) {
 
 // A router that stops answering NATUPnP during a check doesn't end it: the host keeps checking (counting the passes
 // that couldn't read it), and once the router and the gateway answer and agree, the address is told with no click.
-KV_TEST(w8_a_router_failure_during_a_check_keeps_it_checking) {
+KV_TEST(outside_a_router_failure_during_a_check_keeps_it_checking) {
     GatewayRig g(L"gw-natupnp-failure");
     KV_REQUIRE(g.up(kHomeGateway, {100}));
     g.gw->set(kHomeGateway, ""); // the gateway's UPnP doesn't answer yet
@@ -4074,7 +4074,7 @@ KV_TEST(w8_a_router_failure_during_a_check_keeps_it_checking) {
 // A gateway that can't be read is no evidence: the host keeps reading it (here far more passes than any time limit
 // would allow), devices keep the address they were told, invites wait, and the panel says it is checking. Once one
 // pass confirms the address it is told, with no click.
-KV_TEST(w8_a_gateway_unreachable_for_long_then_confirmed_is_told_with_no_click) {
+KV_TEST(outside_a_gateway_unreachable_for_long_then_confirmed_is_told_with_no_click) {
     GatewayRig g(L"gw-unreachable-long");
     KV_REQUIRE(g.up(kHomeGateway, {20}));
     g.gw->set(kHomeGateway, "");
@@ -4093,7 +4093,7 @@ KV_TEST(w8_a_gateway_unreachable_for_long_then_confirmed_is_told_with_no_click) 
 }
 
 // ...but positive evidence after a stretch of not answering holds it, stickily.
-KV_TEST(w8_a_gateway_unreachable_then_answering_differently_is_held) {
+KV_TEST(outside_a_gateway_unreachable_then_answering_differently_is_held) {
     GatewayRig g(L"gw-unreachable-other");
     KV_REQUIRE(g.up(kHomeGateway, {50}));
     g.gw->set(kHomeGateway, "");
@@ -4112,7 +4112,7 @@ KV_TEST(w8_a_gateway_unreachable_then_answering_differently_is_held) {
 // pet-camera.json's pin fails safe: a key that isn't a valid address or hardware address drops the whole pin, so a
 // first address that differs at the next start waits for the PC user (nothing to check it against). A corrupt saved
 // address makes every first address a change to check, which the pinned gateway can still confirm.
-KV_TEST(w8_corrupt_router_pin_keys_drop_the_pin_and_a_change_waits) {
+KV_TEST(outside_corrupt_router_pin_keys_drop_the_pin_and_a_change_waits) {
     {
         GatewayRig g(L"gw-corrupt-pin");
         KV_REQUIRE(g.up());
@@ -4172,7 +4172,7 @@ KV_TEST(w8_corrupt_router_pin_keys_drop_the_pin_and_a_change_waits) {
 // answer comes back; a description URL anywhere but the gateway, or with user-info, is never fetched; a control URL
 // off the gateway is never called. And a host whose gateway is that loopback one tells an address the gateway
 // confirms and holds one it doesn't.
-KV_TEST(w8_the_pinned_gateway_is_asked_over_soap_and_only_on_its_own_address) {
+KV_TEST(outside_the_pinned_gateway_is_asked_over_soap_and_only_on_its_own_address) {
     LoopbackIgd igd;
     KV_CHECK((outside::askGatewayForWanAt("127.0.0.1", igd.location(), 3000) == std::vector<std::string>{"203.0.113.143"}));
     const int served = igd.count();
@@ -4207,7 +4207,7 @@ KV_TEST(w8_the_pinned_gateway_is_asked_over_soap_and_only_on_its_own_address) {
 // Every WAN connection service of the gateway is asked, and only public answers count: one service answering 0.0.0.0
 // or a private address (unread) while another holds the public address confirms it; a public answer that differs
 // from NATUPnP's doesn't outweigh one that agrees.
-KV_TEST(w8_every_wan_service_is_asked_and_only_public_answers_count) {
+KV_TEST(outside_every_wan_service_is_asked_and_only_public_answers_count) {
     struct Case {
         const wchar_t* tag;
         std::string ipAnswer;
@@ -4231,7 +4231,7 @@ KV_TEST(w8_every_wan_service_is_asked_and_only_public_answers_count) {
 
 // The read-only router probe sees each step of the gateway read (GatewayTrace): the description and its WAN services,
 // each service's answer, a URL off the gateway that is reported and never fetched, and a service that gives no answer.
-KV_TEST(w8_the_gateway_read_reports_each_step_to_the_router_probe) {
+KV_TEST(outside_the_gateway_read_reports_each_step_to_the_router_probe) {
     LoopbackIgd igd;
     igd.answerPpp("0.0.0.0");
     std::vector<std::string> lines;
@@ -4269,7 +4269,7 @@ KV_TEST(w8_the_gateway_read_reports_each_step_to_the_router_probe) {
 
 // The description that gave the gateway's answer is saved with the pin, and a restart asks it first, so a pass after a
 // restart needn't search. A saved description anywhere but the pinned gateway is dropped at load, and the pin stands.
-KV_TEST(w8_the_description_that_answered_is_kept_across_a_restart) {
+KV_TEST(outside_the_description_that_answered_is_kept_across_a_restart) {
     LoopbackIgd igd;
     GatewayRig g(L"gw-location-kept");
     KV_REQUIRE(upOnLoopback(g, igd));
@@ -4324,7 +4324,7 @@ KV_TEST(w8_the_description_that_answered_is_kept_across_a_restart) {
 // A gateway that still can't be read is checked less often after a while, as a hold is (every 5 minutes after 30;
 // here every 60 s after 2 s, the retry every 100 ms). The change stays "checking" all along. Waited on by the passes
 // themselves, with generous bounds, so a busy PC only makes it slower.
-KV_TEST(w8_a_gateway_unreadable_for_long_is_checked_less_often) {
+KV_TEST(outside_a_gateway_unreadable_for_long_is_checked_less_often) {
     GatewayRig g(L"gw-slow-unread");
     KV_REQUIRE(g.up(kHomeGateway, {100}, [](HostStreamServer::Options& o) {
         o.gateway_slow_after_ms = 2'000;
@@ -4360,7 +4360,7 @@ KV_TEST(w8_a_gateway_unreadable_for_long_is_checked_less_often) {
 // The description that answered last time gets at most kLastGoodTryMs of the deadline: an old port that has gone dead
 // (here its SOAP answers are held, then dropped, by both services) can't use up the 8 s and leave nothing for the
 // search. lanIPv4 isn't an address, so the search sends nothing (no test searches this PC's network).
-KV_TEST(w8_a_dead_last_good_description_leaves_time_for_the_search) {
+KV_TEST(outside_a_dead_last_good_description_leaves_time_for_the_search) {
     LoopbackIgd igd;
     igd.answerPpp("203.0.113.143");
     igd.hangSoap(3'500);
@@ -4394,7 +4394,7 @@ outside::AdapterInfo homeWifi() {
 
 // fe80::/64 is on every link. A link-local source on the home Wi-Fi's link is home; the same kind of address on
 // another link (a virtual switch, a VPN's TAP adapter, a Mobile Hotspot) is closed before TLS, as any other stranger.
-KV_TEST(w8_a_link_local_source_is_home_only_on_the_home_adapters_link) {
+KV_TEST(outside_a_link_local_source_is_home_only_on_the_home_adapters_link) {
     Rig r(L"home-link-local");
     KV_REQUIRE(r.start([](HostStreamServer::Options& o) {
         o.on_link_prefixes.reset();
@@ -4440,7 +4440,7 @@ KV_TEST(w8_a_link_local_source_is_home_only_on_the_home_adapters_link) {
 // The adapter read (GetAdaptersAddresses and a GetIfEntry2 per adapter: tens of milliseconds) runs with the server's
 // lock released, so the stranger whose connection makes it read holds nothing else up. Here the read is held for as
 // long as the row likes; meanwhile a call that takes the server's lock returns at once.
-KV_TEST(w8_a_slow_adapter_read_holds_nothing_else_up) {
+KV_TEST(outside_a_slow_adapter_read_holds_nothing_else_up) {
     struct Gate {
         std::mutex m;
         std::condition_variable cv;
@@ -4494,7 +4494,7 @@ KV_TEST(w8_a_slow_adapter_read_holds_nothing_else_up) {
 
 // A stranger's connections read the adapters again at most once every 2 s, however many there are: within 2 s of a
 // read the list answers them, and the first after that reads once more.
-KV_TEST(w8_strangers_read_the_adapters_at_most_once_every_2_s) {
+KV_TEST(outside_strangers_read_the_adapters_at_most_once_every_2_s) {
     auto reads = std::make_shared<std::atomic<int>>(0);
     Rig r(L"home-read-count");
     KV_REQUIRE(r.start([reads](HostStreamServer::Options& o) {
@@ -4537,7 +4537,7 @@ KV_TEST(w8_strangers_read_the_adapters_at_most_once_every_2_s) {
 // A failed adapter read keeps the last list, but not for ever: once reads have failed for longer than a list is kept
 // (home_list_keep_ms, 5 minutes in the product, 3 s here), the list may be another network's, and home is loopback
 // alone until a read works again. Then the home phone is home again.
-KV_TEST(w8_a_home_list_that_cant_be_read_again_is_kept_only_so_long) {
+KV_TEST(outside_a_home_list_that_cant_be_read_again_is_kept_only_so_long) {
     auto fail = std::make_shared<std::atomic<bool>>(false);
     Rig r(L"home-read-expires");
     KV_REQUIRE(r.start([fail](HostStreamServer::Options& o) {

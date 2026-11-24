@@ -1,4 +1,4 @@
-// W8 (outside the home), Phase A: the outside listener's admission limits (protocol v3 §8.5). It decides at
+// Outside the home: the outside listener's admission limits (protocol v3 §8.5). It decides at
 // accept time, before any thread or TLS work: a refused socket is closed with nothing read or written.
 // Every per-source count uses the §8.0 source key (IPv4 address, IPv6 /64). Pure logic with an injected
 // clock, safe to call from any thread. Paired sessions never count once their handshake has ended.
@@ -108,7 +108,7 @@ public:
 
     // At accept, before any thread or TLS work.
     AdmitResult tryAdmit(const IpAddress& peer);
-    // A paired device's handshake succeeded from peer (Phase B calls it beside finish(Success)). For the next
+    // A paired device's handshake succeeded from peer (the host calls it beside finish(Success)). For the next
     // 24 h that source has its own slots outside the global 8 and the per-minute cap, still
     // held to its own bucket and per-source cap.
     void noteAuthenticated(const IpAddress& peer);

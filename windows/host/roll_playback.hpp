@@ -66,7 +66,7 @@ public:
     bool pause(uint64_t requestId);
     bool resume(uint64_t requestId);
     bool seek(uint64_t requestId, double positionSec);
-    // A stop by the device (with its requestId), or by the host (none, and the §9 sentence in message).
+    // A stop by the device (with its requestId), or by the host (none, and the user-facing sentence, v3 §9, in message).
     bool stop(std::optional<uint64_t> requestId, const std::optional<std::string>& message);
     // The session is gone: the stream stops with nothing sent.
     void stopSilently();

@@ -2,7 +2,7 @@
 // scaler's colour math, per-tier encoder threads (IDR first, unique and rising epochs, low at half rate),
 // keyframe coalescing, no stall of high while low opens, the hold time, the software fallback, and a
 // decode of each tier's output at its size.
-#include "kv_desk.hpp"
+#include "kv_load.hpp"
 #include "kv_test.hpp"
 
 #include "live_tiers.hpp"
@@ -668,9 +668,9 @@ KV_TEST(hold_time_closes_an_unwanted_tier) {
 
     // Released for good: open during the hold, closed after it; frames then go nowhere. The encoder closing at all,
     // within 5 s of the deadline, and the tier inactive by then are checked in every run. How soon after the deadline
-    // the encoder has closed is a timing floor, judged against the desk: closing joins the hardware MFT's event thread
+    // the encoder has closed is a timing floor, judged against the PC's load: closing joins the hardware MFT's event thread
     // (TierEncoder::closeEncoder), which a busy PC can stretch with nothing wrong in the hold.
-    kvtest::DeskSampler desk;
+    kvtest::LoadSampler load;
     set.release(LiveTier::Medium);
     const uint64_t deadline_ns = nowNs() + 400000000ULL; // o.hold
     feed(set, 1920, 1080, 6, seq); // ~200 ms
@@ -680,7 +680,7 @@ KV_TEST(hold_time_closes_an_unwanted_tier) {
         return !d.open && d.encoder_name.empty();
     });
     const double close_ms = (static_cast<double>(nowNs()) - static_cast<double>(deadline_ns)) / 1e6;
-    const kvtest::DeskSnapshot timed = desk.snapshot();
+    const kvtest::LoadSnapshot timed = load.snapshot();
     std::printf("  closed %.0f ms after the hold deadline; %s\n", close_ms, timed.r.line().c_str());
     KV_CHECK_MSG(closed, "the encoder hadn't closed 5 s after the hold deadline");
     KV_CHECK(!set.diagnostics(LiveTier::Medium).active);

@@ -1,4 +1,4 @@
-// Recordings inside the app (the Mac's phase 2 and phase 7 fixes 6 and 12): the list, session_meta.json,
+// Recordings inside the app (as on the Mac): the list, session_meta.json,
 // the 7-day deletion and its log, deletion by the user, the purge of old colour sessions, the reminder
 // policy, the reader (PNG16 and FFV1 chunks, bit exact at any index, any order) and playback through
 // the core's replay pipeline. Temp folders only; the frames are made up (each one's index is in its
@@ -160,7 +160,7 @@ KV_TEST(old_colour_sessions_are_purged_and_logged_and_never_listed_as_ir) {
     removeTree(base);
     const std::wstring keep = recordSession(base, KV_MODE_IR, Lossless16::Png16Sequence, 3);
     KV_REQUIRE(!keep.empty());
-    // W4's colour sessions (an HEVC .mp4 and its CSV), a side-by-side one, and an unknown folder.
+    // Colour sessions (an HEVC .mp4 and its CSV), a side-by-side one, and an unknown folder.
     const std::vector<std::wstring> bad = {L"20261101-100000-000_color1080p.nosync", L"20261101-100001-000_sidebyside.nosync",
                                            L"20261101-100002-000_mystery.nosync"};
     for (const auto& n : bad) {
@@ -168,7 +168,7 @@ KV_TEST(old_colour_sessions_are_purged_and_logged_and_never_listed_as_ir) {
         writeFile(base + L"\\" + n + L"\\color1080p_hevc.mp4", std::string(1000, 'x'));
         writeFile(base + L"\\" + n + L"\\color1080p_timestamps.csv", "frame_index,engine_seq,device_ticks,arrival_mach_ns\n0,1,2,3\n");
     }
-    // A W4 IR session without session_meta.json still counts (explicit ir16 markers).
+    // An IR session without session_meta.json still counts (explicit ir16 markers).
     const std::wstring legacy = base + L"\\20261101-100003-000_ir16.nosync";
     CreateDirectoryW(legacy.c_str(), nullptr);
     writeFile(legacy + L"\\ir16_timestamps.csv", "frame_index,engine_seq,device_ticks,arrival_mach_ns\n0,1,2,1000000000\n1,2,3,1033333333\n");

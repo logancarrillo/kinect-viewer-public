@@ -33,7 +33,7 @@ enum class MsgType : uint8_t {
     SessionNotice = 0x0F,  // host -> device
     PairRequest = 0x10,
     PairResponse = 0x11,
-    // Protocol v3, W7: the camera roll (docs/protocol-v3-pet-camera.md §5.6-5.9), version 3 only like
+    // Protocol v3: the camera roll (docs/protocol-v3-pet-camera.md §5.6-5.9), version 3 only like
     // 0x0B-0x0F. 0x1A and up stay free (§1 rule 7).
     RollListReq = 0x12,        // device -> host
     RollList = 0x13,           // host -> device
@@ -47,9 +47,9 @@ enum class MsgType : uint8_t {
 
 // Protocol v3 (the pet camera, docs/protocol-v3-pet-camera.md).
 constexpr int kProtocolV3 = 3;
-// The version this host speaks (W6: v3). Every session starts at 1 and is raised once, by its first
+// The version this host speaks (v3). Every session starts at 1 and is raised once, by its first
 // Ping that says "protocolVersion": 2 or more, to min(ping, 3) (v3 §1 rule 1). v1/v2 phones read a 3
-// in hello and 0x07 as "2 or more" (v3 §1 rule 5).
+// in hello and 0x07 as "2 or more", so they are safe to send 3 (v3 §1).
 constexpr int kHostProtocolVersion = kProtocolV3;
 
 // SharedRecordingReminderConstants in shared/WireProtocol.swift: one copy of each sentence the host
@@ -113,7 +113,7 @@ const char* sentenceFor(const std::string& code);
 } // namespace text
 
 enum class CodecKind : uint8_t { H264 = 0, HEVC = 1 };
-// Invite (v3 §4.4, methodRaw 2) is a remote invite: only the outside listener takes it (W8), and the
+// Invite (v3 §4.4, methodRaw 2) is a remote invite: only the outside listener takes it, and the
 // LAN pairing listener closes the connection on it without checking a proof.
 enum class PairingMethod : uint8_t { QrToken = 0, ShortCode = 1, Invite = 2 };
 
@@ -127,7 +127,7 @@ constexpr uint32_t kWireMaxPayload = 4u * 1024u * 1024u;
 constexpr uint32_t kMaxClientPayload = 64u * 1024u;
 
 // Known to a peer of the given protocol version: v1 knows 0x01-0x06 and 0x10/0x11, v2 adds 0x07-0x0A,
-// v3 adds 0x0B-0x0F and, from W7, 0x12-0x19.
+// v3 adds 0x0B-0x0F and, with the camera roll, 0x12-0x19.
 bool isKnownMsgType(uint8_t raw, int protocolVersion = kHostProtocolVersion);
 
 std::vector<uint8_t> packFrame(MsgType type, uint8_t flags, const uint8_t* payload, size_t n);
@@ -211,8 +211,8 @@ struct PlaybackAccessUnitHeader {
 struct PetCameraHello {
     int specVersion = 1;
     int maxWatchers = 4;
-    bool cameraRoll = false; // true from W7
-    bool outside = false;    // true from W8
+    bool cameraRoll = false; // true on a host with the camera roll
+    bool outside = false;    // true on a host that can listen outside
     std::vector<std::string> qualities{"auto", "high", "medium", "low"};
 };
 
@@ -348,7 +348,7 @@ struct PairResponseMessage {
 // v3 §1 rule 6: every v3 enum decodes leniently. An unknown string becomes Unknown and never fails
 // the message, so a newer peer's value can't drop a whole 0x0B (the v2 powerState trap). toWire of
 // Unknown is "unknown", as the Swift raw value; the host never sends it.
-enum class PetPath { Home, Outside, Unknown };      // home = LAN stream listener, outside = W8 listener
+enum class PetPath { Home, Outside, Unknown };      // home = LAN stream listener, outside = the outside listener
 // LiveTier values index the tier arrays in live_tiers (High = 0 .. Low = 2); Unknown is decode-only.
 enum class LiveTier : int { High = 0, Medium = 1, Low = 2, Unknown = 3 };
 enum class LiveQuality { Auto, High, Medium, Low, Unknown };
@@ -400,7 +400,7 @@ constexpr const char* kSharingOff = "sharing_off";
 constexpr const char* kSharingSchedule = "sharing_schedule";
 constexpr const char* kRollDisabled = "roll_disabled";
 constexpr const char* kRollPreparing = "roll_preparing"; // the folder is being prepared
-constexpr const char* kFolderUnavailable = "folder_unavailable"; // W7 B1 fix: a roll folder set but unusable
+constexpr const char* kFolderUnavailable = "folder_unavailable"; // a roll folder set but unusable
 constexpr const char* kSensorOff = "sensor_off";
 constexpr const char* kViewFrozen = "view_frozen";
 constexpr const char* kPcReplaying = "pc_replaying";
@@ -500,7 +500,7 @@ struct PetDevice {
     bool connected = false;
 };
 
-// 0x0B, host -> device. The defaults are what a W6 host sends (v3 §5.1 "Before W7 and W8").
+// 0x0B, host -> device. The defaults are what a host without the camera roll or outside listening sends (v3 §5.1).
 // Owner-only keys (outsideStatus, outsideStatusText, watchingNow, devices) must stay unset for a
 // viewer: they are left out, never sent empty.
 struct PetCameraStateMessage {
@@ -580,7 +580,7 @@ struct SessionNoticeMessage {
 // and message is the reason's sentence when it has one.
 SessionNoticeMessage makeSessionNotice(const std::string& reason);
 
-// ---- protocol v3, W7: the camera roll (v3 §5.6-5.9) ---------------------------------------------
+// ---- protocol v3: the camera roll (v3 §5.6-5.9) -------------------------------------------------
 // The decoders below check JSON shape only (§5.10: a message that fails is ignored, not answered).
 // The values a device sends (clip id, day, cursor, limit, the keys an action needs) are checked
 // afterwards by roll_wire.hpp, which picks the 0x0D code a well-formed request gets.

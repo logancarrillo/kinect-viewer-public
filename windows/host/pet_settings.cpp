@@ -91,7 +91,7 @@ std::string toJson(const PetSettings& s) {
         .field("motionSensitivity", s.motionSensitivity)
         .field("recordScheduleEnabled", s.recordScheduleEnabled)
         .array("recordSchedule", rec)
-        // W8, after the roll keys.
+        // The outside keys, after the roll keys.
         .field("allowOutside", s.allowOutside);
     // v3 §8.7: no port yet (none of the default's tries bound) is no key at all, so none is ever read back.
     if (outside::isValidOutsidePort(s.outsidePort)) w.field("outsidePort", s.outsidePort);
@@ -169,11 +169,11 @@ bool fromJson(const std::string& text, PetSettings& s, const outside::AddressPol
             s.sharingSchedule.push_back(r);
         }
     }
-    // W7 roll keys, each read leniently: a missing or bad value keeps its default, and the defaults record
+    // The roll keys, each read leniently: a missing or bad value keeps its default, and the defaults record
     // nothing (fail closed).
     if (const json::Value* b = v.get("rollEnabled")) b->asBool(s.rollEnabled);
     if (const json::Value* f = v.get("rollFolder")) f->asString(s.rollFolder);
-    // The limits are the owner's only when the file holds them and every one it holds reads; a W6-era file
+    // The limits are the owner's only when the file holds them and every one it holds reads; an older file
     // (no roll keys) or a bad value leaves them unknown, and retention waits (fail closed).
     bool limit_read = false, limit_bad = false;
     if (const json::Value* k = v.get("rollKeepDays")) {
@@ -225,7 +225,7 @@ bool fromJson(const std::string& text, PetSettings& s, const outside::AddressPol
             s.recordSchedule.push_back(r);
         }
     }
-    // W8 keys, read leniently and failing closed: anything but true leaves outside listening off; a port
+    // The outside keys, read leniently and failing closed: anything but true leaves outside listening off; a port
     // outside 1024-65535 is 0 (a new one is picked); an address that isn't a public IPv4 is empty.
     if (const json::Value* b = v.get("allowOutside")) {
         if (!b->asBool(s.allowOutside)) s.allowOutside = false;

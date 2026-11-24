@@ -9,7 +9,7 @@
 // host's monotonic capture clock (LiveFrame::capture_ns / 100). A media time counts from a clip's
 // first sample, which is 0.
 //
-// Container (decided in W7, pet-camera.md §6.1): fragmented MP4. The tests in test_roll_media.cpp
+// Container (decided in pet-camera.md §6.1): fragmented MP4. The tests in test_roll_media.cpp
 // prove that IMFSourceReader reads a finished fMP4 back with every frame and its timestamps, that the
 // file's sync-sample flags mark exactly the IDRs, that a seek lands on the IDR at or before the
 // position, and that a file never finalized (a crash) is readable up to its last fragment (the sink
@@ -53,7 +53,7 @@ struct RollAccessUnit {
 // Builds a RollAccessUnit from the encoder's Annex-B output. idr is read from the NAL units.
 RollAccessUnit rollAccessUnitFromAnnexB(const uint8_t* annexb, size_t n, int64_t capture_hns, uint32_t width,
                                         uint32_t height);
-// Builds one from a TierAccessUnit's form (AVCC with 4-byte lengths, plus the tier's SPS/PPS), so Phase B
+// Builds one from a TierAccessUnit's form (AVCC with 4-byte lengths, plus the tier's SPS/PPS), so the recorder
 // can tap the `medium` tier without changing live_tiers: Annex-B again, with SPS and PPS before an IDR.
 RollAccessUnit rollAccessUnitFromAvcc(const std::vector<uint8_t>& avcc, const std::vector<uint8_t>& sps,
                                       const std::vector<uint8_t>& pps, bool idr, int64_t capture_hns,
@@ -131,7 +131,7 @@ private:
 };
 
 enum class RollContainer { FragmentedMp4, Mp4 };
-// The W7 decision (see the top of this file).
+// The container decision (see the top of this file).
 constexpr RollContainer kRollContainer = RollContainer::FragmentedMp4;
 
 struct RollWriterOptions {
@@ -188,7 +188,7 @@ struct RollClipResult {
 //   the 'mvhd' box's creation time (and the end into its modification time) in place.
 //
 // Threading: internally queued. append() never waits on Media Foundation or the disk; it copies the AU
-// into a queue that the writer's own thread drains (with COM initialised there), so Phase B may call
+// into a queue that the writer's own thread drains (with COM initialised there), so the recorder may call
 // it from the encoder's output thread. finalize() blocks until the queue is written and the file is
 // finalized, so it belongs on a thread that may wait (not the encoder output thread). One thread at a
 // time calls append; finalize may come from another.
@@ -298,7 +298,7 @@ private:
 };
 
 // What the leftover pass needs to rebuild a sidecar for an .mp4 that has none (pet-camera.md §6.3
-// "Leftovers"). Whether to rebuild or delete is roll_store's (Phase B's) decision.
+// "Leftovers"). Whether to rebuild or delete is roll_store's decision.
 struct RollProbeResult {
     uint32_t width = 0, height = 0;
     int64_t duration_hns = 0; // end of the last readable sample

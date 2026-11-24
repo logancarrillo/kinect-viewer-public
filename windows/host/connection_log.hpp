@@ -1,4 +1,4 @@
-// W8 (outside the home), Phase A: the connection log (protocol v3 §8.6, pet-camera.md §5). connection-log.jsonl
+// Outside the home: the connection log (protocol v3 §8.6, pet-camera.md §5). connection-log.jsonl
 // in the host state folder, one JSON object a line: device, time, address. Kept 30 days and at most 20 MB, on the
 // PC only: it is never sent anywhere, owners included. Repeats of the same (event, device or certificate, source:
 // the IPv4 address or IPv6 /64, detail but a disconnected line's session length) within a minute become one line

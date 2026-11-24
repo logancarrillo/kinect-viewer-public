@@ -1,4 +1,4 @@
-# W7 (pet-camera.md §4, §6; protocol v3 §10 "Test isolation"): the camera roll on the PC, synthetic only. Every
+# The camera roll on the PC (pet-camera.md §4, §6; protocol v3 §10 "Test isolation"), synthetic only. Every
 # launch passes --synthetic and a --state-dir under the build tree; the roll, when there is one, records only into
 # the --camera-roll-dir under the build tree. Nothing here reads, lists or creates the real camera roll
 # (either default folder), the recordings folder or the real .host-state: the refusals are checked by the path

@@ -1,4 +1,4 @@
-// The --test-pet-camera hook's fake v3 device (protocol v3, W6): a pet-camera client on this PC that pairs
+// The --test-pet-camera hook's fake v3 device (protocol v3): a pet-camera client on this PC that pairs
 // through the viewer's own pairing window and then streams over loopback, so the panel, the "Watching
 // now" banner and the Devices dialog can be driven by a synthetic test. It is a test hook only: the
 // viewer creates it only under --test-pet-camera (with --screenshot, so the synthetic source), and the

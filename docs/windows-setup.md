@@ -13,12 +13,12 @@ The Windows host is a port of the Mac host to Windows 11 (MSVC). The portable co
 | `kinect-viewer.exe` (Win32 + D3D11), all four modes | PC, **synthetic only** | CTest screenshot hook (PrintWindow) |
 | Unplug/replug and sleep/wake restart in the viewer | **not run** | needs someone to unplug the sensor / sleep the PC |
 | Real Kinect v2 on a Windows 11 PC | **runs, but depth/IR lost about half their frames there** | 2026-11-11 results below |
-| iPhone streaming host (W3) | PC loopback, **synthetic + fake phone**; real iPhone **not run** | CTest `stream_e2e_loopback`, `protocol_golden` |
-| Protocol v2 host (W5 stage 1) | PC loopback, **synthetic + v1 and v2 fake phones**; real iPhone **not run** | CTest `stream_e2e_loopback` (`v2_*`), `host_power`, `protocol_golden` |
-| Host recorder (W4; colour removed in W5 stage 2) | PC, **synthetic only** | CTest `recorder` (FFV1 bit-exact, PNG16 exact, colour refused), `cli_record_refuses_*` |
-| 3D point cloud, cut-off, blend (W5 stage 5) | PC, **synthetic only**; real sensor and iPhone **not run** | CTest `point_cloud` (camera, renderer, cut-off, 30 fps), `viewer_3d_*`, refusals |
-| Second display + B black-out, app icon (W5 stage 6) | PC, **synthetic only**, as a small test window; a real projector **not run** | CTest `viewer_second_display_screenshot`, `app_icon`, `inspection` |
-| Pet camera W6: many devices, roles, privacy, sharing, the panel (protocol v3) | PC loopback, **synthetic + fake v1/v2/v3 devices**; real iPhone, Mac and second phone **not run** | CTest `stream_e2e_loopback` (`v3_*`), `device_store`, `live_tiers`, `viewer_pet_camera_panel`, `viewer_test_launch_isolated_state`, `viewer_model` |
+| iPhone streaming host | PC loopback, **synthetic + fake phone**; real iPhone **not run** | CTest `stream_e2e_loopback`, `protocol_golden` |
+| Protocol v2 host | PC loopback, **synthetic + v1 and v2 fake phones**; real iPhone **not run** | CTest `stream_e2e_loopback` (`v2_*`), `host_power`, `protocol_golden` |
+| Host recorder (16-bit depth/IR only) | PC, **synthetic only** | CTest `recorder` (FFV1 bit-exact, PNG16 exact, colour refused), `cli_record_refuses_*` |
+| 3D point cloud, cut-off, blend | PC, **synthetic only**; real sensor and iPhone **not run** | CTest `point_cloud` (camera, renderer, cut-off, 30 fps), `viewer_3d_*`, refusals |
+| Second display + B black-out, app icon | PC, **synthetic only**, as a small test window; a real projector **not run** | CTest `viewer_second_display_screenshot`, `app_icon`, `inspection` |
+| Pet camera, multi-viewer: many devices, roles, privacy, sharing, the panel (protocol v3) | PC loopback, **synthetic + fake v1/v2/v3 devices**; real iPhone, Mac and second phone **not run** | CTest `stream_e2e_loopback` (`v3_*`), `device_store`, `live_tiers`, `viewer_pet_camera_panel`, `viewer_test_launch_isolated_state`, `viewer_model` |
 
 ## Real-sensor results on a Windows 11 PC (2026-11-11, libusbK, firmware 4.0.3917.0)
 
@@ -149,7 +149,7 @@ Win32 + Direct3D 11 (no WinUI). The left panel mirrors the Mac sidebar:
 - Source (Kinect v2 or synthetic) and pipeline (`gl`, `cpu`; CUDA comes in a later step), plus Start and Stop.
 - Mode: IR, Colour, Depth false colour, Side by Side (IR + Depth, Colour + Depth, Colour + IR), 3D point
   cloud, and the synthetic clock-barcode overlay. Then the 3D controls, the depth cut-off and the
-  depth/colour blend (stage 5, below).
+  depth/colour blend (below).
 - IR mapping: percentile auto-scale, gamma 0.20-1.40, EMA alpha, black and white points, reset.
 - Depth: Turbo, Viridis, Inferno or Grayscale; min and max distance; Desk, Spec and Room presets;
   near = warm.
@@ -189,14 +189,14 @@ reclaimed; a lock without a pid, or whose process cannot be queried, is treated 
 
 | What | Version | Source | Size | For |
 |---|---|---|---|---|
-| vcpkg (tool, shallow git clone + bootstrap) | commit b58529e, vcpkg.exe 2026-10-29 | github.com/microsoft/vcpkg | ~55 MB clone + 6.8 MB exe, at `KV_VCPKG_ROOT` | W3 deps |
-| OpenSSL (vcpkg, x64-windows-static-md, built from source) | 3.6.5#2 | vcpkg port `openssl` | static libs in `KV_VCPKG_INSTALLED` (build tools such as perl/nasm are downloaded into vcpkg's `downloads`) | W3 TLS 1.3 |
-| nayuki-qr-code-generator (vcpkg) | 1.8.0#1 | vcpkg port | small static lib, same folder | W3 pairing QR |
-| FFmpeg (winget `Gyan.FFmpeg`, user scope, portable zip, GPL-3.0) | 9.0.2 full_build | github.com/GyanD/codexffmpeg | 665 MB under `%LOCALAPPDATA%\Microsoft\WinGet\Packages` | W4 FFV1 recording, test decode |
+| vcpkg (tool, shallow git clone + bootstrap) | commit b58529e, vcpkg.exe 2026-10-29 | github.com/microsoft/vcpkg | ~55 MB clone + 6.8 MB exe, at `KV_VCPKG_ROOT` | the streaming host's deps |
+| OpenSSL (vcpkg, x64-windows-static-md, built from source) | 3.6.5#2 | vcpkg port `openssl` | static libs in `KV_VCPKG_INSTALLED` (build tools such as perl/nasm are downloaded into vcpkg's `downloads`) | TLS 1.3 |
+| nayuki-qr-code-generator (vcpkg) | 1.8.0#1 | vcpkg port | small static lib, same folder | pairing QR |
+| FFmpeg (winget `Gyan.FFmpeg`, user scope, portable zip, GPL-3.0) | 9.0.2 full_build | github.com/GyanD/codexffmpeg | 665 MB under `%LOCALAPPDATA%\Microsoft\WinGet\Packages` | FFV1 recording, test decode |
 
 Nothing CUDA-related is installed or built.
 
-## iPhone streaming (W3, not run with the iPhone yet)
+## iPhone streaming (not run with a real iPhone yet)
 
 ```bat
 %VIEWER%                                         & rem then Pair a device... (QR; "Use a code instead" adds the 8-digit code; 120 s, one try)
@@ -206,12 +206,12 @@ Nothing CUDA-related is installed or built.
 
 Pairing state lives in `%USERPROFILE%\kinect-viewer\.host-state\pairing.json` (owner-only ACL, with the PC's
 private key wrapped by DPAPI for this PC; `docs/pet-camera.md` §5), with the device list in `devices.json` next
-to it (W6, below). A `--synthetic` or `--loopback-only` serve keeps its state
+to it (the pet camera, below). A `--synthetic` or `--loopback-only` serve keeps its state
 in a temp folder that is deleted when it stops, unless `--state-dir` names one (as on the last line). The first
 run that listens on the LAN raises a Windows Firewall prompt: allow it on **Private** networks, and make
 sure the Wi-Fi/Ethernet profile is Private, otherwise the iPhone can't reach the host or see its mDNS.
 
-**Protocol v2 (W5 stage 1).** The host speaks v2 (`docs/protocol-changes.md`): the new iPhone app gets
+**Protocol v2.** The host speaks v2 (`docs/protocol-changes.md`): the new iPhone app gets
 its Kinect On/Off switch and remote sheet; the old app still works as before. Under "iPhone live stream":
 - **Allow iPhone mode switch** (as before) also gates the remote sheet's commands.
 - **Allow iPhone to turn the Kinect on and off** (on by default). Off: the phone's switch is disabled and
@@ -221,9 +221,9 @@ its Kinect On/Off switch and remote sheet; the old app still works as before. Un
 
 Start/Stop here and the phone's switch are the same request, so they stay in sync. Off finishes a
 recording, stops the video, closes the Kinect and removes `KINECT-IN-USE`; the phone stays connected.
-From stage 5 the phone can pick the 3D mode, orbit it, and set the cut-off (Track me) too.
+The phone can also pick the 3D mode, orbit it, and set the cut-off (Track me).
 
-## Inspection tools (W5 stage 3, the Mac's phase 1)
+## Inspection tools (as on the Mac)
 
 - **Hover** the image: the line under it shows the pixel, the depth in mm and the raw IR value (a dash off the
   depth image, e.g. the colour half of a Side by Side view).
@@ -242,10 +242,10 @@ From stage 5 the phone can pick the 3D mode, orbit it, and set the cut-off (Trac
 - **Keys**: 1 IR, 2 Colour, 3 Depth, 4 Side by Side, 5 3D point cloud, F full screen, M mirror,
   R rotate 180 degrees, ? the shortcut list. The control panel scrolls.
 
-## 3D point cloud, cut-off and blend (W5 stage 5, the Mac's phase 3)
+## 3D point cloud, cut-off and blend (as on the Mac)
 
 - **3D point cloud** (mode 5, or **5**): every depth pixel is a point, placed with the depth camera's own
-  intrinsics, `x = (col + 0.5 - cx) / fx * z`, `y = -(row + 0.5 - cy) / fy * z` (phase 7). Without
+  intrinsics, `x = (col + 0.5 - cx) / fx * z`, `y = -(row + 0.5 - cy) / fy * z`. Without
   intrinsics (an older recording) nothing is drawn and the line under the view says why: no made-up values.
   Rendered with Direct3D 11 at 960x720 on black, then shown (and sent to the phone) as a picture.
   **Drag** orbits, **Shift-drag** or right-drag pans, **scroll** zooms, **double-click** (or *Reset 3D view*)
@@ -259,7 +259,7 @@ From stage 5 the phone can pick the 3D mode, orbit it, and set the cut-off (Trac
   is on), never in a preset, refused by the screenshot hook, and off during a playback.
 - The status line shows the 3D view's own frame rate and its render + readback time.
 
-## Second display and app icon (W5 stage 6, the Mac's phases 4.2 and 6)
+## Second display and app icon (as on the Mac)
 
 - **Second display (projector)** in the panel: pick a display (a projector is picked first when one is
   plugged in; refresh with the arrow), then *Show full screen there*. That display shows the current view
@@ -271,10 +271,10 @@ From stage 5 the phone can pick the 3D mode, orbit it, and set the cut-off (Trac
 - If the output is on the same display as the main window, **Esc** (with nothing else to clear) stops it.
   Unplugging its display stops it; a display that changes size is followed.
 - It shows the screen only; nothing is kept. Colour on it is live, like the main view.
-- **App icon**: phase 6's logo, `design/logo.svg`, rendered at build time by `kv-render-icon` (Windows'
+- **App icon**: the app's logo, `design/logo.svg`, rendered at build time by `kv-render-icon` (Windows'
   own Direct2D SVG renderer and WIC, no new dependency) into `kinect-viewer.ico` at 16 to 256 px. Both
   `kinect-viewer.exe` and `kinect-cli.exe` carry it; change the SVG and the next build follows.
-## Recordings in the app (W5 stage 4, the Mac's phase 2)
+## Recordings in the app (as on the Mac)
 
 - **Recordings...** (under the Record button) lists every IR and Depth session in
   `%USERPROFILE%\kinect-viewer-recordings\` with its date, mode, length, size and time left: metadata only,
@@ -284,20 +284,23 @@ From stage 5 the phone can pick the 3D mode, orbit it, and set the cut-off (Trac
   slider to scrub. **Back to live** ends it (Start opens the sensor again). Decoding runs on its own thread.
 - **Deleted after 7 days**: at launch and once an hour, with a countdown in the list. Each deletion, automatic
   or by **Delete...**, adds one line to `deletion-log.txt` in that folder: the time, the folder name, its size
-  and `automatic` or `user`, nothing about the content. Old colour sessions from W4 (`*_color1080p.nosync`,
+  and `automatic` or `user`, nothing about the content. Old colour sessions (`*_color1080p.nosync`,
   `*_sidebyside.nosync`) are deleted at launch the same way, and never listed.
 - **Before every recording**, from the PC or the phone, a reminder: *Only you in view. Not pointed at a
   window. Depth and IR only. Deleted after 7 days.* Cancel is the default; "Don't remind me for 1 hour"
   skips it for an hour. A phone that showed it and was confirmed starts the recording directly.
 - Each session now has `session_meta.json` (the Mac's format), with the depth camera's intrinsics, so the
-  ruler works on playback. A W4 session without it plays, but its ruler says *Intrinsics unavailable*.
-## Host-only recording (W4)
+  ruler works on playback. A session without it plays, but its ruler says *Intrinsics unavailable*.
+## Host-only recording
 
 ```bat
-%CLI% record --mode ir --duration 10                 & rem 16-bit IR, FFV1 lossless .mkv + timestamps CSV
-%CLI% record --mode depth --duration 10 --png16      & rem 16-bit depth (mm), PNG sequence + CSV
-%CLI% record --mode color --duration 10              & rem refused: "Colour is live only. Switch to IR or Depth to record."
+%CLI% record --synthetic --mode ir --duration 10             & rem 16-bit IR, FFV1 lossless .mkv + timestamps CSV
+%CLI% record --synthetic --mode depth --duration 10 --png16  & rem 16-bit depth (mm), PNG sequence + CSV
+%CLI% record --synthetic --mode color --duration 10          & rem refused: "Colour is live only. Switch to IR or Depth to record."
 ```
+
+`kinect-cli record` records the synthetic source only, as a check of the recorder: without `--synthetic` it refuses
+before anything opens. The Kinect itself is recorded in the viewer, after its reminder.
 
 In the viewer, the "Host-only recording" section has the 16-bit format choice and Record / Stop recording.
 Changing mode, or stopping the stream, stops a recording (as on the Mac).
@@ -316,12 +319,12 @@ back identical, and Colour / Side by Side are refused with nothing written (not 
 Real-sensor recording: not part of these tests (they run the synthetic source). The viewer's `--screenshot` test hook only captures the synthetic source in a
 view without colour (exit 3 otherwise, nothing written).
 
-## Pet camera (W6, protocol v3; not run with a real device yet)
+## Pet camera (protocol v3; not run with a real device yet)
 
 The host now speaks protocol v3 ([`protocol-v3-pet-camera.md`](protocol-v3-pet-camera.md), design in
 [`pet-camera.md`](pet-camera.md)): many paired devices, each an **owner** or a **viewer**, up to 8 sessions and
-4 watching at once. v1 and v2 phones keep working (v3 §2.4). The camera roll (W7) and viewing from outside the
-home (W8) are not in this stage.
+4 watching at once. v1 and v2 phones keep working (v3 §2.4). The camera roll and viewing from outside the
+home are below.
 
 **The Pet camera section** in the panel:
 - **Privacy mode** (the large button, red while on) stops live video to every device at once, owners
@@ -341,7 +344,7 @@ home (W8) are not in this stage.
   only. **Turn the Kinect off when the iPhone disconnects** acts when the last *available* session ends, not
   on revoking one device, a replacement or privacy mode (Revoke all still counts as the old unpair did).
 - **Watching now: <names>** shows over the view whenever any device holds a watcher slot (with
-  "(outside the home)" from W8). Nothing hides it while anyone watches, full screen included.
+  "(outside the home)" for a device outside it). Nothing hides it while anyone watches, full screen included.
 - The health display (H) has a fifth line with each live tier (high / medium / low): its encoder, size,
   epoch and sessions.
 
@@ -378,9 +381,9 @@ removed first, so every such run starts empty. Every CTest that starts the viewe
 under `build\windows\windows\test-state\`. Presets (and the last-used settings) are neither read nor written
 in any of these launches, and recordings aren't purged.
 
-**Camera roll (W7, [`pet-camera.md`](pet-camera.md) §6).** Clips go to `%USERPROFILE%\kinect-viewer-camera-roll\` unless the panel's **Change…** picked another folder (you can choose any folder; the change applies after a restart). Tests pass `--camera-roll-dir DIR` (with `--synthetic` only), and a test run without it has no camera roll at all.
+**Camera roll ([`pet-camera.md`](pet-camera.md) §6).** Clips go to `%USERPROFILE%\kinect-viewer-camera-roll\` unless the panel's **Change…** picked another folder (you can choose any folder; the change applies after a restart). Tests pass `--camera-roll-dir DIR` (with `--synthetic` only), and a test run without it has no camera roll at all.
 
-**Outside the home (W8, [`pet-camera.md`](pet-camera.md) §7).** "Allow viewing from outside the home" in the Pet camera section is off by default and needs sharing on; it opens a second listener and asks the router for a port mapping (UPnP), or shows the manual port-forward steps, and it can't work behind carrier NAT (the panel says so). Invites: send only to the person you're inviting. Tests use `--test-outside` with `--synthetic`, a `--state-dir` and a fake router, never the real one.
+**Outside the home ([`pet-camera.md`](pet-camera.md) §7).** "Allow viewing from outside the home" in the Pet camera section is off by default and needs sharing on; it opens a second listener and asks the router for a port mapping (UPnP), or shows the manual port-forward steps, and it can't work behind carrier NAT (the panel says so). Invites: send only to the person you're inviting. Tests use `--test-outside` with `--synthetic`, a `--state-dir` and a fake router, never the real one.
 
 `--state-dir DIR` must be a folder that doesn't exist yet, an empty one, or one the host already keeps its
 state in: the host makes it owner-only, and that reaches every file already in it. The host writes a marker,

@@ -6,7 +6,7 @@
 //
 // Not thread-safe by design: every call comes from one thread, in arrival order (the viewer's UI
 // thread, through posted messages; a test's own queue). That serial path is what keeps two quick
-// toggles in order (phase 7 fix 13). snapshot() alone may be read from any thread.
+// toggles in order. snapshot() alone may be read from any thread.
 //
 // Built into kv_viewer_model, not kv_host: the viewer's own Start/Stop goes through it even when
 // it's built without the streaming host. It uses wire_protocol.hpp's enum only, no kv_host code.

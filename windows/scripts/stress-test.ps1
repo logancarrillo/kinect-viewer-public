@@ -11,7 +11,7 @@
 #
 # What it reports: a copy stops at its first crash (an exit code other than 0, 1 or 77), and the script then exits 1.
 # An ordinary check failure (exit 1) is counted and reported, not treated as a crash. So is a run whose timing floors
-# were skipped on a busy desk (exit 77, kv_desk.hpp), which parallel copies make likely. Logs go to a new temp folder.
+# were skipped on a busy PC (exit 77, kv_load.hpp), which parallel copies make likely. Logs go to a new temp folder.
 param(
     [Parameter(Mandatory)][string] $Exe,
     [Parameter(Mandatory)][string] $Filter,
@@ -63,6 +63,6 @@ for ($k = 0; $k -lt $results.Count; $k++) {
         "copy $($k + 1): $($r.Run) runs, no crash (ordinary check failures: $($r.Plain))"
     }
 }
-"total: $runs runs in $Copies copies, $crashes crash(es), $plain ordinary check failure(s), $skipped run(s) with timing floors skipped on a busy desk; logs in $OutDir"
+"total: $runs runs in $Copies copies, $crashes crash(es), $plain ordinary check failure(s), $skipped run(s) with timing floors skipped on a busy PC; logs in $OutDir"
 if ($crashes -gt 0) { exit 1 }
 exit 0

@@ -20,7 +20,7 @@ struct HostDeviceInfo {
     std::optional<uint64_t> lastSeenUnixMs;
     std::optional<int> lastProtocolVersion;
     bool connected = false;  // a session of this device is open
-    std::string path;        // "home" while connected ("outside" from W8), empty otherwise
+    std::string path;        // "home" while connected ("outside" over the outside listener), empty otherwise
     int sessionVersion = 0;  // the open session's protocol version (0 when not connected)
     bool watching = false;   // receiving live video now
     bool available = false;  // v3 §2.3 conditions 1, 2, 3 and 5 hold for the open session

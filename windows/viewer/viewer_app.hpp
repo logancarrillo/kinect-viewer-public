@@ -8,10 +8,10 @@
 
 #include "host_power.hpp"
 #include "kinect_core_c.h"
-#include "outside_panel_model.hpp" // W8: OutsidePanelView, OutsideInvitePanelView, LogLine
+#include "outside_panel_model.hpp" // OutsidePanelView, OutsideInvitePanelView, LogLine
 #include "pet_camera_types.hpp"
 #include "pet_settings.hpp"
-#include "roll_recorder.hpp" // RollRecorderStatus, the roll's store (W7)
+#include "roll_recorder.hpp" // RollRecorderStatus, the roll's store
 #include "viewer_model.hpp"
 #include "wire_protocol.hpp"
 
@@ -58,7 +58,7 @@ struct RollStorageView {
     bool limitsKnown = false; // the owner's limits; until then retention doesn't run
 };
 
-// The --test-outside hook's fake router (W8; a test hook only, never the real router): what it does when the host's
+// The --test-outside hook's fake router (a test hook only, never the real router): what it does when the host's
 // mapper opens a session on it. Every field takes effect at the next session the host opens.
 struct TestRouterScript {
     bool present = true;             // false: no UPnP router answers (NATUPnP's NULL collection)
@@ -76,7 +76,7 @@ struct TestRouterCounts {
     size_t mappings = 0; // this PC's mappings it holds now
 };
 
-// Optional iPhone-streaming hooks (phase W3). The viewer runs without them.
+// Optional iPhone-streaming hooks. The viewer runs without them.
 class StreamHooks {
 public:
     virtual ~StreamHooks() = default;
@@ -118,7 +118,7 @@ public:
     virtual void setAllowPhoneModeSwitch(bool allow) = 0;
     virtual std::wstring statusLine() const = 0;
 
-    // ---- the pet camera (protocol v3, W6; pet-camera.md §4). Any thread unless noted; the defaults
+    // ---- the pet camera (protocol v3; pet-camera.md §4). Any thread unless noted; the defaults
     // are what a viewer without the streaming host shows. --------------------------------------------
     // Called (from any thread) whenever devices, sessions or the pet-camera settings change.
     virtual void setPetStateCallback(std::function<void()> on_pet_state) { (void)on_pet_state; }
@@ -199,7 +199,7 @@ public:
     // setting is refused. Empty when the disk has everything.
     virtual std::string petSaveError() const { return {}; }
 
-    // ---- the camera roll (W7; pet-camera.md §4, §6). UI thread unless noted; the defaults are a viewer
+    // ---- the camera roll (pet-camera.md §4, §6). UI thread unless noted; the defaults are a viewer
     // without the streaming host, which has no roll. ----------------------------------------------------------
     // A clip was finalized (any thread): the roll browser may refresh.
     virtual void setRollCallback(std::function<void(const std::string& clipId)> on_clip_finalized) {
@@ -304,7 +304,7 @@ public:
         return kvhost::roll::RollError::NotFound;
     }
 
-    // ---- outside the home (W8; v3 §8, pet-camera.md §4). UI thread unless noted; the defaults are a viewer
+    // ---- outside the home (v3 §8, pet-camera.md §4). UI thread unless noted; the defaults are a viewer
     // without the streaming host, which has no outside listener. ------------------------------------------------
     // The host's outside change reports (from a host thread) reach the viewer through setPetStateCallback's
     // callback, so they coalesce with the other pet-camera changes into one refresh on the UI thread.

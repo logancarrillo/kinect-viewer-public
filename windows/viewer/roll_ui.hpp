@@ -1,4 +1,4 @@
-// The camera roll's windows on the PC (W7; pet-camera.md §4, §6): the roll browser (days, then each day's clips
+// The camera roll's windows on the PC (pet-camera.md §4, §6): the roll browser (days, then each day's clips
 // with thumbnail, time, trigger, duration and star; Play, Star, Delete), the scheduled-recording editor, and the
 // player, a window of its own that decodes a clip locally.
 //

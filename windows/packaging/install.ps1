@@ -4,7 +4,8 @@ Installs Kinect Viewer for the current user: no admin, nothing machine-wide.
 
 .DESCRIPTION
 Copies a release build (kinect-viewer.exe, kinect-cli.exe and the DLLs beside them), with the
-licence and its notices (LICENSE, NOTICE, THIRD_PARTY_NOTICES.md), to
+licence and its notices (LICENSE, NOTICE, THIRD_PARTY_NOTICES.md) and each DLL's own licence
+texts (licences\), to
 %LOCALAPPDATA%\Programs\Kinect Viewer, adds a Start menu shortcut (and a desktop one with
 -Desktop), and adds an Apps & Features entry under HKCU so Windows can uninstall it.
 Running it again updates the install in place. Close Kinect Viewer first.
@@ -72,7 +73,15 @@ $files += @(Get-ChildItem -LiteralPath $src -Filter '*.dll' -File | ForEach-Obje
 $repo = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..\..'))
 $notices = @(@('LICENSE', 'NOTICE', 'THIRD_PARTY_NOTICES.md') |
     Where-Object { Test-Path -LiteralPath (Join-Path $repo $_) -PathType Leaf })
-$recorded = @($files + $notices)
+# And each bundled DLL's own licence texts, named after it (licences\<dll name>.*, licences\README.md).
+$licenceDir = Join-Path $PSScriptRoot 'licences'
+$dllLicences = @(foreach ($dll in @($files | Where-Object { $_ -like '*.dll' })) {
+        $base = [IO.Path]::GetFileNameWithoutExtension($dll)
+        if (Test-Path -LiteralPath $licenceDir -PathType Container) {
+            Get-ChildItem -LiteralPath $licenceDir -File -Filter "$base.*" | ForEach-Object { $_.Name } | Sort-Object
+        }
+    })
+$recorded = @($files + $notices + $dllLicences)
 
 # ---- Keep-running watchdogs of this install stand down first -----------------------------------
 # A watchdog (kinect-viewer.exe --keep-running) restarts a viewer that ends without a clean stop.
@@ -116,6 +125,7 @@ New-Item -ItemType Directory -Force -Path $root | Out-Null
 try {
     foreach ($f in $files) { Copy-Item -LiteralPath (Join-Path $src $f) -Destination (Join-Path $root $f) -Force }
     foreach ($n in $notices) { Copy-Item -LiteralPath (Join-Path $repo $n) -Destination (Join-Path $root $n) -Force }
+    foreach ($l in $dllLicences) { Copy-Item -LiteralPath (Join-Path $licenceDir $l) -Destination (Join-Path $root $l) -Force }
     Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'uninstall.ps1') -Destination (Join-Path $root 'uninstall.ps1') -Force
 } catch {
     Fail "couldn't copy into '$root': $($_.Exception.Message). If Kinect Viewer is open, close it and run this again." 1

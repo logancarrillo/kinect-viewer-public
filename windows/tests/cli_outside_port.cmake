@@ -1,4 +1,4 @@
-# kinect-cli serve --outside-port (W8, protocol v3 §8.1, §10): outside listening on, on the port given, for the
+# kinect-cli serve --outside-port (protocol v3 §8.1, §10): outside listening on, on the port given, for the
 # host's own state. It needs sharing on (refused with the reason otherwise, and serve goes on); in a test run
 # (--synthetic, --loopback-only) the listener binds 127.0.0.1 only and no router is ever used, so the status is
 # manual with the steps; the switch and the port are saved in pet-camera.json. Synthetic, loopback, build tree.

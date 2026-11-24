@@ -24,7 +24,7 @@ inline int& failures() {
     return n;
 }
 
-// Timing floors missed while the desk was busy (KV_FLOOR, kv_desk.hpp): neither passed nor failed.
+// Timing floors missed while the PC was busy (KV_FLOOR, kv_load.hpp): neither passed nor failed.
 inline int& skips() {
     static int n = 0;
     return n;
@@ -52,7 +52,7 @@ inline int runAll(int argc, char** argv) {
         std::fflush(stdout);
         ++ran;
     }
-    std::printf("%d test(s), %d failure(s), %d timing floor(s) skipped on a busy desk\n", ran, failures(), skips());
+    std::printf("%d test(s), %d failure(s), %d timing floor(s) skipped on a busy PC\n", ran, failures(), skips());
     if (failures() != 0 || ran == 0) return 1;
     return skips() > 0 ? kSkipReturnCode : 0;
 }

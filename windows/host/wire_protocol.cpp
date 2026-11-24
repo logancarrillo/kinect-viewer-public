@@ -474,7 +474,7 @@ bool fromValue(const json::Value& v, StreamConfigMessage& m) {
     return true;
 }
 
-// ---- W7 nested objects (v3 §5.7), keys in the order of the spec's tables --------------------------
+// ---- camera roll nested objects (v3 §5.7), keys in the order of the spec's tables -----------------
 
 json::ObjectWriter writer(const RollDay& m) {
     json::ObjectWriter w;
@@ -764,7 +764,7 @@ std::string toJson(const SessionNoticeMessage& m) {
     return w.finish();
 }
 
-// ---- W7 (v3 §5.6-5.9): keys in the order of the spec's tables; nil optionals left out --------------
+// ---- camera roll (v3 §5.6-5.9): keys in the order of the spec's tables; nil optionals left out -----
 
 std::string toJson(const RollListRequestMessage& m) {
     json::ObjectWriter w;
@@ -1021,7 +1021,7 @@ bool fromJson(const uint8_t* d, size_t n, SessionNoticeMessage& m) {
            json::getOptString(v, "message", m.message);
 }
 
-// ---- W7 decoders. Shape only (§5.10); roll_wire.hpp checks the values a device sends. --------------
+// ---- camera roll decoders. Shape only (§5.10); roll_wire.hpp checks the values a device sends. -----
 
 bool fromJson(const uint8_t* d, size_t n, RollListRequestMessage& m) {
     json::Value v;

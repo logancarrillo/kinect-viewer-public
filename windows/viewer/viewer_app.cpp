@@ -1,6 +1,6 @@
 // kinect-viewer.exe: Win32 + Direct3D 11 live viewer for the Kinect v2 (or the synthetic source).
 // Modes: IR, Colour, Depth false colour, Side by Side, 3D point cloud. Controls mirror the Mac host's
-// sidebar, with the depth cut-off and the depth/colour blend (stage 5).
+// sidebar, with the depth cut-off and the depth/colour blend.
 // Flags: --synthetic, --no-autostart, --mode, --sbs-layout, --colormap, --pipeline, --clock-overlay,
 //        --point-color, --point-size, --track-me, --blend,
 //        test hook --screenshot PATH [--screenshot-after-ms N] [--exit-after-screenshot].
@@ -35,8 +35,8 @@
 #include "recordings.hpp"
 #endif
 #ifdef KV_WITH_STREAMING
-#include "roll_ui.hpp" // W7: the camera roll's browser, player and schedule editor (they need the streaming host)
-#include "outside_ui.hpp" // W8: the invite, re-share and connection log windows (they need the streaming host)
+#include "roll_ui.hpp" // the camera roll's browser, player and schedule editor (they need the streaming host)
+#include "outside_ui.hpp" // the invite, re-share and connection log windows (they need the streaming host)
 #endif
 #include <shobjidl.h> // the camera roll's "Change..." folder picker
 
@@ -270,7 +270,7 @@ struct ViewerApp::Impl final : kvhost::SensorBackend {
     HWND chkBlend{}, tbBlend{}, lblBlend{};
     std::wstring rec_tip_text; // kept alive for the tooltip
 
-    // ---- stage 5: the 3D point cloud ------------------------------------------------------------------
+    // ---- the 3D point cloud ---------------------------------------------------------------------------
     // The core's inputs (undistorted depth, point colours, intrinsics) are kept from the last frame so a
     // camera move re-renders at once, a frozen 3D view included. Memory only.
     PointCloudRenderer pc;
@@ -371,7 +371,7 @@ struct ViewerApp::Impl final : kvhost::SensorBackend {
         y += 28;
         populatePresets();
 
-        // Stage 5 (the Mac's phase 3).
+        // The 3D point cloud, as on the Mac.
         section(L"3D point cloud (mode 5)");
         cbPcSource = labeledCombo(L"Point colour", ID_PC_SOURCE, {L"Depth colours", L"IR", L"Live colour (RGB)"},
                                   static_cast<int>(s.point_color_source));
@@ -397,7 +397,7 @@ struct ViewerApp::Impl final : kvhost::SensorBackend {
         tbBlend = slider(ID_BLEND, &lblBlend, kBlendSliderMin, kBlendSliderMax,
                          static_cast<int>(std::lround(s.depth_color_blend_percent)));
 
-        // Stage 6 (the Mac's phase 4.2).
+        // The second display, as on the Mac.
         section(L"Second display (projector)");
         cbOutDisplay = make(WC_COMBOBOXW, L"", CBS_DROPDOWNLIST | WS_TABSTOP | WS_VSCROLL, x0, y, 250, 200, ID_OUT_DISPLAY);
         btnOutRefresh = make(L"BUTTON", L"↻", BS_PUSHBUTTON | WS_TABSTOP, x0 + 254, y, 30, 24, ID_OUT_REFRESH);
@@ -439,7 +439,7 @@ struct ViewerApp::Impl final : kvhost::SensorBackend {
         tbGain = slider(ID_GAIN, &lblGain, kGainSliderMin, kGainSliderMax, gainToSlider(s.manual_analog_gain));
 
         if (hooks) {
-            // W6: the pet camera (pet-camera.md §4). Privacy mode first, and large: it stops every video at once.
+            // The pet camera (pet-camera.md §4). Privacy mode first, and large: it stops every video at once.
             section(L"Pet camera");
             const int pet_top = y;
             btnPrivacy = make(L"BUTTON", L"Privacy mode: off", BS_OWNERDRAW | WS_TABSTOP, x0, y, 284, 34, ID_PET_PRIVACY);
@@ -469,7 +469,7 @@ struct ViewerApp::Impl final : kvhost::SensorBackend {
             y += 36;
 
 #ifdef KV_WITH_STREAMING
-            // W8: outside the home (pet-camera.md §4, v3 §8). Off by default, turned on on this PC only, and only
+            // Outside the home (pet-camera.md §4, v3 §8). Off by default, turned on on this PC only, and only
             // with sharing on. refreshOutside sets every control from outsidePanelState.
             section(L"Outside the home");
             chkOutside = check(L"Allow viewing from outside the home", ID_OUTSIDE_ALLOW, false);
@@ -518,7 +518,7 @@ struct ViewerApp::Impl final : kvhost::SensorBackend {
             y += 32;
 #endif
 
-            // W7: the camera roll (pet-camera.md §4, §6). Every switch is off by default (§1).
+            // The camera roll (pet-camera.md §4, §6). Every switch is off by default (§1).
             section(L"Camera roll (clips kept on this PC)");
             chkRoll = check(L"Record to the camera roll", ID_ROLL_ENABLE, false);
             // The limits retention keeps to, next to the switch that writes them (turning the roll on confirms
@@ -617,7 +617,7 @@ struct ViewerApp::Impl final : kvhost::SensorBackend {
         refreshEnabled();
     }
 
-    // ---- phase 1: inspection, freeze, zoom/pan, health, presets, shortcuts --------------------------
+    // ---- inspection, freeze, zoom/pan, health, presets, shortcuts -----------------------------------
     ViewportTransform viewport;
     bool frozen = false;
     std::vector<uint8_t> frozen_frame;
@@ -792,7 +792,7 @@ struct ViewerApp::Impl final : kvhost::SensorBackend {
         if (lblInspect) SetWindowTextW(lblInspect, inspectText().c_str());
     }
 
-    // ---- stage 6: the second display (projector) ------------------------------------------------------
+    // ---- the second display (projector) ---------------------------------------------------------------
     SecondDisplayOutput out;
     std::vector<DisplayTarget> displays; // what the combo lists
     std::wstring out_device;             // the chosen display (\\.\DISPLAYn)
@@ -1105,7 +1105,7 @@ struct ViewerApp::Impl final : kvhost::SensorBackend {
         }
     }
 
-    // ---- recordings and playback (phase 2) --------------------------------------------------------------
+    // ---- recordings and playback ------------------------------------------------------------------------
     bool replaying = false;    // a recording plays through the pipeline (the sensor is closed meanwhile)
     bool user_state = false;   // false in a test launch: no recordings purged, no presets touched
 #ifdef KV_WITH_RECORDER
@@ -1137,7 +1137,7 @@ struct ViewerApp::Impl final : kvhost::SensorBackend {
         const int64_t now = kvrec::unixNow();
         for (size_t i = 0; i < rec_items.size(); ++i) {
             const auto& it = rec_items[i];
-            // Metadata only: no thumbnail, no preview of the content (phase 2.1).
+            // Metadata only: no thumbnail, no preview of the content.
             std::wstring cols[5] = {it.dateText(), it.modeTitle(), it.lengthText(), it.sizeText(), it.countdownText(now)};
             LVITEMW lv{};
             lv.mask = LVIF_TEXT;
@@ -1176,7 +1176,7 @@ struct ViewerApp::Impl final : kvhost::SensorBackend {
         }
     }
 
-    // A recording replays as if it were the sensor: every mode and tool works on it (phase 2.2).
+    // A recording replays as if it were the sensor: every mode and tool works on it.
     void startPlayback(int sel) {
         if (sel < 0 || sel >= static_cast<int>(rec_items.size())) return;
         const kvrec::SessionItem item = rec_items[static_cast<size_t>(sel)];
@@ -1768,8 +1768,8 @@ struct ViewerApp::Impl final : kvhost::SensorBackend {
     }
 
 #ifdef KV_WITH_RECORDER
-    // Every start, from this PC or the phone, goes through the reminder (phase 2.4) unless it was
-    // snoozed: the phone may have shown it and been confirmed (phase 7 fix 5), otherwise it's shown here.
+    // Every start, from this PC or the phone, goes through the reminder unless it was
+    // snoozed: the phone may have shown it and been confirmed, otherwise it's shown here.
     bool reminder_open = false; // one reminder at a time
     void requestRecordingStart(bool confirmed_on_phone, bool snooze_from_phone) {
         if (reminder_open) return; // a second start (the phone's, say) while it's up is ignored
@@ -1848,7 +1848,7 @@ struct ViewerApp::Impl final : kvhost::SensorBackend {
 #endif
     }
 
-    // ---- W7: the camera roll's motion feed (pet-camera.md §6.2) ------------------------------------------------
+    // ---- the camera roll's motion feed (pet-camera.md §6.2) ----------------------------------------------------
     // Depth is decoded in every view mode, so each new depth frame is polled here, as feedRecorder polls raw frames,
     // and handed to the host with its sequence number and capture time while motion is on. live_sensor is true
     // only for the live sensor's own frames: never during a replay, nor from a replay source.
@@ -1961,7 +1961,7 @@ struct ViewerApp::Impl final : kvhost::SensorBackend {
         if (hooks) hooks->onModeOrSourceChanged();
     }
 
-    // ---- stage 5 controls (the panel and the phone go through these) ----
+    // ---- 3D point cloud controls (the panel and the phone go through these) ----
     void setPointColorSource(kv_point_color_source_t src) {
         if (src == KV_POINT_COLOR_REGISTERED_RGB && replaying) { // a recording has no colour (the Mac's)
             SendMessageW(cbPcSource, CB_SETCURSEL, static_cast<int>(s.point_color_source), 0);
@@ -2092,7 +2092,7 @@ struct ViewerApp::Impl final : kvhost::SensorBackend {
         std::wstring why;
         if (!pc.render(pc_depth.data(), pc_bgra.data(), pc_intr, cam, s.point_size, s.mirror_horizontal, s.rotate_180,
                        PointCloudRenderer::kWidth, PointCloudRenderer::kHeight, target, &why)) {
-            // No intrinsics (nothing drawn, no made-up values: phase 7), or the GPU: black, with why.
+            // No intrinsics (nothing drawn, no made-up values), or the GPU: black, with why.
             if (why != pc_note) showBlank3D(why);
             return false;
         }
@@ -2302,14 +2302,14 @@ struct ViewerApp::Impl final : kvhost::SensorBackend {
                      static_cast<unsigned long long>(st.color_frames),
                      static_cast<unsigned long long>(st.ir_seq_drops + st.depth_seq_drops), show_health ? 1 : 0, frozen ? 1 : 0,
                      s.mirror_horizontal ? 1 : 0, s.rotate_180 ? 1 : 0, narrow(inspectText()).c_str());
-        // Stage 5: the 3D view (renders, the last render's time, the camera), the cut-off and the blend.
+        // The 3D view (renders, the last render's time, the camera), the cut-off and the blend.
         const auto& sm = shownMeta();
         std::fprintf(f, "shown=%ux%u\npc_rendered=%llu\npc_render_ms=%.2f\npc_warp=%d\npc_note=%s\ncam_yaw=%.3f\ncam_pitch=%.3f\n"
                         "cam_distance=%.3f\npoint_source=%d\npoint_size=%.1f\ncutoff=%d\ncutoff_near=%.0f\ncutoff_far=%.0f\nblend=%d\n",
                      sm.width, sm.height, static_cast<unsigned long long>(pc_rendered), pc_render_ms, pc.usingWarp() ? 1 : 0,
                      narrow(pc_note).c_str(), cam.yaw, cam.pitch, cam.distance, static_cast<int>(s.point_color_source), s.point_size,
                      s.cutoff_enabled ? 1 : 0, s.cutoff_near_mm, s.cutoff_far_mm, s.depth_color_blend_enabled ? 1 : 0);
-        // Stage 6: the second display (the test hook's small window), B and Esc, through the keys' own code.
+        // The second display (the test hook's small window), B and Esc, through the keys' own code.
         const SecondTest& t = second_test;
         std::fprintf(f,
                      "displays=%zu\nsecond_ran=%d\nsecond_opened_blacked=%d\nsecond_took_focus=%d\nsecond_click_through=%d\n"
@@ -2321,7 +2321,7 @@ struct ViewerApp::Impl final : kvhost::SensorBackend {
                      t.tools_on_main, static_cast<unsigned long long>(t.frames), t.live_lit, t.live_total, t.blackout_after_b,
                      t.black_lit, t.black_total, static_cast<unsigned long long>(t.black_presents), t.esc_presses, t.esc_stopped,
                      t.switch_cleared, t.black_after_frames);
-        // W6: where the host kept its state (v3 §10 isolation), and the pet camera as the panel shows it.
+        // Where the host kept its state (v3 §10 isolation), and the pet camera as the panel shows it.
         if (hooks) {
             const kvhost::PetSettings ps = hooks->petSettings();
             std::fprintf(f, "state_dir=%s\nstate_dir_temp=%d\npet_devices=%zu\npet_sharing=%d\npet_privacy=%d\npet_schedule_rows=%zu\n"
@@ -2370,7 +2370,7 @@ struct ViewerApp::Impl final : kvhost::SensorBackend {
                          p.devices_highlighted, p.devices_captured, p.revoked_notice, p.devices_after_revoke,
                          p.devices_dialog_rows_after, p.banner_after_revoke);
         }
-        // W7: the camera roll as this run has it (v3 §10: a test run's roll is only --camera-roll-dir's folder).
+        // The camera roll as this run has it (v3 §10: a test run's roll is only --camera-roll-dir's folder).
         if (hooks) {
             const kvhost::PetSettings ps = hooks->petSettings();
             const kvhost::RollRecorderStatus rs = hooks->rollStatus();
@@ -2441,7 +2441,7 @@ struct ViewerApp::Impl final : kvhost::SensorBackend {
                          r.owner_delete_player_closed, narrow(r.owner_delete_notice).c_str(), r.pins_after_owner_delete,
                          r.owner_delete_gone, r.deleted, r.pc_delete_closed_player, r.deleted_gone, r.shot_allowed_after);
         }
-        // W8: outside the home as the panel shows it. The invite's link is never written here (v3 §10): only that it
+        // Outside the home as the panel shows it. The invite's link is never written here (v3 §10): only that it
         // was shown, masked, and its length.
         if (hooks) {
             const OutsidePanelView ov = hooks->outsideView();
@@ -2577,7 +2577,7 @@ struct ViewerApp::Impl final : kvhost::SensorBackend {
         t.esc_stopped = out.active() ? 0 : 1;
     }
 
-    // ---- the pet camera (protocol v3, W6; pet-camera.md §4) ----------------------------------------------
+    // ---- the pet camera (protocol v3; pet-camera.md §4) --------------------------------------------------
     PetCameraUi petui; // the Devices dialog and the sharing-schedule editor
     HWND btnPrivacy{}, chkShare{}, lblSchedule{}, btnSchedule{}, btnDevices{}, lblPet{}, lblWatching{};
     HWND lblPrivacyNote{}, lblShareNote{}, lblIdentity{}, btnIdRetry{}, btnIdReset{};
@@ -2747,7 +2747,7 @@ struct ViewerApp::Impl final : kvhost::SensorBackend {
         onCommand(ID_PET_SHARE, BN_CLICKED);
     }
 
-    // ---- the camera roll (W7; pet-camera.md §4, §6) ----------------------------------------------------------------
+    // ---- the camera roll (pet-camera.md §4, §6) --------------------------------------------------------------------
     HWND chkRoll{}, lblRollStatus{}, btnRollRecord{}, btnRollStop{}, chkMotion{}, lblMotion{}, tbMotion{}, lblMotionNote{};
     HWND chkRecSched{}, btnRecSched{}, lblRecSched{}, lblRollFolder{}, btnRollFolder{}, edKeepDays{}, edKeepGb{}, btnKeepApply{};
     HWND lblRollStorage{}, btnRollBrowser{}, lblRollNote{}, lblD6Note{}, lblRollLimits{}, lblRollConfirm{}, btnRollConfirm{};
@@ -2769,7 +2769,7 @@ struct ViewerApp::Impl final : kvhost::SensorBackend {
         return false;
 #endif
     }
-    // W8 (v3 §10): the invite window is open, and with it a live token (a test run masks it, and is refused all the
+    // v3 §10: the invite window is open, and with it a live token (a test run masks it, and is refused all the
     // same).
     bool inviteOnScreen() const {
 #ifdef KV_WITH_STREAMING
@@ -2798,7 +2798,7 @@ struct ViewerApp::Impl final : kvhost::SensorBackend {
 #endif
     }
 
-    // The roll's status line: recording or not, the trigger, and the v3 §9 sentence for what blocks it; or why
+    // The roll's status line: recording or not, the trigger, and the user-facing sentence for what blocks it (v3 §9); or why
     // there is no roll at all (rollError: a folder that was refused, a test run without --camera-roll-dir).
     std::wstring rollStatusLine(bool avail, const kvhost::RollRecorderStatus& st) const {
         if (!avail) return L"No camera roll: " + widen(hooks->rollError().c_str());
@@ -3019,7 +3019,7 @@ struct ViewerApp::Impl final : kvhost::SensorBackend {
     }
 
 #ifdef KV_WITH_STREAMING
-    // ---- outside the home (W8; pet-camera.md §4, v3 §8) ------------------------------------------------------------
+    // ---- outside the home (pet-camera.md §4, v3 §8) ----------------------------------------------------------------
     OutsideUi outsideui; // the invite, re-share and connection log windows, and the role and port prompts
     HWND chkOutside{}, lblOutsideReason{}, lblOutsideStatus{}, lblOutsidePort{}, btnOutsidePort{}, lblOutsideEndpoint{};
     HWND lblOutsideRouter{};
@@ -4725,7 +4725,7 @@ struct ViewerApp::Impl final : kvhost::SensorBackend {
         else pushDisplay();
     }
 
-    // W4 hardening: USB unplug/replug and sleep/wake, through the power model so the phone hears
+    // Hardening: USB unplug/replug and sleep/wake, through the power model so the phone hears
     // Error or Off as it happens. Each reopen carries the generation from the moment it was set up:
     // an Off (or On) from the phone or this PC during the settle delay wins.
     void onDeviceChange(WPARAM wp) {
@@ -4971,7 +4971,7 @@ std::optional<std::wstring> ViewerApp::Impl::askPresetName() {
     return st.text;
 }
 #ifdef KV_WITH_RECORDER
-// ---- recordings window (phase 2) --------------------------------------------------------------------
+// ---- recordings window ------------------------------------------------------------------------------
 static LRESULT CALLBACK RecordingsProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
     ViewerApp::Impl* a = g_impl;
     switch (msg) {
@@ -5060,7 +5060,7 @@ void ViewerApp::Impl::openRecordingsWindow() {
     ShowWindow(recWnd, SW_SHOW);
 }
 
-// The reminder before a recording (phase 2.4): the shared sentence, Cancel as the default (Enter and
+// The reminder before a recording: the shared sentence, Cancel as the default (Enter and
 // Esc both cancel), and "Don't remind me for 1 hour". True only for Record.
 namespace {
 struct ReminderState {
@@ -5352,7 +5352,7 @@ int ViewerApp::run(HINSTANCE inst, int argc, const wchar_t* const* argv, StreamH
     wc.hCursor = LoadCursorW(nullptr, IDC_ARROW);
     wc.hbrBackground = reinterpret_cast<HBRUSH>(COLOR_BTNFACE + 1);
     wc.lpszClassName = L"KinectViewerMain";
-    // The app icon from phase 6's logo (resource 1, rendered from design/logo.svg at build time).
+    // The app icon from the logo (resource 1, rendered from design/logo.svg at build time).
     wc.hIcon = LoadIconW(inst, MAKEINTRESOURCEW(1));
     wc.hIconSm = static_cast<HICON>(LoadImageW(inst, MAKEINTRESOURCEW(1), IMAGE_ICON, GetSystemMetrics(SM_CXSMICON),
                                                GetSystemMetrics(SM_CYSMICON), LR_DEFAULTCOLOR));

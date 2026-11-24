@@ -51,7 +51,7 @@ struct MotionResult {
 //   each one's sequence number is the previous one's plus 1, and its timestamp is after the previous
 //   one's and at most 1 s later. Anything else restarts the count: the frame may start a new run but
 //   never completes one with frames from before it.
-//   - Sequence (W7): a depth frame that comes after a dropped frame never
+//   - Sequence: a depth frame that comes after a dropped frame never
 //     counts as motion with the frames before the drop. A gap, a repeated number or one going backwards
 //     all restart the count. The first frame after construction or reset() has no previous number.
 //   - Time: a stall of more than 1 s, or a timestamp going backwards, restarts it too, so a stall can't
@@ -63,7 +63,7 @@ struct MotionResult {
 //   kRelearnAfterNs (60 s of frame timestamps), its background becomes its current value, and it stops
 //   counting. A cell that moves again restarts its 60 s; a cell that goes back to its background, or is
 //   invalid, forgets the settled value (invalid frames don't restart it).
-// - Whole-scene change (W7): more than kGlobalRelearnPercent (60 %) of the
+// - Whole-scene change: more than kGlobalRelearnPercent (60 %) of the
 //   compared cells changing at once is the camera being moved or the scene changing, not a pet. When it
 //   holds for 3 consecutive frames (the same sequence and time rules as motion), the third frame
 //   re-learns the whole background at once: every cell valid in that frame takes its current value as
@@ -312,7 +312,7 @@ public:
 
     // 0x0C start_clip / the PC button. Refused, with no trigger added, while blocked.
     StartClipResult startClip(const ClipStartedBy& who);
-    // 0x0C stop_clip / the PC button (W7):
+    // 0x0C stop_clip / the PC button:
     // - not recording: Ok, a no-op (a clip can end by itself just before the request arrives);
     // - recording with the manual trigger active: Ok, and the manual trigger is dropped; the clip goes on
     //   while motion or the schedule still holds it;

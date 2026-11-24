@@ -1,4 +1,4 @@
-// The PC's pet camera panel (pet-camera.md §4, protocol v3 W6): the text it shows, as pure functions
+// The PC's pet camera panel (pet-camera.md §4, protocol v3): the text it shows, as pure functions
 // over the host's plain structs, so the unit tests can check them without a window or a server.
 #pragma once
 
@@ -49,8 +49,8 @@ std::wstring clockText(uint16_t minutes);
 // "Live tiers: high <encoder> (hw) 1024x424 e3 1 session | medium off | low off".
 std::wstring tierDiagnosticsLine(const std::vector<kvhost::HostTierStatus>& tiers);
 
-// ---- the camera roll (W7; pet-camera.md §4, §6) ----------------------------------------------------------
-// The v3 §9 sentence for why recording can't run (rollBlockedText); empty for None.
+// ---- the camera roll (pet-camera.md §4, §6) --------------------------------------------------------------
+// The user-facing sentence for why recording can't run (v3 §9, rollBlockedText); empty for None.
 std::wstring rollBlockText(kvhost::RollBlock b);
 // "Manual", "Motion", "Schedule" ("?" for Unknown).
 std::wstring clipTriggerLabel(kvhost::ClipTrigger t);

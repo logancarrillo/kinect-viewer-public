@@ -1,7 +1,7 @@
 // End-to-end loopback tests: synthetic engine -> HostController (NV12, hardware H.264, AVCC) ->
 // HostStreamServer (pinned mutual TLS 1.3) -> FakePhone (Swift client logic) -> H.264 decode -> barcode.
 // Loopback only: listeners bind 127.0.0.1, nothing is advertised. This is NOT the iOS app.
-#include "kv_desk.hpp"
+#include "kv_load.hpp"
 #include "kv_test.hpp"
 
 #include "fake_phone.hpp"
@@ -544,7 +544,7 @@ KV_TEST(qr_pairing_then_pinned_stream_with_barcode_latency_and_mode_switch) {
     std::printf("  capture->decoded latency (loopback, same clock): p50=%.1f ms p95=%.1f ms max=%.1f ms; rtt p50=%.2f ms\n",
                 pct(st.latency_ms, 0.5), pct(st.latency_ms, 0.95), pct(st.latency_ms, 1.0), pct(st.rtt_ms, 0.5));
     KV_CHECK(st.got_hello);
-    // The host says v3 (re-scoped from 2 in W6, v3 §10); this phone is a v1 phone, never reads the
+    // The host says v3 (re-scoped from 2 by multi-viewer and roles, v3 §10); this phone is a v1 phone, never reads the
     // version, and still streams.
     KV_CHECK(st.hellos.front().protocolVersion == 3 && st.hellos.front().codecRaw == 0 && st.hellos.front().allowPhoneModeSwitch);
     KV_CHECK(!phone.violated() && st.states.empty());
@@ -714,7 +714,7 @@ KV_TEST(the_hosts_sockets_are_not_inheritable) {
     l.stop();
 }
 
-// Re-scoped in W6 (v3 §2.4, §10): a second pairing adds a device instead of replacing the only pin.
+// Re-scoped for multi-viewer and roles (v3 §2.4, §10): a second pairing adds a device instead of replacing the only pin.
 KV_TEST(pairing_window_expires_and_a_second_pairing_adds_a_device) {
     SyntheticHost host;
     std::string err;
@@ -794,7 +794,7 @@ KV_TEST(identity_and_pin_persist_across_restart) {
 
 // What a v1 phone must never see is checked in every round of every run: no 0x07, no violation, a v3 hello, the v1
 // version seen, and video and pong answers reaching it at all. The pace (20 AUs within 1.5 s of the first, 4 pongs to
-// its pings every 250 ms) is a timing floor, judged against the desk each round: a busy PC slows a round's encode and
+// its pings every 250 ms) is a timing floor, judged against the PC's load each round: a busy PC slows a round's encode and
 // loopback with nothing wrong in what the host sends.
 KV_TEST(v2_a_v1_phone_never_receives_0x07_across_reconnects) {
     PoweredHost host;
@@ -805,7 +805,7 @@ KV_TEST(v2_a_v1_phone_never_receives_0x07_across_reconnects) {
     FakePhone::PairResult pr;
     KV_REQUIRE(pairAndConnect(srv, phone, pr));
     for (int round = 0; round < 3; ++round) {
-        kvtest::DeskSampler desk;
+        kvtest::LoadSampler load;
         if (round > 0) {
             std::string cerr;
             KV_REQUIRE(phone.connectStream("127.0.0.1", pr.streamPort, pr.serverHash, &cerr));
@@ -820,7 +820,7 @@ KV_TEST(v2_a_v1_phone_never_receives_0x07_across_reconnects) {
         const int paced = ausWithin(st, 1500);
         std::printf("  v1 round %d: hello v%d, aus=%d (%d within 1.5 s) pongs=%d states=%zu violated=%d (%s)\n    %s\n",
                     round, st.got_hello ? st.hello.protocolVersion : 0, st.aus, paced, st.pongs, st.states.size(),
-                    phone.violated() ? 1 : 0, phone.violation().c_str(), desk.report().line().c_str());
+                    phone.violated() ? 1 : 0, phone.violation().c_str(), load.report().line().c_str());
         KV_CHECK(st.got_hello && st.hello.protocolVersion == 3); // the old app reads a v3 hello fine (re-scoped from 2)
         KV_CHECK(!phone.violated());
         KV_CHECK(st.states.empty());
@@ -828,8 +828,8 @@ KV_TEST(v2_a_v1_phone_never_receives_0x07_across_reconnects) {
         KV_CHECK_MSG(st.aus >= 20, std::to_string(st.aus)); // video reaches it (within the stream deadline)
         KV_CHECK(st.pongs >= 1);                             // and its pings are answered
         const std::string r = "round " + std::to_string(round) + ": ";
-        KV_FLOOR(paced >= 20, desk, r + std::to_string(paced) + " AUs within 1.5 s of the first");
-        KV_FLOOR(st.pongs >= 4, desk, r + std::to_string(st.pongs) + " pongs"); // it pings every 250 ms
+        KV_FLOOR(paced >= 20, load, r + std::to_string(paced) + " AUs within 1.5 s of the first");
+        KV_FLOOR(st.pongs >= 4, load, r + std::to_string(st.pongs) + " pongs"); // it pings every 250 ms
         phone.close();
         std::this_thread::sleep_for(std::chrono::milliseconds(150));
     }
@@ -876,11 +876,11 @@ KV_TEST(v2_a_v2_phone_receives_0x07_only_after_its_v2_ping) {
 // Power off and on from the phone. While Off there is no video and the session stays open (pings are answered); then
 // starting, then on, and video again. These are checked in every run. The floor, Off within 1 s of the request, is the
 // host's own promise: from the request reaching the host to its power model reaching Off, on the host's clock, judged
-// against the desk (KV_FLOOR: skipped, never passed, when the PC was busy). The phone's view of it is printed beside
+// against the PC's load (KV_FLOOR: skipped, never passed, when the PC was busy). The phone's view of it is printed beside
 // it, not gated. "On" is sent 2 s after the host reached Off, so the off window, and the pings answered in it, don't
 // depend on how fast it got there.
 KV_TEST(v2_power_off_stops_video_keeps_the_session_and_on_brings_it_back) {
-    kvtest::DeskSampler desk;
+    kvtest::LoadSampler load;
     PoweredHost host;
     std::string err;
     KV_REQUIRE(host.start(freshStateDir(L"power"), &err));
@@ -923,9 +923,9 @@ KV_TEST(v2_power_off_stops_video_keeps_the_session_and_on_brings_it_back) {
     std::printf("  host: off %d ms after the request; phone: off sent %d, off at %d; on sent %d, starting at %d, on at %d; "
                 "aus while off=%d, after on=%d; pongs while off=%d; states=%zu\n",
                 host_off_ms, off_sent, off_ms, on_sent, starting_ms, on_ms, aus_off, aus_after, pongs_off, st.states.size());
-    std::printf("  %s\n", desk.report().line().c_str());
+    std::printf("  %s\n", load.report().line().c_str());
     KV_CHECK(off_ms >= off_sent && on_sent > off_ms); // the phone sees Off after asking, and before asking for On
-    KV_FLOOR(host_off_ms >= 0 && host_off_ms < 1000, desk,
+    KV_FLOOR(host_off_ms >= 0 && host_off_ms < 1000, load,
              "the host reached Off " + std::to_string(host_off_ms) + " ms after the request");
     KV_CHECK(aus_off == 0);       // Off: no 0x03 video
     KV_CHECK(pongs_off >= 4);     // ...and the TLS session stays open
@@ -1002,7 +1002,7 @@ KV_TEST(v2_remote_commands_are_gated_and_answered_and_unknown_types_are_skipped)
             phone.sendFrame(MsgType::Orbit3DGesture, toJson(orbit)); // likewise
             RemoteControlCommandMessage key;
             phone.sendFrame(MsgType::RemoteControlCmd, toJson(key)); // request_keyframe: always allowed
-            // Unknown types are skipped, not a violation. W6 took 0x0B-0x0F, so (re-scoped) the sends
+            // Unknown types are skipped, not a violation. v3 took 0x0B-0x0F, so (re-scoped) the sends
             // use bytes nobody knows: 0x7E (the Swift sentinel) and 0x1A, the first free one (v3 §1 rule 7).
             phone.sendRaw(0x7E, "{\"fromTheFuture\":true}");
             phone.sendRaw(0x1A, "");
@@ -1026,7 +1026,7 @@ KV_TEST(v2_remote_commands_are_gated_and_answered_and_unknown_types_are_skipped)
     for (const auto& s : st.states) KV_CHECK(s.powerState == SensorPowerState::On);
 }
 
-// Stage 5: with mode switching allowed, select_mode 4, set_cutoff (Track me, and off) and 0x09 come
+// The 3D mode: with mode switching allowed, select_mode 4, set_cutoff (Track me, and off) and 0x09 come
 // through with their fields; with it turned off again, the same orbit is dropped.
 KV_TEST(v2_select_mode_4_set_cutoff_and_orbit_come_through_when_allowed) {
     PoweredHost host;
@@ -1220,8 +1220,8 @@ KV_TEST(v2_unpairing_goes_through_the_disconnect_hook) {
     KV_CHECK(!again.got_hello);
 }
 
-// ---- protocol v3 (W6): many devices, roles, availability, slots, tiers ------------------------------
-// docs/protocol-v3-pet-camera.md §10 "W6". Synthetic source, loopback, temp state folders only.
+// ---- protocol v3: many devices, roles, availability, slots, tiers -----------------------------------
+// docs/protocol-v3-pet-camera.md §10 (multi-viewer and roles). Synthetic source, loopback, temp state folders only.
 
 namespace {
 
@@ -1567,7 +1567,7 @@ KV_TEST(v3_two_v3_devices_and_a_v1_phone_stream_side_by_side) {
     for (const V3Log* l : {&la, &lb}) {
         KV_REQUIRE(l->got_hello && l->hellos.front().petCamera);
         const PetCameraHello& pc3 = *l->hellos.front().petCamera;
-        // v3 §4.1: petCamera.outside is true from W8 (re-scoped from W6's false); outside listening itself is off
+        // v3 §4.1: petCamera.outside is true with outside access (re-scoped from false); outside listening itself is off
         // by default, which 0x0B's outsideEnabled says (checked below).
         KV_CHECK(pc3.specVersion == 1 && pc3.maxWatchers == 4 && !pc3.cameraRoll && pc3.outside && pc3.qualities.size() == 4);
         KV_CHECK(!l->pets.empty() && !l->states.empty());
@@ -1896,7 +1896,7 @@ KV_TEST(v3_a_demoted_owner_is_refused_owner_commands_without_reconnecting) {
     KV_REQUIRE(r.waitFor([](const V3Log& l) { return !l.pets.empty() && l.aus >= 3; }, 4000));
     r.send(MsgType::PetCameraCmd, cmdJson(1, pet_action::kSetPrivacy, false));
     r.send(MsgType::PetCameraCmd, cmdJson(2, "teleport"));                 // unknown action
-    r.send(MsgType::PetCameraCmd, cmdJson(3, pet_action::kSetRoll, true)); // W7
+    r.send(MsgType::PetCameraCmd, cmdJson(3, pet_action::kSetRoll, true)); // a camera roll action
     r.send(MsgType::PetCameraCmd, cmdJson(4, pet_action::kStartClip));
     r.send(MsgType::PetCameraCmd, "{\"action\":\"set_privacy\",\"enabled\":true}"); // no requestId: not answered
     r.send(MsgType::PetCameraCmd, cmdJson(5, pet_action::kSetSharing));             // no "enabled": invalid
@@ -2870,7 +2870,7 @@ bool everyStateSaysV3(const V3Log& l) {
 
 // v3 §2.3: a v3 session the camera is unavailable to gets 0x0B liveAllowed false with the reason, and
 // its 0x07 keeps the real power state (never the v2 "off" presentation); a v2 session gets the "off"
-// 0x07 with the §9 sentence. Privacy mode for every role, sharing off for viewers. §4.3: every 0x07,
+// 0x07 with the user-facing sentence from v3 §9. Privacy mode for every role, sharing off for viewers. §4.3: every 0x07,
 // to v2 and v3 sessions alike, carries protocolVersion 3, the host's version.
 KV_TEST(v3_unavailable_v3_sessions_get_0x0b_and_v2_sessions_get_the_off_0x07) {
     PoweredHost host;

@@ -3,9 +3,9 @@
 // except privacy mode, which fails closed (a privacyMode that isn't a bool, or a file that exists but
 // can't be read or parsed, means privacy mode on). Only a missing file means all the defaults.
 //
-// W6 holds sharing, the sharing schedule and privacy mode; W7 adds the camera roll (on/off, folder,
-// retention, motion and scheduled recording). W8 (outside the home) adds allowOutside, outsidePort and
-// outsidePublicAddress after the roll keys; an older build ignores them.
+// It holds sharing, the sharing schedule and privacy mode, then the camera roll (on/off, folder,
+// retention, motion and scheduled recording), then outside the home (allowOutside, outsidePort and
+// outsidePublicAddress) after the roll keys; an older build ignores them.
 //
 // Thread safety: none; the caller guards its PetSettings and serialises loads and saves.
 #pragma once
@@ -51,7 +51,7 @@ struct PetSettings {
     std::vector<SharingScheduleRow> sharingSchedule;
     bool privacyMode = false; // saved across restarts (v3 §6.4, D3)
 
-    // W7, the camera roll (pet-camera.md §4, §6). Every switch is off by default (§1).
+    // The camera roll (pet-camera.md §4, §6). Every switch is off by default (§1).
     bool rollEnabled = false; // "Record to the camera roll", the master switch for every trigger (v3 D5)
     // The folder the PC app chose ("Change..."), UTF-8; empty means the app's default. Only the PC app reads
     // it, to pick the folder it passes to the host: the host itself records only into the folder its Options
@@ -62,21 +62,21 @@ struct PetSettings {
     // The two above are the owner's (pet-camera.md §6.4): the file held them (a key that
     // was there and read), or the owner set or confirmed them, or turned the roll on beside them on the PC.
     // Only then are they written: a file saved before that holds no limits, so a restart doesn't mistake the
-    // defaults for the owner's. A W6-era file has no roll keys and leaves this false.
+    // defaults for the owner's. An older file has no roll keys and leaves this false.
     bool rollLimitsKnown = false;
     bool motionEnabled = false;
     int motionSensitivity = kRollDefaultMotionSensitivity; // 1 (least) to 10 (most)
     bool recordScheduleEnabled = false;
     std::vector<RecordScheduleRow> recordSchedule; // "Scheduled recording": days, start, length 1-60 min
 
-    // W8, outside the home (pet-camera.md §4, v3 §8.1). Off by default, PC only, and only with sharing on: a
+    // Outside the home (pet-camera.md §4, v3 §8.1). Off by default, PC only, and only with sharing on: a
     // value that isn't a bool reads as off (fail closed). The port is picked once (20000-44999, one that binds:
     // v3 §8.7) and saved; 0 until then (and then not written), and any value outside 1024-65535 reads as 0. The public address is what the PC user typed
     // for the manual case (a public IPv4); anything else reads as empty.
     bool allowOutside = false;
     uint16_t outsidePort = 0;
     std::string outsidePublicAddress;
-    // v3 §8.7 (additive, after the W8 keys): the port this PC's router forward is on while it may still be there
+    // v3 §8.7 (additive, after the outside keys): the port this PC's router forward is on while it may still be there
     // (written when mapped, cleared when removed). A start with outside listening off, or on another port, removes
     // that forward best effort (only ours: our description and this PC's internal client) and clears it.
     uint16_t outsideMappedPort = 0;

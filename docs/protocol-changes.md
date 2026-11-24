@@ -1,6 +1,6 @@
 # Wire Protocol Changes (`_kv2s._tcp` / `_kv2p._tcp`)
 
-This document tracks every additive change to the encrypted Kinect Viewer LAN protocol (`shared/WireProtocol.swift`) so the Windows host (`windows/`) stays wire-compatible with Kinect Pocket (`ios/`).
+This document tracks every additive change to the encrypted Kinect Viewer LAN protocol (`shared/WireProtocol.swift`) so the Windows host (`windows/`) stays wire-compatible with the iPhone app (`ios/`).
 
 All packets continue to use the 8-byte `WireHeader` (`0x4B 0x56` `"KV"`, `type: UInt8`, `flags: UInt8`, `payloadLength: UInt32` big-endian).
 - **Backward / Forward Compatibility (explicit v1/v2 gating):**
@@ -12,9 +12,9 @@ All packets continue to use the 8-byte `WireHeader` (`0x4B 0x56` `"KV"`, `type: 
 
 ---
 
-## Phase 3 — 3D Point Cloud Mode Value (`protocolVersion >= 1`, additive enum value)
+## 3D Point Cloud Mode Value (`protocolVersion >= 1`, additive enum value)
 
-No wire framing or JSON field names changed in Phase 3. A fifth rendered view mode value (`modeRaw = 4`) was added for the Metal 3D point cloud stream.
+No wire framing or JSON field names changed for it. A fifth rendered view mode value (`modeRaw = 4`) was added for the Metal 3D point cloud stream.
 
 | Message | Wire Type | Direction | Field | Added Value | Version | Notes |
 |---|---|---|---|---|---|---|
@@ -24,7 +24,7 @@ No wire framing or JSON field names changed in Phase 3. A fifth rendered view mo
 
 ---
 
-## Phase 5 & Phase 7 — v2 Capability Negotiation, Host State Sync, Remote Control, 3D Orbit & Sensor Power (`protocolVersion = 2`)
+## v2 Capability Negotiation, Host State Sync, Remote Control, 3D Orbit & Sensor Power (`protocolVersion = 2`)
 
 Updated hosts advertise `protocolVersion: 2` inside `HelloServerMessage` (`0x01`) while keeping all 7 v1 `HelloServerMessage` fields unchanged, and updated iOS clients advertise `"protocolVersion": 2` inside `PingMessage` (`0x04`, ignored by v1 Mac/Windows hosts). Over the mutually pinned TLS 1.3 stream connection (`_kv2s._tcp`), **the phone sends `0x08`–`0x0A` based on `hello.protocolVersion >= 2` alone**, whereas **only `0x07` (`HostStateSyncMessage`, host → iPhone) waits for the phone's v2 ping** (`PingMessage` with `protocolVersion >= 2`). When the Kinect sensor is turned Off, the host stops `VideoAccessUnit` frames, closes USB, and deletes `~/KINECT-IN-USE`, while keeping the `_kv2s._tcp` mTLS session open so the paired iPhone receives confirmed state updates and can turn the sensor back On.
 
@@ -57,7 +57,7 @@ Updated hosts advertise `protocolVersion: 2` inside `HelloServerMessage` (`0x01`
 | `isRecording` | `Bool` | Whether lossless 16-bit Depth/IR host recording is currently active. |
 | `canRecordCurrentMode` | `Bool` | `true` only in non-colour modes (`IR` or `Depth` without Depth/Colour Blend). |
 | `recordingDisabledReason` | `String?` | Tooltip/reason when recording is unavailable (e.g. `"Colour is live only. Switch to IR or Depth to record."`). |
-| `recordingReminderNeeded` | `Bool` | `true` when starting a recording requires confirming the Phase 2 privacy reminder (`"Only you in view. Not pointed at a window. Depth and IR only. Deleted after 7 days."`). |
+| `recordingReminderNeeded` | `Bool` | `true` when starting a recording requires confirming the recording privacy reminder (`"Only you in view. Not pointed at a window. Depth and IR only. Deleted after 7 days."`). |
 | `recordingFrames` | `UInt64` | Frames written in the active host recording session (`0` when idle). |
 | `recordingElapsedSec` | `Double` | Elapsed seconds in the active host recording session (`0.0` when idle). |
 | `isReplayingOnHost` | `Bool` | `true` when the host is currently replaying a saved Depth/IR recording. |
@@ -75,7 +75,7 @@ Updated hosts advertise `protocolVersion: 2` inside `HelloServerMessage` (`0x01`
 | `cutoffEnabled` | `Bool?` | Enables/disables host depth cut-off when `action == "set_cutoff"`. |
 | `applyTrackMePreset` | `Bool?` | If `true` with `action == "set_cutoff"`, applies `"Track me"` (`500–2000 mm`, enabled). |
 | `hostFrozen` | `Bool?` | Target host freeze state when `action == "set_host_frozen"`. |
-| `reminderConfirmedOnPhone` | `Bool?` | When `action == "start_recording"`, `true` indicates the user confirmed the exact Phase 2 reminder on the iPhone; if `false`/`nil` while `recordingReminderNeeded` is `true`, the host presents its confirmation dialog on the Mac before starting. |
+| `reminderConfirmedOnPhone` | `Bool?` | When `action == "start_recording"`, `true` indicates the user confirmed the exact recording reminder on the iPhone; if `false`/`nil` while `recordingReminderNeeded` is `true`, the host presents its confirmation dialog on the Mac before starting. |
 | `snoozeReminderOneHour` | `Bool?` | Optional 1-hour reminder snooze (`3600 s`) when `reminderConfirmedOnPhone == true`. |
 
 ### 3. `Orbit3DGestureMessage` (`0x09` / `orbit3DGesture`)
@@ -106,18 +106,18 @@ Updated hosts advertise `protocolVersion: 2` inside `HelloServerMessage` (`0x01`
 
 ## Windows host (`windows/`)
 
-From W5 stage 1 the Windows host speaks v2 as described above: `protocolVersion: 2` in hello, every client held at v1 until its Ping says `protocolVersion >= 2`, then one `0x07` at once and one per state change, never to a v1 phone. Its stream reader skips unknown types (the pairing reader still drops them). Where it differs from the Mac host for now:
-- **Mode 4 (3D Cloud)** (stage 5): `selectModeReq` / `select_mode` with `modeRaw = 4` switches to it. The host renders the point cloud on its GPU (Direct3D 11) at `960 × 720` and sends only that picture as H.264, as the Mac does; the point cloud itself never leaves the PC. `0x09` moves the 3D camera as on the Mac (reset, or orbit, `zoomScale` as a distance multiplier, pan), when `allowPhoneModeSwitch` is on.
-- **Cut-off** (stage 5): `set_cutoff` with `applyTrackMePreset: true` applies Track me (500–2000 mm, on); otherwise `cutoffEnabled` turns it on or off. `0x07` carries `cutoffEnabled`, `cutoffNearMm` and `cutoffFarMm`, and a new 0x07 goes out when they change on the PC. **Host freeze** (stage 3): `set_host_frozen` freezes the shown frame in memory, `0x07` reports `isHostFrozen`, and `request_keyframe` re-sends the frozen frame. A frozen 3D view still follows `0x09`.
-- **Recording from the phone** (stage 4): `start_recording` with `reminderConfirmedOnPhone: true` starts it (and `snoozeReminderOneHour` snoozes the reminder); otherwise the PC shows its own reminder. `canRecordCurrentMode` is false in colour modes, in 3D, with the depth/colour blend on, and during a playback, with the reason.
+The Windows host speaks v2 as described above, under v3 (below): every client held at v1 until its Ping says `protocolVersion >= 2`, then one `0x07` at once and one per state change, never to a v1 phone. Its stream reader skips unknown types (the pairing reader still drops them). Where it differs from the Mac host for now:
+- **Mode 4 (3D Cloud)**: `selectModeReq` / `select_mode` with `modeRaw = 4` switches to it. The host renders the point cloud on its GPU (Direct3D 11) at `960 × 720` and sends only that picture as H.264, as the Mac does; the point cloud itself never leaves the PC. `0x09` moves the 3D camera as on the Mac (reset, or orbit, `zoomScale` as a distance multiplier, pan), when `allowPhoneModeSwitch` is on.
+- **Cut-off**: `set_cutoff` with `applyTrackMePreset: true` applies Track me (500–2000 mm, on); otherwise `cutoffEnabled` turns it on or off. `0x07` carries `cutoffEnabled`, `cutoffNearMm` and `cutoffFarMm`, and a new 0x07 goes out when they change on the PC. **Host freeze**: `set_host_frozen` freezes the shown frame in memory, `0x07` reports `isHostFrozen`, and `request_keyframe` re-sends the frozen frame. A frozen 3D view still follows `0x09`.
+- **Recording from the phone**: `start_recording` with `reminderConfirmedOnPhone: true` starts it (and `snoozeReminderOneHour` snoozes the reminder); otherwise the PC shows its own reminder. `canRecordCurrentMode` is false in colour modes, in 3D, with the depth/colour blend on, and during a playback, with the reason.
 - `sensorPowerDisabledReason` is the Mac's sentence, word for word, until there's PC wording.
 - A resume from sleep (and a USB replug) reopens the sensor only if no On or Off arrived during the delay.
 
 ---
 
-## Protocol v3: the pet camera (Windows host, planned)
+## Protocol v3: the pet camera (Windows host)
 
-v3 adds multiple devices with owner and viewer roles, privacy mode, live quality tiers, a camera roll on the PC (listed, thumbnailed and played over the protocol), and viewing from outside the home through a separate listener with one-time invites. It is specified in [`protocol-v3-pet-camera.md`](protocol-v3-pet-camera.md), with the feature plan in [`pet-camera.md`](pet-camera.md).
+v3 adds multiple devices with owner and viewer roles, privacy mode, live quality tiers, a camera roll on the PC (listed, thumbnailed and played over the protocol), and viewing from outside the home through a separate listener with one-time invites. It is specified in [`protocol-v3-pet-camera.md`](protocol-v3-pet-camera.md), with the feature's design in [`pet-camera.md`](pet-camera.md).
 - It is additive. v1 and v2 phones see the same messages as today, and the only changes they can see are listed in that document's §2.4.
 - New type bytes are `0x0B`–`0x0F` and `0x12`–`0x19`.
-- Until W6 merges, the Windows host still speaks v2 as described above.
+- The Windows host speaks v3 (its hello says `protocolVersion: 3`); the macOS host speaks v2.

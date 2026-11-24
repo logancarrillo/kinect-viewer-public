@@ -1,4 +1,4 @@
-// Named viewer presets and the last-used settings (the Mac's phase 1, macos/App/PresetsStore.swift).
+// Named viewer presets and the last-used settings (as on the Mac, macos/App/PresetsStore.swift).
 // A preset holds the mode, pipeline, IR mapping, colour map, distance window,
 // exposure and orientation; not the source. Built in: "Desk", "Room" and "Dark room IR", with the
 // Mac's values. Custom presets and the last-used settings are kept in presets.json beside the
@@ -14,10 +14,10 @@
 
 namespace kvwin {
 
-// Phase 3's preset fields, optional as on the Mac: a file from before phase 3, and the built-ins,
-// don't have them, and applying such a preset leaves the cut-off and the point cloud as they are.
+// The cut-off and point cloud preset fields, optional as on the Mac: a file from before they existed, and the
+// built-ins, don't have them, and applying such a preset leaves the cut-off and the point cloud as they are.
 // The depth/colour blend is never in a preset (it is live colour).
-struct PresetPhase3 {
+struct PresetCutoffAndPoints {
     std::optional<bool> cutoff_enabled;
     std::optional<float> cutoff_near_mm;
     std::optional<float> cutoff_far_mm;
@@ -29,7 +29,7 @@ struct ViewerPreset {
     std::string name; // UTF-8
     bool built_in = false;
     ViewerSettings settings; // only the preset's fields are used (see applyPreset)
-    PresetPhase3 phase3;
+    PresetCutoffAndPoints cutoff_points;
 };
 
 // The preset's fields from s.

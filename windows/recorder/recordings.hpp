@@ -1,4 +1,4 @@
-// Recordings inside the app (the Mac's phase 2 and phase 7 fixes 6 and 12; RecordingLibraryAndPlayer.swift):
+// Recordings inside the app (as on the Mac, RecordingLibraryAndPlayer.swift):
 // the list of sessions in %USERPROFILE%\kinect-viewer-recordings (metadata only,
 // never a thumbnail or a preview), the 7-day automatic deletion with the deletion log, deletion by the
 // user, the purge of old colour sessions, the reminder before recording, and a reader that plays a
@@ -124,7 +124,7 @@ private:
     std::atomic<bool> cancelled_{false};
 };
 
-// Decodes off the UI thread (phase 7 fix 12): request(index) queues the latest wanted frame (older
+// Decodes off the UI thread: request(index) queues the latest wanted frame (older
 // requests are dropped), take() hands back a decoded one if there is one. The worker owns the reader.
 class ReplayDecoder {
 public:

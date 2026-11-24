@@ -1,4 +1,4 @@
-// W8 (outside the home), Phase B: the router mapping's own worker (protocol v3 §8.2, §8.3). PortMapper is
+// Outside the home: the router mapping's own worker (protocol v3 §8.2, §8.3). PortMapper is
 // driven from one thread of this class's own, with its own COM apartment (ComScope), never the UI thread or a
 // connection's: each router call can take seconds. The host posts what it wants (open on a port, close,
 // acknowledge an address change) and reads back a snapshot of the state; the worker tells it of every change

@@ -34,6 +34,12 @@ are not part of the binaries.
 You only need this section if you ship built binaries (an installer, a zip of `build\windows\windows\`, a
 signed app). Building and running it yourself creates no obligations beyond the licences' own terms.
 
+The Windows install (`windows\packaging\install.ps1`) already puts this project's `LICENSE`, `NOTICE` and this
+file beside the programs, and each bundled DLL's own licence texts beside it: libfreenect2's, libusb's (the
+LGPL-2.1 and its copyright notices), libjpeg-turbo's and GLFW's, from
+[`windows/packaging/licences/`](windows/packaging/licences/README.md). A zip of an install folder carries them. What
+that doesn't cover, such as libusb's source or a written offer of it, is below.
+
 ### libfreenect2 (Apache-2.0 or GPL-2.0)
 
 Choose the Apache-2.0 option to stay compatible with this project's licence. Include libfreenect2's licence

@@ -1,5 +1,5 @@
-// The Windows app icon from design/logo.svg (the Sensor and Beam mark since the real-app PR; phase 6's
-// contour lens before it). It's rendered from the logo at build time; here it's rendered again and
+// The Windows app icon from design/logo.svg (the Sensor and Beam mark).
+// It's rendered from the logo at build time; here it's rendered again and
 // must match the build's .ico byte for byte, has every size, looks like the logo (transparent outside
 // the rounded square, the light sensor bar with its dark lens, the near-to-far depth bands, the dark
 // field around them), and kinect-viewer.exe carries it as resource 1.

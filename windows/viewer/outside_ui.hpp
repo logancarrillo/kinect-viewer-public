@@ -1,4 +1,4 @@
-// W8, outside the home, on the PC (pet-camera.md §3, §4; protocol v3 §8.4, §8.6): the invite window (its QR code,
+// Outside the home, on the PC (pet-camera.md §3, §4; protocol v3 §8.4, §8.6): the invite window (its QR code,
 // the copyable link and the 10-minute countdown), the re-share window (the endpoint link, which holds no secret),
 // the connection log window, and the two small prompts the panel asks (the invite's role, the outside port). All
 // modeless except the prompts, all on the UI thread, and all talk to the host through StreamHooks only. The panel's

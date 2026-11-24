@@ -1,11 +1,11 @@
 # Pet camera (Windows host)
 
-The owner wants to use the Kinect viewer as a pet camera:
+On Windows, the Kinect viewer can be a pet camera:
 - watch it live from anywhere, when the camera is on and sharing is turned on in the PC app;
 - record clips into a dated camera roll stored on this PC;
 - browse and play the camera roll from the PC, Mac and iOS apps.
 
-This is the plan, with the PC-side design filled in. The wire protocol is in [`protocol-v3-pet-camera.md`](protocol-v3-pet-camera.md), called "v3" below. Where the two overlap, v3 is the contract and this document points to it. Decisions D1–D11 are listed in v3 §11.
+This is the feature's design, with the PC side in full. The wire protocol is in [`protocol-v3-pet-camera.md`](protocol-v3-pet-camera.md), called "v3" below. Where the two overlap, v3 is the contract and this document points to it. Decisions D1–D11 are listed in v3 §11.
 
 ## 1. The decision and the hard rules
 
@@ -40,7 +40,7 @@ Raw colour, depth and IR frames and point clouds still never leave the PC; only 
 
   `vcpkg.json` is unchanged.
 - **Protocol changes are additive.** v1/v2 phones keep working (v3 §1 and §2.4).
-- **The PC doesn't touch the Mac/iOS Swift code.** The Mac session builds that half from the same spec, as phase 9.
+- **The Mac and iOS half is built from the same spec,** in Swift (`shared/`, `macos/`, `ios/`).
 
 ## 2. Who and where
 
@@ -128,21 +128,18 @@ All the files live in `%USERPROFILE%\kinect-viewer\.host-state\`, unless a test 
 | `connection-log.jsonl` | v3 §8.6 |
 
 **This PC's private key at rest.** `pairing.json` holds the key wrapped with DPAPI for this PC, as `serverIdentity.privateKeyWrapped`: machine scope (`CRYPTPROTECT_LOCAL_MACHINE`) with this app's own entropy. A copy of the folder alone, taken to another PC or Windows install, holds no key that can be used; a full image of the system disk carries this PC's DPAPI secrets with it. On this PC the folder's owner-only ACL keeps non-admin users from reading the file; an administrator can read it.
-- **Migration.** A `pairing.json` from a build before the wrap holds the key plain (`privateKeyRaw`). The first start after a load that worked migrates it:
+- **Migration.** A `pairing.json` that holds the key plain (`privateKeyRaw`, written while DPAPI wasn't working: see Saves) is migrated by the first start after a load that worked:
   1. The key is wrapped, and the wrap is unwrapped and compared in memory.
   2. `pairing.json` is written with both keys, plain and wrapped.
   3. That file is read back from disk, and its wrapped key is unwrapped and compared with the plain one beside it.
   4. Only then is `pairing.json` written with the wrapped key alone, and read back and checked again.
 
   A step that fails leaves a file that still holds the plain key. The host starts with it as before (reachability comes first), the reconcile log says why, and the next start tries again. A file that is already wrapped is never rewritten by the migration, so running it again changes nothing. A file left with both keys is finished from its plain key.
-- **Saves.** Every later write of `pairing.json` (a setting, a pairing, a repair, a reset) writes the key wrapped. The new wrap is unwrapped and compared before the write, and the file is read back after it. When the key can't be wrapped (DPAPI isn't working) and `pairing.json` is missing or still holds the key plain, the save writes it plain, as before the wrap, so a phone can still pair and a setting still saves (reachability first); the next start's migration wraps it. Over a file that holds the key wrapped, a save never writes it plain: it fails instead. That holds when another start of the host on the same folder wraps the key between the save's check and its write: the plain save replaces `pairing.json` keeping what it replaced, finds the wrap there, puts it back as it was, and fails; and a first run's plain save never replaces a `pairing.json` written meanwhile. A replace that Windows fails midway (a program holding the file) never leaves the folder without `pairing.json`: what it moved to `pairing.json.prev` goes back at once. A start sorts out what an interrupted write left before it loads: a `pairing.json.prev` with no `pairing.json` is put back, so the folder is never read as a first run; one beside a `pairing.json` is removed, as are the temp files of writes that never finished.
+- **Saves.** Every later write of `pairing.json` (a setting, a pairing, a repair, a reset) writes the key wrapped. The new wrap is unwrapped and compared before the write, and the file is read back after it. When the key can't be wrapped (DPAPI isn't working) and `pairing.json` is missing or still holds the key plain, the save writes it plain, so a phone can still pair and a setting still saves (reachability first); the next start's migration wraps it. Over a file that holds the key wrapped, a save never writes it plain: it fails instead. That holds when another start of the host on the same folder wraps the key between the save's check and its write: the plain save replaces `pairing.json` keeping what it replaced, finds the wrap there, puts it back as it was, and fails; and a first run's plain save never replaces a `pairing.json` written meanwhile. A replace that Windows fails midway (a program holding the file) never leaves the folder without `pairing.json`: what it moved to `pairing.json.prev` goes back at once. A start sorts out what an interrupted write left before it loads: a `pairing.json.prev` with no `pairing.json` is put back, so the folder is never read as a first run; one beside a `pairing.json` is removed, as are the temp files of writes that never finished.
 - **A key that can't be unwrapped** fails closed, as a file that can't be parsed does (below). The error says why, by the error DPAPI gives:
   - **A data error** (`ERROR_INVALID_DATA`, `ERROR_INVALID_PARAMETER`, `NTE_BAD_DATA`, `NTE_BAD_KEY`, `NTE_BAD_KEY_STATE`): the wrap is damaged, has other entropy, or was made on another PC or Windows install. The error says resetting this PC's identity makes a new one.
   - **Anything else** (out of memory, the DPAPI service not answering): it may pass. The error says to try again, and to reset only if it still fails after a restart, so a passing fault doesn't make every device pair again.
-- **Downgrade.** A build from before the wrap can't read a wrapped key.
-  - A build from `df8af2c` (2026-11-19) on fails closed the same way: no new identity and no serving, and its error says `pairing.json` can't be parsed. Going back to it takes a reset of this PC's identity in it, and every device must pair again. That is the cost of the wrap.
-  - A build from before `df8af2c` doesn't fail closed: it makes a new identity over the file it can't parse, and every device must pair again.
-- **Copies made before the wrap.** A `pairing.json.bad` kept by an older build, a backup, or disk space freed by an older build's writes may still hold the key plain. The migration leaves `.bad` copies as they are; the owner can delete them.
+- **Plain copies.** A `pairing.json.bad` copy of a plain file, a backup, or disk space freed by plain writes may still hold the key plain. The migration leaves `.bad` copies as they are; the owner can delete them.
 
 **Reading.** The new files are read leniently. A bad entry, an unknown key or a wrong type is skipped or replaced by its default, and never fails the load. A missing `pairing.json` means a first run, and a new identity is made. One that exists but can't be read or parsed fails closed (below). A bad `devices.json` never makes a new identity either.
 
@@ -205,9 +202,7 @@ A hash in `revoked` is never admitted again by reconciliation; only a new pairin
 - **Sync samples:** IDR samples set `MFSampleExtension_CleanPoint = 1`, so each fragment's sample flags mark the keyframes for seeks (fragmented MP4 has no single sync-sample table).
 - **Creation time:** the file's creation time is the clip's start.
 
-**Container, decided in W7:**
-- **Preferred:** fragmented MP4 (`MF_TRANSCODE_CONTAINERTYPE = MFTranscodeContainerType_FMPEG4`, built into Windows), so a clip interrupted by a crash or power loss stays readable up to its last fragment.
-- **Fallback:** if W7 finds that `IMFSourceReader` can't seek fMP4 reliably, it uses plain MP4 and says so in the PR. In that case an interrupted clip is lost (§6.3).
+**Container:** fragmented MP4 (`MF_TRANSCODE_CONTAINERTYPE = MFTranscodeContainerType_FMPEG4`, built into Windows), so a clip interrupted by a crash or power loss stays readable up to its last fragment. `test_roll_media.cpp` proves that `IMFSourceReader` reads and seeks it.
 
 **Playback over the protocol.**
 - `IMFSourceReader` reads native samples.
@@ -257,7 +252,7 @@ A hash in `revoked` is never admitted again by reconciliation; only a new pairin
 | Schedule | A row's start time (PC local clock) | The row's length (1–60 minutes) | |
 
 **Motion by depth.** Depth doesn't change with the light, so lamps and daylight don't trip it.
-- **Input:** the 512×424 depth in mm from `kv_engine_copy_latest_raw16`, polled with each pass of the viewer's loop (as the depth/IR recorder is), with its frame sequence number. W7 confirmed that depth is decoded in every view mode, colour included, and keeps coming while the view is frozen.
+- **Input:** the 512×424 depth in mm from `kv_engine_copy_latest_raw16`, polled with each pass of the viewer's loop (as the depth/IR recorder is), with its frame sequence number. Depth is decoded in every view mode, colour included, and keeps coming while the view is frozen.
   - Motion is offered only while the live sensor runs, never from a replay. While the sensor is off, `motionAvailable` is false, the PC greys out Motion, and the reason is shown.
   - A frame after a dropped one (its sequence number isn't the last plus 1) never completes a motion run: the 3-frame count starts again.
 - **Grid:** reduce the depth to a 64×53 grid of block medians, ignoring zeros.
@@ -268,7 +263,7 @@ A hash in `revoked` is never admitted again by reconciliation; only a new pairin
   - **Per cell:** a cell that has stayed changed but still (within `max(40 mm, 3 %)` of the value it settled at) for 60 s takes that value as its background, so a pet lying down or a moved chair stops counting as motion.
   - **Whole frame:** when more than 60 % of the valid cells change at once and hold for the 3 frames, the camera was moved or the scene changed. The whole background re-learns at once, and it is not motion.
   - Starting the sensor, changing the cut-off and unfreezing all reset it.
-- **Testing:** the detector is a pure function over depth arrays, so W7 can test it on synthetic depth alone.
+- **Testing:** the detector is a pure function over depth arrays, so it is tested on synthetic depth alone.
 
 ### 6.3 Layout on disk
 
@@ -314,7 +309,7 @@ A hash in `revoked` is never admitted again by reconciliation; only a new pairin
 - a `pet-camera.json` that holds the roll's limits (`rollKeepDays` or `rollCapBytes`) has been read successfully; or
 - the owner has set them on the PC, pressed **Confirm** beside them, or turned the roll on at the PC, where the limits are shown beside the switch. Each of these writes them, and retention runs with them at once, without a restart.
 
-A W6-era file without the roll keys doesn't count, and neither does a missing or unreadable one. Until the limits are known:
+A file without the roll keys doesn't count, and neither does a missing or unreadable one. Until the limits are known:
 - retention doesn't run at all, and the defaults never delete a clip;
 - the host never writes the limits into `pet-camera.json`, so a later start can't take the defaults for the owner's;
 - `storage_full` is never raised against the default cap; only the disk floor below stops recording;
@@ -366,7 +361,7 @@ The new camera-roll code is the only place colour is written: the writer, the th
 - the reminder text;
 - the CLI's `RECORD_REFUSED` paths.
 
-**Docs.** In W7, the README and `design.md` rules that say colour is never written (README "Colour is live only", and `design.md` §2 rules 2–4) each get one line pointing to this document for the camera-roll exception. The rules themselves are not reworded.
+**Docs.** The README and `design.md` rules that say colour is never written (README "Colour is live only", and `design.md` §2 rules 2–4) each have one line pointing to this document for the camera-roll exception.
 
 **Test hooks.** The camera-roll test hooks refuse the real source, as `screenshotAllowed` does. Tests write synthetic clips into temp folders only.
 
@@ -386,31 +381,28 @@ v3 §8 has the details. In short:
 
 **Firewall.** The app adds no firewall rules, which would need admin rights. Traffic from the router reaches the PC on its home network, which `windows-setup.md` already requires to be **Private**, and the existing allow rule for `kinect-viewer.exe` covers it. The PC shows a hint if the active profile is Public, while outside viewing is on: it reads the connected networks' categories (`INetworkListManager`) and never changes them.
 
-## 8. Stages
+## 8. The parts and their tests
 
-One PR per stage, against `main`, each reviewed before it merges.
-
-1. **Spec PR (docs only):** this document, v3, and a pointer in `protocol-changes.md`. It is reviewed before any code.
-2. **W6, multi-viewer and roles.**
+1. **Multi-viewer and roles.**
    - **Devices:** the device list, reconciliation and the mirror (§5), roles in pairing and on the wire, and revoke and re-pair.
    - **Protocol:** per-session `0x07`, plus `0x0B`/`0x0C`/`0x0D`/`0x0E`/`0x0F`.
    - **Video:** tiers with one thread per tier, the downscaler, the host-wide epoch, and per-session keyframes and configs.
    - **Sessions:** watcher slots with owner pre-emption, the 8/16 limits, "Watching now", privacy mode, share on/off with its schedule, and the replay and freeze rules.
    - **Infrastructure:** the `--state-dir` test isolation, and the PC UI for all of this.
 
-   `petCamera.cameraRoll` and `petCamera.outside` stay `false`. **Tests:** v3 §10 W6.
-3. **W7, camera roll.**
-   - **Writing:** the pass-through MP4/fMP4 writer, sidecars, thumbnails and index.
+   **Tests:** v3 §10, multi-viewer and roles.
+2. **The camera roll.**
+   - **Writing:** the pass-through fMP4 writer, sidecars, thumbnails and index.
    - **Triggers:** manual, motion and schedule.
    - **Housekeeping:** retention, the floor, and handling interrupted clips.
    - **Protocol:** list, thumbnail and playback (`0x12`–`0x19`).
    - **PC:** the roll browser with its own player window, and the roll settings.
 
-   It sets `petCamera.cameraRoll: true`.
+   It sets `petCamera.cameraRoll: true` while the host has a camera roll it can use.
 
    **Tests** (synthetic and temp folders only):
    - **The file:** a clip from the synthetic source reads back through `IMFSourceReader` with the right frame count and timestamps. The number of sync samples equals the number of IDRs, and a seek lands on an IDR.
-   - **Interrupted clips:** an interrupted (never finalized) clip is recovered (fMP4), or deleted and logged (plain MP4).
+   - **Interrupted clips:** an interrupted (never finalized) clip is recovered, or deleted and logged if it can't be read.
    - **Sidecar and index:** the sidecar and index round-trip, and the index is rebuilt from sidecars.
    - **Retention:** it deletes the oldest clips first and keeps starred ones. The day limit works. A viewer can unstar only its own star, and revoking a device drops its stars.
    - **The floor:** it stops recording, simulated through the free-space seam, never by filling a disk.
@@ -420,7 +412,7 @@ One PR per stage, against `main`, each reviewed before it merges.
    - **Playback over the protocol:** on a fake v3 device, every row of the v3 §5.9 table works; `0x18` arrives before `0x19`, the stream id is respected, and live video stops while playing.
    - **Blocked cases:** privacy mode stops playback and refuses thumbnails. A viewer can't delete.
    - **Real source:** the roll writer refuses the real source under test hooks.
-4. **W8, outside the home.**
+3. **Outside the home.**
    - **The listener:** the outside listener and its own TLS context, on a configurable port.
    - **The router:** the UPnP flow with the manual fallback and the 10-minute re-check, the carrier-NAT check, and mapping removal when off.
    - **Access:** remote invites (`methodRaw 2`) and endpoint links, the local-only LAN filter, rate limits and blocking.
@@ -428,13 +420,8 @@ One PR per stage, against `main`, each reviewed before it merges.
 
    It sets `petCamera.outside: true`.
 
-   **Tests:** v3 §10 W8, with UPnP behind an interface so the tests use a fake router. No test touches the real router or opens a port beyond loopback.
-5. **The Mac and iOS half** (phase 9) is built against the merged spec.
-
-**Done means**, for each Windows stage:
-- It builds with no new warnings, and ctest is green.
-- The PR says what changed, how it was tested (synthetic only), what the owner should check with the real camera, and its honest limits, especially carrier NAT.
-- The owner's build folder is rebuilt after each merge, after checking that nothing is running from it.
+   **Tests:** v3 §10, outside the home, with UPnP behind an interface so the tests use a fake router. No test touches the real router or opens a port beyond loopback.
+4. **The Mac and iOS half** is built against the same spec (v3 §10, Mac and iOS).
 
 ## 9. Honest limits (known now)
 
@@ -448,10 +435,10 @@ One PR per stage, against `main`, each reviewed before it merges.
 - **Playback:**
   - Seeks are keyframe-accurate, to within 1 s.
   - Clips play back at the recorded `medium` quality with no re-encode, so a very slow link plays late rather than at lower quality.
-- **Interrupted clips** survive only if fMP4 works out in W7. With plain MP4, a clip cut short by a crash or power loss is lost.
+- **Interrupted clips** keep only what reached their last fragment before a crash or power loss.
 - **Motion by depth** needs depth to be decoded (§6.2). It sees moving shapes, not what they are, and anything inside the cut-off range counts.
 - **Old phones retry once a second** while they are refused or unavailable (v3 §2.4). The cost is a TLS handshake a second, and the log coalesces it.
-- **Global IPv6 at home.** If phones at home reach the PC over a global IPv6 address, the local-only filter accepts it only when it's inside one of the PC's on-link prefixes. The owner should check pairing still works after W8 on their network.
+- **Global IPv6 at home.** If phones at home reach the PC over a global IPv6 address, the local-only filter accepts it only when it's inside one of the PC's on-link prefixes. The owner should check pairing still works on their network.
 - **Real-world checks only the owner can do.** No test exercises the router mapping, the WAN address, mobile-data viewing or real-camera clips. Tests use a fake router and the synthetic source.
 
 ## 10. The owner's checklist at the end

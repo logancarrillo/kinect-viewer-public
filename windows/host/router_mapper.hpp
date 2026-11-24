@@ -1,6 +1,6 @@
-// W8 (outside the home), Phase A: the router port mapping (protocol v3 §8.2) and the public address it reads
+// Outside the home: the router port mapping (protocol v3 §8.2) and the public address it reads
 // (§8.3). The mapping logic runs against a RouterSession seam; the real one is NATUPnP (natupnp.h, COM),
-// opened by openNatUpnpSession on a thread that has COM initialised (Phase B's own UPnP thread, never the UI
+// opened by openNatUpnpSession on a thread that has COM initialised (the outside mapper's own UPnP thread, never the UI
 // thread: each call can take seconds). Tests use a fake router and never reach NATUPnP.
 #pragma once
 

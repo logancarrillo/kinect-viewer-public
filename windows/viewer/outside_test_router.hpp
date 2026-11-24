@@ -1,4 +1,4 @@
-// W8, the --test-outside hook's fake router (v3 §10: no test reaches the real router, not even to read). The host
+// The --test-outside hook's fake router (v3 §10: no test reaches the real router, not even to read). The host
 // gets it through HostController::Options::router_factory, so its mapper runs every §8.2/§8.3 step against this
 // object. HOST's test utilities have no scripted fake the viewer can link, so this one is the viewer's own. The
 // script and the counts are guarded: the host's mapper calls it from its own worker threads.

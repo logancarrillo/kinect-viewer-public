@@ -1,4 +1,4 @@
-// W8, outside the home, on the PC (pet-camera.md §4, the outside rows; protocol v3 §8): what the Pet camera
+// Outside the home, on the PC (pet-camera.md §4, the outside rows; protocol v3 §8): what the Pet camera
 // panel's "Outside the home" section and its windows show, as pure functions over plain structs, so the unit
 // tests check every status's text and every control's state without a window or a host.
 #pragma once

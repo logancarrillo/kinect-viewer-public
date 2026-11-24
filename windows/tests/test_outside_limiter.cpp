@@ -1,4 +1,4 @@
-// W8 Phase A: the outside listener's admission limits (v3 §8.5, with a per-source cap of 2
+// The outside listener's admission limits (v3 §8.5, with a per-source cap of 2
 // unauthenticated connections at once and the IPv6 /64 source). An injected clock; no sockets.
 #include "kv_test.hpp"
 

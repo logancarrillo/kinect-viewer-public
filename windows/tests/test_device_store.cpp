@@ -928,7 +928,7 @@ KV_TEST(pet_settings_defaults_and_round_trip) {
 
 KV_TEST(pet_settings_lenient_reading) {
     PetSettings s;
-    // Unknown keys (a later stage's) are ignored; bad values give defaults; bad rows are dropped.
+    // Unknown keys (a later version's) are ignored; bad values give defaults; bad rows are dropped.
     KV_CHECK(fromJson("{\"sharingEnabled\":\"yes\",\"privacyMode\":true,\"rollEnabled\":true,"
                       "\"outsidePort\":51000,\"sharingSchedule\":["
                       "{\"days\":2,\"from\":\"08:00\",\"to\":\"09:00\",\"note\":\"x\"},"
@@ -955,7 +955,7 @@ KV_TEST(pet_settings_lenient_reading) {
 
 }
 
-// W8 (pet-camera.md §4, v3 §8.1): the outside keys go after the roll keys and fail closed. Outside listening is on
+// The outside keys (pet-camera.md §4, v3 §8.1) go after the roll keys and fail closed. Outside listening is on
 // only for a real true; a port outside 1024-65535 reads as none (a new one is picked); an address that isn't a
 // public IPv4 reads as none.
 KV_TEST(pet_settings_outside_keys_after_the_roll_keys_and_fail_closed) {
@@ -1003,9 +1003,9 @@ KV_TEST(pet_settings_outside_keys_after_the_roll_keys_and_fail_closed) {
     PetSettings edge;
     KV_CHECK(fromJson("{\"outsidePort\":1024,\"outsidePublicAddress\":\"  203.0.113.142 \"}", edge, samples));
     KV_CHECK(edge.outsidePort == 1024 && edge.outsidePublicAddress == "203.0.113.142");
-    // A W7 file has none of the keys: outside listening stays off.
-    PetSettings w7;
-    KV_CHECK(fromJson("{\"sharingEnabled\":true,\"rollEnabled\":true}", w7) && !w7.allowOutside && w7.outsidePort == 0);
+    // A file with only roll keys has none of the outside keys: outside listening stays off.
+    PetSettings rollOnly;
+    KV_CHECK(fromJson("{\"sharingEnabled\":true,\"rollEnabled\":true}", rollOnly) && !rollOnly.allowOutside && rollOnly.outsidePort == 0);
 }
 
 // outsideMappingRemoved, a bool written after the other outside keys,

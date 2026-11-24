@@ -1,4 +1,4 @@
-// The pet camera's windows on the PC (pet-camera.md §4, protocol v3 W6): the Devices dialog (name, role,
+// The pet camera's windows on the PC (pet-camera.md §4, protocol v3): the Devices dialog (name, role,
 // kind, paired, last seen, connected; Rename, Role, Re-pair, Revoke, Revoke all, Pair a device...) and
 // the sharing-schedule editor. Both are modeless and talk to the host only through StreamHooks, on the
 // UI thread. The panel section and the "Watching now" banner live in viewer_app.cpp.

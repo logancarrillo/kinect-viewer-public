@@ -1,4 +1,4 @@
-// W8 Phase A: remote invites (v3 §8.4): the kv2://invite and kv2://endpoint links, the methodRaw 2 golden
+// Remote invites (v3 §8.4): the kv2://invite and kv2://endpoint links, the methodRaw 2 golden
 // proof, and the invite store (10 minutes, once, one at a time, a wrong proof or a certificate mismatch burns
 // it), kept in invite.json and failing closed. New temp folders only.
 #include "kv_test.hpp"

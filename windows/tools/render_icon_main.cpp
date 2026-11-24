@@ -1,4 +1,4 @@
-// kv-render-icon <logo.svg> <out.ico>: the build makes the app icon from phase 6's logo with this.
+// kv-render-icon <logo.svg> <out.ico>: the build makes the app icon from the logo with this.
 #include "icon_render.hpp"
 
 #ifndef WIN32_LEAN_AND_MEAN

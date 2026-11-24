@@ -51,7 +51,7 @@ public:
     // The pairRequest's methodRaw (tests send 2, an invite, to the LAN pairing listener).
     void setPairMethodOverride(std::optional<uint8_t> m) { method_override_ = m; }
     // The pairRequest's clientCertDER (and the proof's client hash) from another certificate than the TLS leaf
-    // (a W8 invite test: the host burns the invite and closes without a reply).
+    // (an outside-invite test: the host burns the invite and closes without a reply).
     void setClientCertOverride(std::optional<Bytes> der) { cert_override_ = std::move(der); }
     // A frame this phone's reader refused (for a v1 phone: a v2 message reached it).
     bool violated() const { return violated_; }

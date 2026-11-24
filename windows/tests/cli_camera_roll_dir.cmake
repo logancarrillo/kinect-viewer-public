@@ -1,10 +1,10 @@
-# kinect-cli serve --camera-roll-dir (W7, protocol v3 §10 "Test isolation"): the roll is recorded only into the
+# kinect-cli serve --camera-roll-dir (protocol v3 §10 "Test isolation"): the roll is recorded only into the
 # folder named on the command line. Without the flag serve has no roll at all (it never picks a folder of its
 # own, so a test can't reach the real camera roll); a folder the roll refuses (pet-camera.md §6.5: here one that
 # holds other files) stops serve with exit 2 and the reason, and is left as it was. Synthetic, loopback only,
 # in the build tree.
 #
-# W7: a synthetic or loopback-only serve is a test run, whose folder must be new,
+# A synthetic or loopback-only serve is a test run, whose folder must be new,
 # empty, or a test roll (it holds .kinect-viewer-test-roll, which the host writes when it prepares one). A temp folder
 # made to look like a real roll is refused and left alone. No real path is ever passed here, not even to check a
 # refusal: the path-text refusals are checked by parsing (test_viewer_model). The run that turns the roll on waits
@@ -14,7 +14,7 @@ file(REMOVE_RECURSE "${base}")
 file(MAKE_DIRECTORY "${base}")
 
 # A new folder, with the roll off (a fresh state, no pet-camera.json): accepted and named in the output, but
-# left alone. W7: with the roll off the host creates and changes nothing there.
+# left alone. With the roll off the host creates and changes nothing there.
 set(roll "${base}/roll")
 set(state "${base}/state") # this host's own state, so the next run can turn the roll on in its pet-camera.json
 execute_process(

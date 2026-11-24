@@ -1,4 +1,4 @@
-# kinect-cli record refuses colour (phase 0): exit 2, the exact sentence, and its --out folder is
+# kinect-cli record refuses colour: exit 2, the exact sentence, and its --out folder is
 # never created (the folder is in the build tree, so even a regression couldn't write into the real
 # recordings folder).
 set(out "${OUTDIR}/refused-recordings-${MODE}")

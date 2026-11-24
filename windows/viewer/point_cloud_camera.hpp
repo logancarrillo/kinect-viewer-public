@@ -49,7 +49,7 @@ void applyPhoneGesture(PointCloudCamera& c, float delta_yaw, float delta_pitch, 
 bool projectSensorPoint(const PointCloudCamera& cam, float aspect, float fx, float fy, float cx, float cy, int col, int row,
                         float depth_mm, bool flip_x, bool flip_y, float out_clip[4]);
 
-// The phase 7 rule: the 3D view uses the depth camera's own intrinsics or nothing (no made-up
+// The rule: the 3D view uses the depth camera's own intrinsics or nothing (no made-up
 // fallback values). A recording without them can't be shown in 3D.
 bool pointCloudIntrinsicsUsable(const kv_ir_intrinsics_t& intr);
 constexpr const wchar_t* kNo3DIntrinsics =

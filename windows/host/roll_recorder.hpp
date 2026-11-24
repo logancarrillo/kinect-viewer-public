@@ -1,4 +1,4 @@
-// The camera-roll recorder (pet-camera.md §6.1-§6.4, protocol v3 §5.1-§5.2): it joins the Phase A pieces
+// The camera-roll recorder (pet-camera.md §6.1-§6.4, protocol v3 §5.1-§5.2): it joins the roll's separate pieces
 // into one running thing. The `medium` live tier's H.264 feeds the pre-roll ring; the trigger set
 // (manual, motion by depth, schedule) decides when a clip runs; a pass-through writer records each clip
 // over the .mp4 the store reserved; and each clip is finalized with its thumbnail, sidecar and index

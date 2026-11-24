@@ -48,7 +48,7 @@ bool fromJson(const std::string& text, HostPersistedState& s) {
         !json::getBool(v, "allowPhoneModeSwitch", s.allowPhoneModeSwitch)) {
         return false;
     }
-    // A file written before phase 7 has neither key: the defaults apply, as decodeIfPresent ?? does.
+    // A file written before the power setting existed has neither key: the defaults apply, as decodeIfPresent ?? does.
     std::optional<bool> allow_power, off_on_disconnect;
     if (!json::getOptBool(v, "allowPhoneSensorPowerControl", allow_power) ||
         !json::getOptBool(v, "turnOffKinectOnPhoneDisconnect", off_on_disconnect)) {

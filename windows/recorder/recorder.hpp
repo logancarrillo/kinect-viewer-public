@@ -1,7 +1,7 @@
 // Host-only recorder (port of macos/Recording/HostRecorder.swift), Windows edition.
 //   IR / Depth only: 16-bit lossless. FFV1 .mkv via `ffmpeg -nostdin` (gray16le), or a 16-bit PNG
 //   sequence via WIC. Both write <stem>_timestamps.csv.
-//   Colour is live only (phase 0): Colour and every Side-by-Side layout are refused with
+//   Colour is live only: Colour and every Side-by-Side layout are refused with
 //   "Colour is live only. Switch to IR or Depth to record." before anything is created. There is no
 //   colour writer at all, and nothing colour-derived is ever written.
 // Files go to %USERPROFILE%\kinect-viewer-recordings\<stamp>_<mode>.nosync\ only: never OneDrive, owner-only

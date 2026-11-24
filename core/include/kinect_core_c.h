@@ -78,11 +78,11 @@ typedef struct kv_display_params {
     /* Synthetic latency clock overlay */
     bool clock_overlay;
 
-    /* Orientation transforms (Phase 1) */
+    /* Orientation transforms */
     bool mirror_horizontal;
     bool rotate_180;
 
-    /* Depth cut-off, Depth/Colour blend & 3D Point Cloud controls (Phase 3) */
+    /* Depth cut-off, Depth/Colour blend & 3D Point Cloud controls */
     bool cutoff_enabled;
     float cutoff_near_mm;       /* default 500.0f */
     float cutoff_far_mm;        /* default 2000.0f */
@@ -247,7 +247,7 @@ bool kv_engine_start_ex(
 
 bool kv_engine_is_rgb_active(const kv_engine_t* engine);
 
-/* Start in-app recording playback mode through the live mapping & inspection pipeline (Phase 2).
+/* Start in-app recording playback mode through the live mapping & inspection pipeline.
  * Releases any open hardware device and ~/KINECT-IN-USE lock first. */
 bool kv_engine_start_replay(
     kv_engine_t* engine,
@@ -357,7 +357,7 @@ bool kv_engine_copy_point_cloud_inputs(
     kv_ir_intrinsics_t* out_intrinsics
 );
 
-/* Copy latest live 1920x1080 BGRA8 colour frame in memory only (for on-device Vision pose estimation in Phase 4).
+/* Copy latest live 1920x1080 BGRA8 colour frame in memory only (for on-device Vision pose estimation).
  * Returns false in replay mode or when no new colour frame has arrived since last_seen_color_seq. */
 bool kv_engine_copy_latest_color_bgra(
     kv_engine_t* engine,

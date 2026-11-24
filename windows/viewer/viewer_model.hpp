@@ -41,11 +41,11 @@ struct ViewerSettings {
     float manual_integration_ms = 16.6f;     // (0, 66]
     float manual_analog_gain = 1.5f;         // [1, 4]
 
-    // Orientation (phase 1: M mirrors, R rotates 180 degrees), done in the core's mapping.
+    // Orientation (M mirrors, R rotates 180 degrees), done in the core's mapping.
     bool mirror_horizontal = false;
     bool rotate_180 = false;
 
-    // Phase 3 (the Mac's HostController). The depth cut-off blacks out everything
+    // As in the Mac's HostController. The depth cut-off blacks out everything
     // outside [near, far] in every mode, 3D included; "Track me" is 500-2000 mm.
     bool cutoff_enabled = false;
     float cutoff_near_mm = 500.0f;  // [200, 5000]
@@ -125,12 +125,12 @@ struct LaunchOptions {
     std::wstring screenshot_path;     // test hook: PrintWindow capture of the main window
     int screenshot_after_ms = 2000;
     bool exit_after_screenshot = false;
-    bool serve_loopback_only = false; // W3 tests: bind the stream listeners to 127.0.0.1 only
+    bool serve_loopback_only = false; // tests: bind the stream listeners to 127.0.0.1 only
     // Where the streaming host keeps its state (pairing.json, devices.json, pet-camera.json). Empty:
     // %USERPROFILE%\kinect-viewer\.host-state, except that a --synthetic or test-hook launch never
     // touches it and uses a fresh temp folder instead (v3 §10 "Test isolation").
     std::wstring state_dir;
-    bool pair_on_start = false;       // W3 test hook: open the pairing window at launch
+    bool pair_on_start = false;       // test hook: open the pairing window at launch
     bool show_health = false;         // start with the health display on (H)
     // Test hook (with --screenshot, so synthetic only): before the capture, a region box and a ruler
     // are placed on the depth image and the view is frozen; the report carries the inspector line.
@@ -140,7 +140,7 @@ struct LaunchOptions {
     // out through B's own code and captured again.
     bool test_second_display = false;
     // Test hook (with --screenshot, so synthetic only; implies --loopback-only): the pet camera panel
-    // (protocol v3, W6). A fake v3 device on this PC pairs through the pairing window and watches; the
+    // (protocol v3). A fake v3 device on this PC pairs through the pairing window and watches; the
     // hook toggles privacy, sharing and a sharing schedule through the panel's own code, opens the
     // Devices dialog and captures it, renames and revokes the device, and reports each step.
     bool test_pet_camera = false;
@@ -148,7 +148,7 @@ struct LaunchOptions {
     // pairing.json can't be used: checks the Pet camera panel's error and its buttons, presses "Try again",
     // then "Reset this PC's identity" past its confirm dialog, and pairs the fake v3 device once the host serves.
     bool test_identity_reset = false;
-    // W7, the camera roll (v3 §10 "Test isolation"). --camera-roll-dir: the folder a test run's roll records
+    // The camera roll (v3 §10 "Test isolation"). --camera-roll-dir: the folder a test run's roll records
     // into, with --synthetic only; a test launch without it has no roll at all, whatever pet-camera.json says.
     // A real launch takes the rollFolder setting, or realLaunchRollFolder's default.
     std::wstring camera_roll_dir;
@@ -156,7 +156,7 @@ struct LaunchOptions {
     // roll's panel settings, a motion clip and a manual clip through the panel's own code, the roll browser
     // and its player window, and the screenshot rule while a clip is on screen.
     bool test_camera_roll = false;
-    // W8 test hook (with --screenshot, --synthetic and --state-dir; implies --loopback-only): the Pet camera
+    // Test hook (with --screenshot, --synthetic and --state-dir; implies --loopback-only): the Pet camera
     // panel's "Outside the home" section against a scripted fake router the viewer hands the host
     // (Options::router_factory), never the real one: each status's sentence, the manual address field, an invite
     // made and cancelled (its token never shown or written: only that it was shown and its length), the
@@ -186,9 +186,10 @@ constexpr int kScreenshotRefusedExit = 3;
 
 // Parses --synthetic, --real, --no-autostart, --mode, --sbs-layout, --colormap, --pipeline,
 // --clock-overlay, --screenshot PATH, --screenshot-after-ms N, --exit-after-screenshot,
-// --loopback-only, --pair-on-start, and phase 3's --mode 3d, --point-color depth|ir|rgb,
-// --point-size PX, --track-me, --blend PERCENT; W6's --state-dir DIR, --test-pet-camera and
-// --test-identity-reset; W7's --camera-roll-dir DIR and --test-camera-roll; W8's --test-outside. Refuses (false,
+// --loopback-only, --pair-on-start, and the 3D view's --mode 3d, --point-color depth|ir|rgb,
+// --point-size PX, --track-me, --blend PERCENT; the pet camera's --state-dir DIR, --test-pet-camera and
+// --test-identity-reset; the camera roll's --camera-roll-dir DIR and --test-camera-roll; and the outside
+// listener's --test-outside. Refuses (false,
 // camera_roll_refused) roll flags that cameraRollFlagsAcceptable turns down, before anything else, and (false,
 // outside_refused) --test-outside that outsideTestFlagsAcceptable turns down. With
 // --screenshot, refuses (false, screenshot_refused) unless screenshotAllowed. Refuses (false,
@@ -205,7 +206,7 @@ bool isTestLaunch(const ViewerSettings& s, const LaunchOptions& lo);
 // runs only. --camera-roll-dir needs --synthetic; --test-camera-roll needs both; and the folder must not be,
 // hold or sit inside a real or known folder (cameraRollTestDirAcceptable). why: the reason, when false.
 bool cameraRollFlagsAcceptable(const ViewerSettings& s, const LaunchOptions& lo, std::wstring* why);
-// W8 (v3 §10): --test-outside drives the outside listener's panel against a fake router, so it needs --synthetic
+// v3 §10: --test-outside drives the outside listener's panel against a fake router, so it needs --synthetic
 // and a --state-dir of the test's own (pet-camera.json, invite.json and the connection log stay in it).
 bool outsideTestFlagsAcceptable(const ViewerSettings& s, const LaunchOptions& lo, std::wstring* why);
 // A test's roll folder (already normalized) is checked by its path alone, so the real folders are never
@@ -270,16 +271,16 @@ bool stateDirAcceptable(const std::wstring& dir, std::wstring* why);
 // colour, the depth/colour blend, nor 3D with RGB points), and never while a depth/IR recording
 // replays in the view (v3 §10: those are real frames). It is checked at launch and again at the
 // moment of capture (the source, the view or a replay may have changed).
-// W7 (pet-camera.md §6.6, v3 §10): also refused while a camera-roll clip is on screen (roll_on_screen: the
+// The camera roll (pet-camera.md §6.6, v3 §10): also refused while a camera-roll clip is on screen (roll_on_screen: the
 // player window is open, or the roll browser shows clips' thumbnails), whatever the main view shows.
 bool screenshotAllowed(const ViewerSettings& s, std::wstring* why = nullptr);
 bool screenshotAllowed(const ViewerSettings& s, bool replaying, std::wstring* why = nullptr);
 bool screenshotAllowed(const ViewerSettings& s, bool replaying, bool roll_on_screen, std::wstring* why);
-// W8 (v3 §10): also refused while the invite window is open (invite_on_screen): it shows a live token, which no
+// Outside the home (v3 §10): also refused while the invite window is open (invite_on_screen): it shows a live token, which no
 // capture may hold.
 bool screenshotAllowed(const ViewerSettings& s, bool replaying, bool roll_on_screen, bool invite_on_screen, std::wstring* why);
 
-// ---- recording rules (phase 0), shared by the viewer and its tests ----
+// ---- recording rules (colour is never recorded), shared by the viewer and its tests ----
 // IR and Depth only (kvrec::Recorder::canRecord says the same; test_recorder checks they agree).
 bool recordingAllowedInMode(kv_view_mode_t mode);
 // The mode allows it and the blend (live colour) is off, as the Mac's canRecordCurrentMode.

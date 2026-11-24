@@ -371,7 +371,7 @@ bool avccHasIdr(const Bytes& avcc) {
     return false;
 }
 
-// Writes a clip the way Phase B will: the ring is fed frames 0..209, the clip starts with its pre-roll
+// Writes a clip the way the roll recorder does: the ring is fed frames 0..209, the clip starts with its pre-roll
 // (which must begin at the IDR of frame 60) and then takes the live frames 210..299.
 struct WrittenClip {
     bool ok = false;

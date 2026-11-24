@@ -94,7 +94,7 @@ std::string presetJson(const ViewerPreset& p) {
         .doubleField("manualAnalogGain", s.manual_analog_gain)
         .field("mirrorHorizontal", s.mirror_horizontal)
         .field("rotate180", s.rotate_180);
-    const PresetPhase3& x = p.phase3;
+    const PresetCutoffAndPoints& x = p.cutoff_points;
     if (x.cutoff_enabled) w.field("cutoffEnabled", *x.cutoff_enabled);
     if (x.cutoff_near_mm) w.doubleField("cutoffNearMm", *x.cutoff_near_mm);
     if (x.cutoff_far_mm) w.doubleField("cutoffFarMm", *x.cutoff_far_mm);
@@ -130,7 +130,7 @@ bool presetFromJson(const json::Value& v, ViewerPreset& p) {
         !json::getBool(v, "mirrorHorizontal", s.mirror_horizontal) || !json::getBool(v, "rotate180", s.rotate_180)) {
         return false;
     }
-    PresetPhase3& x = p.phase3;
+    PresetCutoffAndPoints& x = p.cutoff_points;
     std::optional<int> src;
     if (!json::getOptBool(v, "cutoffEnabled", x.cutoff_enabled) || !optDouble(v, "cutoffNearMm", x.cutoff_near_mm) ||
         !optDouble(v, "cutoffFarMm", x.cutoff_far_mm) || !optDouble(v, "pointCloudSize", x.point_size) ||
@@ -171,11 +171,11 @@ ViewerPreset capturePreset(const std::string& name, const ViewerSettings& s) {
     p.name = name;
     p.settings = s;
     p.settings.depth_color_blend_enabled = false; // live colour: never saved
-    p.phase3.cutoff_enabled = s.cutoff_enabled;
-    p.phase3.cutoff_near_mm = s.cutoff_near_mm;
-    p.phase3.cutoff_far_mm = s.cutoff_far_mm;
-    p.phase3.point_size = s.point_size;
-    p.phase3.point_color_source = s.point_color_source;
+    p.cutoff_points.cutoff_enabled = s.cutoff_enabled;
+    p.cutoff_points.cutoff_near_mm = s.cutoff_near_mm;
+    p.cutoff_points.cutoff_far_mm = s.cutoff_far_mm;
+    p.cutoff_points.point_size = s.point_size;
+    p.cutoff_points.point_color_source = s.point_color_source;
     return p;
 }
 
@@ -202,7 +202,7 @@ void applyPreset(const ViewerPreset& p, ViewerSettings& s) {
     s.manual_analog_gain = f.manual_analog_gain;
     s.mirror_horizontal = f.mirror_horizontal;
     s.rotate_180 = f.rotate_180;
-    const PresetPhase3& x = p.phase3;
+    const PresetCutoffAndPoints& x = p.cutoff_points;
     if (x.cutoff_enabled) s.cutoff_enabled = *x.cutoff_enabled;
     if (x.cutoff_near_mm) s.cutoff_near_mm = *x.cutoff_near_mm;
     if (x.cutoff_far_mm) s.cutoff_far_mm = std::max(s.cutoff_near_mm + 50.0f, *x.cutoff_far_mm);

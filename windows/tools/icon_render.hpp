@@ -1,4 +1,4 @@
-// The Windows app icon from phase 6's logo (design/logo.svg, the Mac's master from
+// The Windows app icon from the logo (design/logo.svg, the Mac's master from
 // design/render-icons.swift). Direct2D draws the SVG once at its own 1024x1024 size, and WIC scales
 // that down to each icon size; the .ico holds every size as a PNG. Windows' own Direct2D and WIC only:
 // no new dependency. Run at build time (kv-render-icon), so the icon always follows the SVG.

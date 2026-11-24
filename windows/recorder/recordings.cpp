@@ -149,7 +149,7 @@ std::optional<SessionItem> parseSession(const std::wstring& folder, const std::w
             if (s.duration_sec <= 0.0) s.duration_sec = st.duration;
         }
     } else {
-        // No session_meta.json (a W4 session): only explicit ir16 / depth16mm markers count.
+        // No session_meta.json (an older session): only explicit ir16 / depth16mm markers count.
         const bool depth = endsWith(name, L"_depth16mm.nosync") || exists(folder + L"\\depth16mm_timestamps.csv") ||
                            exists(folder + L"\\depth16mm_lossless.mkv") || exists(folder + L"\\depth16mm_000000.png");
         const bool ir = !depth && (endsWith(name, L"_ir16.nosync") || exists(folder + L"\\ir16_timestamps.csv") ||

@@ -64,7 +64,7 @@ void HostPowerModel::request(bool turn_on) {
         set(SensorPowerState::Off, std::nullopt, std::nullopt);
         return;
     }
-    // Turning On never starts a recording on its own (phase 5.7); the backend's open() doesn't.
+    // Turning On never starts a recording on its own; the backend's open() doesn't.
     if (backend_.isOpen() && snapshot().state == SensorPowerState::On) {
         set(SensorPowerState::On, std::nullopt, std::nullopt); // confirm, change nothing
         return;

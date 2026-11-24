@@ -1,5 +1,5 @@
 // Core-on-Windows tests that run against the synthetic source only (no Kinect needed).
-#include "kv_desk.hpp"
+#include "kv_load.hpp"
 #include "kv_test.hpp"
 #include "kinect_core_c.h"
 
@@ -57,9 +57,9 @@ KV_TEST(usb_presence_check_runs_quickly_without_opening_anything) {
 
 // The synthetic source at 30 fps: frames at the right size, no sequence drops, every clock barcode valid, a rate in
 // 27-33 fps, all checked in every run. That 95 % of the gaps between frames stay under 40 ms (33.3 ms nominal) is a
-// timing floor, judged against the desk: a busy PC delays the source's thread now and then with nothing wrong in it.
+// timing floor, judged against the PC's load: a busy PC delays the source's thread now and then with nothing wrong in it.
 KV_TEST(synthetic_ir_streams_30fps_with_valid_clock_barcode) {
-    kvtest::DeskSampler desk;
+    kvtest::LoadSampler load;
     const std::string lock = tempLock();
     kv_engine_t* eng = kv_engine_create(lock.c_str());
     KV_REQUIRE(eng != nullptr);
@@ -88,7 +88,7 @@ KV_TEST(synthetic_ir_streams_30fps_with_valid_clock_barcode) {
     }
     kv_stats_snapshot_t st;
     kv_engine_get_stats(eng, &st);
-    const kvtest::DeskSnapshot timed = desk.snapshot();
+    const kvtest::LoadSnapshot timed = load.snapshot();
     std::printf("  ir_frames=%llu fps=%.2f p95=%.1f ms barcode=%d/%d drops=%llu\n  %s\n",
                 static_cast<unsigned long long>(st.ir_frames), st.current_fps, st.inter_frame_p95_ms, valid, checked,
                 static_cast<unsigned long long>(st.ir_seq_drops), timed.r.line().c_str());
@@ -148,7 +148,7 @@ KV_TEST(synthetic_all_modes_have_expected_dimensions) {
     kv_engine_destroy(eng);
 }
 
-// The core's contract changed with the Mac's phase PRs (kv_engine_start_ex): the
+// The core's contract changed with kv_engine_start_ex: the
 // synthetic source takes no lock at the default path (~\KINECT-IN-USE), but does take a custom lock
 // path it was created with, so lock handling can be tested without a sensor.
 KV_TEST(synthetic_source_never_takes_the_kinect_lock) {

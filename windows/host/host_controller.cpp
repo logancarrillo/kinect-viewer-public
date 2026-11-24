@@ -62,7 +62,7 @@ bool HostController::start(const Options& opts, std::string* err, bool* identity
     server_.onOutsideChanged = [this]() {
         if (onOutsideChanged) onOutsideChanged();
     };
-    // W7: the roll, before the server starts, so the first hello already says whether there is one. Only
+    // The roll, before the server starts, so the first hello already says whether there is one. Only
     // the folder the caller named is ever used (v3 §10); a folder refused (§6.5) leaves the host without a
     // roll and the reason in rollError().
     roll_.reset();
@@ -111,7 +111,7 @@ bool HostController::start(const Options& opts, std::string* err, bool* identity
             server_.setRollFolderUnavailable(true);
         }
     }
-    // W8 (v3 §8.2, §10): the router the host may use. A test's fake when given; otherwise the real NATUPnP
+    // v3 §8.2, §10: the router the host may use. A test's fake when given; otherwise the real NATUPnP
     // session only outside a test run and off loopback. A test run gets no router (manual), and its outside
     // listener stays on 127.0.0.1.
     HostStreamServer::Options so = opts.server;
@@ -222,7 +222,7 @@ bool HostController::turnOffSkippedForRoll() const {
     return server_.petSettings().rollEnabled;
 }
 
-// ---- outside the home (W8) -------------------------------------------------------------------------------
+// ---- outside the home ------------------------------------------------------------------------------------
 
 OutsideView HostController::outsideView() const { return server_.outsideView(); }
 bool HostController::setAllowOutside(bool on, std::string* err) { return server_.setAllowOutside(on, err); }

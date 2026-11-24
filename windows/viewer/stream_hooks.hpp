@@ -1,4 +1,4 @@
-// iPhone streaming for the viewer (phase W3): wraps kvhost::HostController and the pairing window.
+// iPhone streaming for the viewer: wraps kvhost::HostController and the pairing window.
 #pragma once
 
 #include "keep_running.hpp"
@@ -48,7 +48,7 @@ public:
     void setAllowPhoneModeSwitch(bool allow) override;
     std::wstring statusLine() const override;
 
-    // The pet camera (W6).
+    // The pet camera.
     void setPetStateCallback(std::function<void()> on_pet_state) override;
     std::vector<kvhost::HostDeviceInfo> petDevices() const override;
     bool renameDevice(const std::string& deviceId, const std::string& name, std::string* err = nullptr) override;
@@ -71,7 +71,7 @@ public:
     bool resetHostIdentityAndStart(std::string* err, std::string* note, bool* identity_kept) override;
     std::string petSaveError() const override;
 
-    // The camera roll (W7).
+    // The camera roll.
     void setRollCallback(std::function<void(const std::string& clipId)> on_clip_finalized) override;
     bool rollAvailable() const override { return ctl_ && ctl_->rollAvailable(); }
     std::string rollError() const override;
@@ -101,7 +101,7 @@ public:
     kvhost::roll::RollError setRollClipStar(const std::string& clipId, bool starred) override;
     kvhost::roll::RollError deleteRollClip(const std::string& clipId) override;
 
-    // Outside the home (W8).
+    // Outside the home.
     bool outsideAvailable() const override;
     OutsidePanelView outsideView() const override;
     bool setAllowOutside(bool on, std::string* err) override;
@@ -159,7 +159,7 @@ private:
     std::function<void(const kvhost::Orbit3DGestureMessage&)> on_phone_orbit_;
     std::function<void()> on_pet_state_;
     std::function<void(const std::string&)> on_roll_clip_;
-    // W7: the folder this run's roll records into (empty: no roll), and why there is none when that is the
+    // The folder this run's roll records into (empty: no roll), and why there is none when that is the
     // launch's doing rather than the host's (a test run without --camera-roll-dir, an unreadable setting).
     std::wstring roll_dir_;
     std::string roll_note_;
@@ -176,7 +176,7 @@ private:
     std::wstring state_dir_;
     bool state_dir_temp_ = false;
     std::unique_ptr<PetTestDevice> test_device_;
-    // W8, --test-outside only: the fake router handed to the host (Options::router_factory), and whether the host
+    // --test-outside only: the fake router handed to the host (Options::router_factory), and whether the host
     // took it. It outlives every host started in this run, so a session the host's worker still holds stays valid.
     std::shared_ptr<OutsideTestRouter> test_router_;
     bool router_injected_ = false;

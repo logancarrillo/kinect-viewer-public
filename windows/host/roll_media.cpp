@@ -1097,7 +1097,7 @@ RollClipReader::Read RollClipReader::readRaw(RollSample& out, std::string* err) 
         out.duration_hns = d;
         // A keyframe is a sample with an IDR slice. MF's clean-point flag is kept for comparison: on an
         // fMP4 the MPEG-4 source reports the first sample of the second fragment as a clean point,
-        // although the file's own sample flags (trun) mark only the IDRs (found in W7).
+        // although the file's own sample flags (trun) mark only the IDRs.
         out.keyframe = au.idr;
         out.clean_point = MFGetAttributeUINT32(s.Get(), MFSampleExtension_CleanPoint, 0) != 0;
         return Read::Sample;

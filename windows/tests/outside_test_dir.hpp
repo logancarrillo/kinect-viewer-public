@@ -1,4 +1,4 @@
-// W8 Phase A tests: a state folder that is new for each test (never a real folder) and removed after it.
+// The outside modules' tests: a state folder that is new for each test (never a real folder) and removed after it.
 #pragma once
 
 #include "host_state.hpp"

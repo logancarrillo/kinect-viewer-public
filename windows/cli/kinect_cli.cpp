@@ -6,7 +6,7 @@
 //   kinect-cli bench [options]            60 s benchmark with a PASS/FAIL verdict (real sensor by default)
 //   kinect-cli verify-lock                Lock-guard self-test on a temp lock file (no device opened)
 //   kinect-cli verify-no-fallback         Ask for a pipeline this build lacks and check it fails cleanly
-//   kinect-cli serve [--pair] [options]   Headless iPhone streaming host (W3); --pair opens a 120 s window.
+//   kinect-cli serve [--pair] [options]   Headless iPhone streaming host; --pair opens a 120 s window.
 //                                         --state-dir DIR keeps its pairing and pet-camera state there; a
 //                                         --synthetic or --loopback-only serve without it uses a temp folder.
 //                                         --camera-roll-dir DIR records the camera roll there; without it the
@@ -15,13 +15,13 @@
 //                                         roll, and never a real folder by its path. --until-roll-prepared
 //                                         ends serve once the roll's folder is prepared (exit 4 if --duration
 //                                         runs out first): a test waits on that, not on a fixed duration.
-//                                         --outside-port N (W8) listens outside the home on port N too, when
+//                                         --outside-port N listens outside the home on port N too, when
 //                                         sharing is on in pet-camera.json; a test run (--synthetic or
 //                                         --loopback-only) binds it to 127.0.0.1 and never uses the router.
 //                                         --until-outside-reported ends serve once the outside status is a
 //                                         result (not "checking") and printed, or outside listening was refused
 //                                         (exit 4 if --duration runs out first): a test waits on that.
-//   kinect-cli record [options]           Host-only recording (W4) for --duration seconds (default 10)
+//   kinect-cli record [options]           Host-only recording for --duration seconds (default 10)
 //   kinect-cli router-probe --outside-port N
 //                                         Read-only: the v3 §8.3 gateway read, once, against this PC's router,
 //                                         and how a new public address would be judged (Confirmed, Contradicted,
@@ -102,13 +102,13 @@ struct Options {
     // the tests can pass one everywhere; only serve reads it.
     std::string state_dir;
     int state_dir_arg = -1; // its index in argv, to read it again from the wide command line
-    // serve: the camera-roll folder (W7). Without it the roll is off: serve never picks a folder of its own,
+    // serve: the camera-roll folder. Without it the roll is off: serve never picks a folder of its own,
     // so a test can't reach the real roll (protocol v3 §10 "Test isolation").
     std::string camera_roll_dir;
     int camera_roll_dir_arg = -1;
     bool until_roll_prepared = false; // serve: exit 0 once the roll folder is prepared; --duration is the deadline
     bool until_outside_reported = false; // serve: exit 0 once the outside status is a result; --duration is the deadline
-    // serve --outside-port N (W8, v3 §8.1): turn outside listening on, on this port, for the host's own state. 0: as
+    // serve --outside-port N (v3 §8.1): turn outside listening on, on this port, for the host's own state. 0: as
     // pet-camera.json says.
     int outside_port = 0;
 };
@@ -612,7 +612,7 @@ int cmdRun(const Options& o, bool bench) {
 
 #ifdef KV_WITH_RECORDER
 int cmdRecord(const Options& o) {
-    // Colour is live only (phase 0): refused before the sensor, or a folder, is opened.
+    // Colour is live only: refused before the sensor, or a folder, is opened.
     if (!kvrec::Recorder::canRecord(o.mode)) {
         std::fprintf(stderr, "RECORD_REFUSED: %s\n", kvhost::text::kColourLiveOnly);
         return 2;
@@ -822,7 +822,7 @@ int cmdServe(const Options& o) {
         return 2;
     }
     if (!o.camera_roll_dir.empty()) {
-        // W7: only the folder named here is ever recorded into (v3 §10). It is checked when the host starts.
+        // Only the folder named here is ever recorded into (v3 §10). It is checked when the host starts.
         ho.roll.dir = wideArgument(o.camera_roll_dir.c_str(), o.camera_roll_dir_arg, L"--camera-roll-dir");
         ho.roll.recordingsDir = recordingsDirForRoll();
         // A second line of refusal, as the viewer's: in a test run the real folders are refused by their path alone (none
@@ -905,7 +905,7 @@ int cmdServe(const Options& o) {
     if (ctl.rollAvailable()) std::printf("camera roll: %ls\n", ho.roll.dir.c_str());
     bool outside_refused = false; // --until-outside-reported: nothing more to wait for
     if (o.outside_port != 0) {
-        // W8: outside listening on, on this port, for this host's state (saved in its pet-camera.json, as the PC's
+        // Outside listening on, on this port, for this host's state (saved in its pet-camera.json, as the PC's
         // switch does). Refused with the reason while sharing is off or pet-camera.json can't be read.
         std::string oerr;
         if (!ctl.setOutsidePort(static_cast<uint16_t>(o.outside_port), &oerr) || !ctl.setAllowOutside(true, &oerr)) {
@@ -977,7 +977,7 @@ int cmdServe(const Options& o) {
 
     std::vector<uint8_t> buf(1920 * 1080 * 4);
     uint64_t last = 0;
-    // W7 motion (pet-camera.md §6.2): the live sensor's depth, each new frame, while there is a roll.
+    // Camera roll motion (pet-camera.md §6.2): the live sensor's depth, each new frame, while there is a roll.
     std::vector<uint16_t> depth(512 * 424);
     uint64_t last_depth = 0;
     const uint64_t start = kv_monotonic_ns();
@@ -1064,7 +1064,7 @@ int cmdServe(const Options& o) {
             }
         }
         if (kv_monotonic_ns() >= next_outside_check) {
-            // W8: the outside status, printed when it changes (the mapper works on a thread of its own).
+            // The outside status, printed when it changes (the mapper works on a thread of its own).
             next_outside_check = kv_monotonic_ns() + 250000000ULL;
             const kvhost::OutsideView ov = ctl.outsideView();
             if (ov.allowed || ov.listening) {

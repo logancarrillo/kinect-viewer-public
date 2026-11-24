@@ -1,4 +1,4 @@
-// W7: the camera-roll messages on the wire (docs/protocol-v3-pet-camera.md §5.1, §5.2, §5.6-5.10,
+// The camera-roll messages on the wire (docs/protocol-v3-pet-camera.md §5.1, §5.2, §5.6-5.10,
 // §7.1, §9). Golden JSON and bytes for 0x12-0x19, written out by hand from the spec's tables (keys in
 // table order, '/' escaped as "\/" as Swift's JSONEncoder does, base64 values computed separately),
 // then the checks a device's requests go through. Pure in-memory: no files, no sockets.
@@ -598,16 +598,16 @@ KV_TEST(playback_access_unit_bytes_are_a_stream_id_then_the_0x03_body) {
 // ---- 0x0B: the roll keys (§5.1) ----------------------------------------------------------------
 
 KV_TEST(pet_camera_state_roll_keys) {
-    // Nothing set: W6's message, byte for byte (no roll-blocked keys; the W6 goldens pin the rest).
-    PetCameraStateMessage w6;
-    const std::string base = toJson(w6);
+    // Nothing set: the pre-roll message, byte for byte (no roll-blocked keys; the protocol goldens pin the rest).
+    PetCameraStateMessage bare;
+    const std::string base = toJson(bare);
     KV_CHECK(base.find("rollBlocked") == std::string::npos);
     KV_CHECK(base.find("\"rollAvailable\":false,\"playbackAvailable\":false,\"rollEnabled\":false,"
                        "\"motionEnabled\":false,\"motionAvailable\":false,\"motionSensitivity\":5,"
                        "\"scheduleEnabled\":false,\"clipRecording\":false,\"clipManualActive\":false,"
                        "\"clipElapsedSec\":0}") != std::string::npos);
 
-    // A W7 state with a clip that recording had to stop.
+    // A roll state with a clip that recording had to stop.
     PetCameraStateMessage m;
     m.rollAvailable = true;
     m.playbackAvailable = true;

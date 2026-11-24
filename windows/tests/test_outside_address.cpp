@@ -1,4 +1,4 @@
-// W8 Phase A: the address rules (v3 §8.0 local sources and source keys, §8.3 the carrier-NAT check).
+// The address rules (v3 §8.0 local sources and source keys, §8.3 the carrier-NAT check).
 #include "kv_test.hpp"
 
 #ifndef WIN32_LEAN_AND_MEAN
@@ -266,7 +266,7 @@ KV_TEST(an_overlay_interface_gives_no_on_link_prefix) {
 }
 
 KV_TEST(sources_are_the_ipv4_address_or_the_ipv6_slash_64) {
-    // Two mapped IPv4 sources get keys of their own (the limiter's buckets, v3 §10 W8).
+    // Two mapped IPv4 sources get keys of their own (the limiter's buckets, v3 §8.5).
     KV_CHECK(sourceKey(ip("::ffff:203.0.113.1")) == "203.0.113.1");
     KV_CHECK(sourceKey(ip("::ffff:203.0.113.2")) == "203.0.113.2");
     KV_CHECK(sourceKey(ip("::ffff:203.0.113.1")) == sourceKey(ip("203.0.113.1")));

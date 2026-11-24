@@ -1,6 +1,6 @@
 // Glue between the core's mapped frames, the live encoder tiers (LiveTierSet, protocol v3 §6) and
 // HostStreamServer (the streaming half of macos/App/HostController.swift). A tier encodes only while
-// a session watches it (plus its 60 s hold); `high` is today's v1/v2 stream byte for byte. W7: it also
+// a session watches it (plus its 60 s hold); `high` is today's v1/v2 stream byte for byte. It also
 // owns the camera-roll recorder (RollRecorder), which keeps `medium` open while the roll is armed and is
 // fed its AUs, the live frame for each clip's thumbnail, the sensor and frozen-view state, and depth for
 // motion.
@@ -39,7 +39,7 @@ public:
         std::chrono::milliseconds tier_hold{60000};
         // Tests turn hardware off for a tier to take the software MFT.
         std::array<bool, kLiveTierCount> tier_hardware_allowed{true, true, true};
-        // W7, the camera roll. roll.dir empty (the default) means no roll at all: nothing is recorded, nothing
+        // The camera roll. roll.dir empty (the default) means no roll at all: nothing is recorded, nothing
         // is opened, and devices see a host without one (v3 §10 "Test isolation": a test or temp-state host
         // never falls back to a real camera roll). The PC app passes its folder here;
         // roll.recordingsDir is the depth/IR folder, refused as or around the roll (pet-camera.md §6.5).
@@ -50,7 +50,7 @@ public:
         // empty, or hold the test-roll marker (roll::kTestRollMarker), which the host writes when it prepares a
         // test roll; anything else is refused as folder_unavailable with the reason.
         bool test_run = false;
-        // W8, the router (v3 §8.2). Tests inject a fake here. Empty: outside a test run (and not loopback-only)
+        // The router (v3 §8.2). Tests inject a fake here. Empty: outside a test run (and not loopback-only)
         // the real NATUPnP session; in a test run no router at all, so the status is manual with the steps. A
         // test run never creates the real session, not even for a read-only query, and
         // its outside listener binds 127.0.0.1 only.
@@ -72,7 +72,7 @@ public:
     HostController();
     ~HostController() override;
 
-    // W8 (v3 §10): whether a host started with these options would use the real NATUPnP session: only with no
+    // v3 §10: whether a host started with these options would use the real NATUPnP session: only with no
     // router of the caller's, outside a test run and off loopback.
     static bool usesRealRouter(const Options& opts);
 
@@ -124,7 +124,7 @@ public:
     // something to encode (v3 §6.2). Called with the server's lock held: only post from it.
     std::function<void()> onFrameRefreshWanted;
 
-    // ---- the camera roll (W7, pet-camera.md §6) -------------------------------------------------------
+    // ---- the camera roll (pet-camera.md §6) -----------------------------------------------------------
     // True when Options::roll.dir was given and the folder was accepted; rollError() says why not otherwise.
     bool rollAvailable() const;
     std::string rollError() const;
@@ -162,7 +162,7 @@ public:
     // own skip uses it, and the PC panel shows its note exactly when it is true.
     bool turnOffSkippedForRoll() const;
 
-    // ---- outside the home (W8, v3 §8; a fixed interface) ----------------------------------------------
+    // ---- outside the home (v3 §8; a fixed interface) --------------------------------------------------
     // Cheap, and never waits on the router (the mapper has a worker of its own).
     OutsideView outsideView() const;
     // Refused (with err) unless sharing is on, or while pet-camera.json can't be read.

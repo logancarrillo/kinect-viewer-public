@@ -1,4 +1,4 @@
-// W7 B1 end to end: the camera roll on a fake v3 device over loopback (docs/protocol-v3-pet-camera.md
+// The camera roll end to end, on a fake v3 device over loopback (docs/protocol-v3-pet-camera.md
 // §5.1-§5.2, §5.6-§5.10, §6.4, §7; docs/pet-camera.md §6). The synthetic engine feeds HostController, whose
 // `medium` tier the roll records; the fake device lists, fetches thumbnails, plays clips and drives the
 // clip and star commands, and decodes what it is sent.
@@ -679,10 +679,10 @@ bool ringFilled(RollHost& host) {
 } // namespace
 
 // ============================================================================================================
-// No roll folder: the roll is off, and the host looks like W6 (v3 §5.1 "Before W7", §10 "Test isolation")
+// No roll folder: the roll is off, and the host looks like one without the roll (v3 §5.1, §10 "Test isolation")
 // ============================================================================================================
 
-KV_TEST(roll_is_off_without_a_roll_folder_and_answers_as_w6) {
+KV_TEST(roll_is_off_without_a_roll_folder_and_answers_as_a_host_without_the_roll) {
     Dirs dirs(L"off");
     RollHost host;
     std::string err;
@@ -748,7 +748,7 @@ KV_TEST(roll_a_manual_clip_records_lists_thumbnails_and_plays_while_live_stops) 
     {
         const RLog l = ra.log();
         KV_REQUIRE(l.hello.petCamera);
-        KV_CHECK(l.hello.petCamera->cameraRoll); // W7 (v3 §4.1)
+        KV_CHECK(l.hello.petCamera->cameraRoll); // the roll is offered (v3 §4.1)
         const PetCameraStateMessage& p = *l.lastPet();
         // Off by default (pet-camera.md §1): the master switch is the block.
         KV_CHECK(p.rollAvailable && !p.rollEnabled && p.rollBlockedReason == std::string(roll_blocked::kRollDisabled) &&
@@ -2737,7 +2737,7 @@ KV_TEST(roll_motion_by_depth_starts_a_clip_from_the_live_sensor_only) {
     for (int i = 0; i < 5; ++i) feed(-1, 0, true);
     for (int i = 0; i < 30; ++i) feed(-1, 15, true);
     KV_CHECK(noClip());
-    // Frames after a dropped one never complete a run (W7): a gap every frame.
+    // Frames after a dropped one never complete a run: a gap every frame.
     for (int i = 0; i < 12; ++i) feed(32 * i, 0, true, 2);
     KV_CHECK(noClip());
     // A box moving on consecutive frames: motion, a clip named motion. The same frame polled twice (the same
@@ -2802,10 +2802,10 @@ KV_TEST(roll_settings_round_trip_read_leniently_and_summarise) {
     PetSettings ur;
     KV_REQUIRE(fromJson(uj, ur));
     KV_CHECK(!ur.rollLimitsKnown && ur.rollKeepDays == 30 && ur.rollCapBytes == 200000000000ULL);
-    // A W6-era file (no roll keys) doesn't make them known; one holding either key does.
-    PetSettings w6;
-    KV_REQUIRE(fromJson(R"({"sharingEnabled":true,"privacyMode":false,"sharingSchedule":[]})", w6));
-    KV_CHECK(!w6.rollLimitsKnown);
+    // A file with no roll keys doesn't make them known; one holding either key does.
+    PetSettings noRollKeys;
+    KV_REQUIRE(fromJson(R"({"sharingEnabled":true,"privacyMode":false,"sharingSchedule":[]})", noRollKeys));
+    KV_CHECK(!noRollKeys.rollLimitsKnown);
     PetSettings k1;
     KV_REQUIRE(fromJson(R"({"rollEnabled":true,"rollKeepDays":90})", k1));
     KV_CHECK(k1.rollLimitsKnown && k1.rollKeepDays == 90);
@@ -2881,7 +2881,7 @@ KV_TEST(roll_changes_are_refused_while_pet_camera_json_cant_be_read) {
 }
 
 // ============================================================================================================
-// W7 fix round 2
+// Limits, retention, preparing, test runs and phone deletes
 // ============================================================================================================
 
 namespace {
@@ -2922,11 +2922,11 @@ KV_TEST(roll_first_run_turning_the_roll_on_confirms_the_limits_and_retention_run
     KV_CHECK(snap.available && snap.limitsKnown && snap.keepDays == 30);
 }
 
-// A W6-era pet-camera.json (no roll keys) doesn't make the limits known: an owner device turning the roll on
-// prepares the folder but ages nothing out, until the limits are confirmed on the PC. The old code took the W6 file
+// A pet-camera.json with no roll keys doesn't make the limits known: an owner device turning the roll on
+// prepares the folder but ages nothing out, until the limits are confirmed on the PC. The old code took such a file
 // as holding the owner's limits and deleted the 40-day-old clip with the default 30 days.
-KV_TEST(roll_a_w6_era_file_leaves_the_limits_unknown_until_they_are_confirmed) {
-    Dirs dirs(L"s3-w6");
+KV_TEST(roll_a_pet_camera_json_without_roll_keys_leaves_the_limits_unknown_until_they_are_confirmed) {
+    Dirs dirs(L"s3-no-roll-keys");
     const std::vector<std::string> ids = seedRoll(dirs, {40 * kDayMs}, true, 90);
     KV_REQUIRE(ids.size() == 1);
     KV_REQUIRE(writePetJson(dirs, R"({"sharingEnabled":false,"privacyMode":false,"sharingSchedule":[]})"));
@@ -2975,7 +2975,7 @@ KV_TEST(roll_off_an_already_prepared_folder_is_kept_tidy_and_browsable) {
     KV_CHECK(clipOf(ra, ids[1]).has_value() && !clipOf(ra, ids[0]).has_value());
 }
 
-// While the folder is being prepared, 0x0B says roll_preparing (with its §9 sentence, right after roll_disabled
+// While the folder is being prepared, 0x0B says roll_preparing (with its user-facing sentence from v3 §9, right after roll_disabled
 // in the §5.1 order) and start_clip is refused with it. The recorder's thread is held, so preparing lasts.
 KV_TEST(roll_preparing_is_reported_and_refuses_start_clip_until_the_folder_is_ready) {
     Dirs dirs(L"s5-preparing");

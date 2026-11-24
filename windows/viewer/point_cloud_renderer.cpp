@@ -241,7 +241,7 @@ bool PointCloudRenderer::render(const float* depth_mm, const uint8_t* point_bgra
                                 const PointCloudCamera& cam, float point_size_px, bool mirror, bool rotate180, uint32_t width,
                                 uint32_t height, std::vector<uint8_t>& out, std::wstring* why) {
     const auto t0 = std::chrono::steady_clock::now();
-    if (!pointCloudIntrinsicsUsable(intr)) { // no fallback values (phase 7)
+    if (!pointCloudIntrinsicsUsable(intr)) { // no fallback values
         if (why) *why = kNo3DIntrinsics;
         return false;
     }

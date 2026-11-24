@@ -218,7 +218,7 @@ KV_TEST(screenshot_hook_is_refused_for_the_real_source_and_any_view_with_colour)
         {{L"--synthetic", L"--mode", L"ir", L"--screenshot", L"x.png"}, true},
         {{L"--synthetic", L"--mode", L"depth", L"--screenshot", L"x.png"}, true},
         {{L"--synthetic", L"--mode", L"sbs", L"--sbs-layout", L"ir-depth", L"--screenshot", L"x.png"}, true},
-        // Stage 5: the blend and RGB-coloured 3D points are live colour too, in any mode.
+        // The blend and RGB-coloured 3D points are live colour too, in any mode.
         {{L"--synthetic", L"--mode", L"depth", L"--blend", L"50", L"--screenshot", L"x.png"}, false},
         {{L"--synthetic", L"--mode", L"ir", L"--blend", L"0", L"--screenshot", L"x.png"}, false},
         {{L"--synthetic", L"--mode", L"3d", L"--blend", L"40", L"--screenshot", L"x.png"}, false},
@@ -264,7 +264,7 @@ KV_TEST(recording_rules_colour_is_live_only) {
         after.mode = m;
         KV_CHECK(viewChangeStopsRecording(during, after));
     }
-    // Stage 5: the cut-off doesn't stop it; the blend coming on does (the Mac's).
+    // The cut-off doesn't stop it; the blend coming on does (the Mac's).
     after = during;
     applyTrackMe(after);
     KV_CHECK(!viewChangeStopsRecording(during, after));
@@ -672,7 +672,7 @@ KV_TEST(watching_now_banner_text) {
     b.deviceName = "iPhone 2";
     b.path = kvhost::PetPath::Outside;
     KV_CHECK(watchingNowText({a}) == L"Watching now: iPhone");
-    KV_CHECK(watchingNowText({a, b}) == L"Watching now: iPhone, iPhone 2 (outside the home)"); // the plan's example
+    KV_CHECK(watchingNowText({a, b}) == L"Watching now: iPhone, iPhone 2 (outside the home)"); // pet-camera.md §4's example
     kvhost::PetWatcher c = a;
     c.deviceName = "Caf\xC3\xA9 iPad"; // UTF-8 from the device list
     c.activity = kvhost::watcher_activity::kPlayback;
@@ -776,7 +776,7 @@ KV_TEST(tier_diagnostics_line_names_each_encoder) {
     KV_CHECK(tierDiagnosticsLine({hi}) == L"Live tiers: high NVIDIA H.264 Encoder MFT (hardware) 1024x424 e3, 1 session");
 }
 
-// ---- W7: the camera roll on the PC (pet-camera.md §4, §6; v3 §10 "Test isolation") ------------------------
+// ---- The camera roll on the PC (pet-camera.md §4, §6; v3 §10 "Test isolation") ----------------------------
 
 KV_TEST(camera_roll_flags_need_synthetic_and_a_folder_of_the_tests_own) {
     {
@@ -983,7 +983,7 @@ KV_TEST(camera_roll_panel_texts) {
     KV_CHECK(clipDurationText(7.4) == L"0:07" && clipDurationText(750) == L"12:30" && clipDurationText(3723) == L"1:02:03");
 }
 
-// ---- W8, outside the home (pet-camera.md §4; protocol v3 §8, §10) ---------------------------------------------------
+// ---- Outside the home (pet-camera.md §4; protocol v3 §8, §10) -------------------------------------------------------
 
 // --test-outside needs --synthetic and a --state-dir of the test's own; checked by parsing alone, so no test launches
 // the viewer without --synthetic.

@@ -175,7 +175,7 @@ void IphoneStreamHooks::attach(kv_engine_t*, ViewerSettings* settings, const Lau
     }
     state_dir_ok_ = true;
     if (state_dir_.empty()) state_dir_ = kvhost::defaultHostStateDir(); // the real one
-    // W7, the camera roll's folder. v3 §10: a test launch records only into --camera-roll-dir, or has no roll;
+    // The camera roll's folder. v3 §10: a test launch records only into --camera-roll-dir, or has no roll;
     // pet-camera.json's rollFolder is never read for it. A real launch: that setting, or the default.
     roll_note_.clear();
     roll_dir_.clear();
@@ -232,7 +232,7 @@ bool IphoneStreamHooks::startHost(bool again) {
     o.server.loopback_only = lo_.serve_loopback_only;
     o.server.advertise = !lo_.serve_loopback_only;
     o.server.state_dir = state_dir_;
-    // W7: the roll records only into roll_dir_ (attach chose it); empty means no roll at all. The depth/IR folder is
+    // The roll records only into roll_dir_ (attach chose it); empty means no roll at all. The depth/IR folder is
     // named so the roll refuses it, a folder inside it and one holding it (pet-camera.md §6.5).
     if (!roll_dir_.empty()) {
         o.roll.dir = roll_dir_;
@@ -253,12 +253,12 @@ bool IphoneStreamHooks::startHost(bool again) {
     };
     // A phone owner is deleting a clip; the host waits for the PC's unpin (a host thread).
     ctl_->onRollClipDeletedForPc = [this](const std::string& id) { rollClipDeletedForPc(id); };
-    // W8: any outside change, reported from a host thread, reaches the panel as a pet-camera change (one coalesced
+    // Any outside change, reported from a host thread, reaches the panel as a pet-camera change (one coalesced
     // refresh on the UI thread).
     ctl_->onOutsideChanged = [this]() {
         if (on_pet_state_) on_pet_state_();
     };
-    // W8, v3 §10: a test run never reaches the real router. The host already never makes the real NATUPnP session
+    // v3 §10: a test run never reaches the real router. The host already never makes the real NATUPnP session
     // in a test run without a router_factory; --test-outside hands it the viewer's scripted fake instead, so the
     // panel can be driven through every status.
     router_injected_ = false;
@@ -509,7 +509,7 @@ std::vector<kvhost::HostTierStatus> IphoneStreamHooks::tierStatus() const {
 
 std::string IphoneStreamHooks::petSaveError() const { return ctl_ ? ctl_->server().saveError() : std::string(); }
 
-// ---- the camera roll (W7) ----------------------------------------------------------------------------
+// ---- the camera roll ---------------------------------------------------------------------------------
 
 void IphoneStreamHooks::setRollCallback(std::function<void(const std::string&)> on_clip_finalized) {
     on_roll_clip_ = std::move(on_clip_finalized);
@@ -633,7 +633,7 @@ kvhost::roll::RollError IphoneStreamHooks::deleteRollClip(const std::string& cli
     return ctl_ ? ctl_->server().deleteRollClip(clipId) : kvhost::roll::RollError::NotFound;
 }
 
-// ---- outside the home (W8) ------------------------------------------------------------------------------
+// ---- outside the home -----------------------------------------------------------------------------------
 
 namespace {
 
@@ -859,8 +859,8 @@ void IphoneStreamHooks::paintPairing(HWND hwnd) {
         const std::wstring intro =
             (pair_repair_ ? L"Re-pair \u201C" + widen(pair_repair_name_) + L"\u201D: it keeps its name and role. "
                           : std::wstring(pair_role_ == kvhost::PetRole::Owner ? L"Pairing as an owner. " : L"Pairing as a viewer. ")) +
-            (pair_code_shown_ ? L"Scan with Kinect Pocket Viewer, or type the code. One try; the window closes after 120 s."
-                              : L"Scan with Kinect Pocket Viewer. One try; the window closes after 120 s.");
+            (pair_code_shown_ ? L"Scan with Kinect Viewer on the iPhone, or type the code. One try; the window closes after 120 s."
+                              : L"Scan with Kinect Viewer on the iPhone. One try; the window closes after 120 s.");
         DrawTextW(dc, intro.c_str(), -1, &t, DT_CENTER | DT_WORDBREAK);
         y += S(46);
         // QR code (ECC M, as CIQRCodeGenerator "M" on the Mac), 4-module quiet zone.

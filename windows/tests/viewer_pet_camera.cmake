@@ -1,4 +1,4 @@
-# W6 (protocol v3 §10 "Test isolation", pet-camera.md §4): the viewer's pet camera, synthetic only.
+# The viewer's pet camera (protocol v3 §10 "Test isolation", pet-camera.md §4), synthetic only.
 #
 # Default: a --state-dir under the build tree is seeded with two synthetic devices (devices.json) and
 # "Share the camera" on, privacy off (pet-camera.json). A --synthetic --test-pet-camera launch must load

@@ -1,4 +1,4 @@
-// The second-display (projector) output (the Mac's phase 4.2, SecondDisplayOutputController.swift):
+// The second-display (projector) output (as on the Mac, SecondDisplayOutputController.swift):
 // a borderless window over a whole display showing the current view and nothing
 // else, aspect-fit on black, with no controls, cursor readout or tool drawings on it. It never takes
 // the keyboard or the mouse, so the main window keeps every control and the B and Esc keys. Black

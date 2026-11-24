@@ -103,7 +103,7 @@ void tuneSocket(SOCKET s) {
     BOOL one = TRUE;
     setsockopt(s, IPPROTO_TCP, TCP_NODELAY, reinterpret_cast<const char*>(&one), sizeof(one));
     setsockopt(s, SOL_SOCKET, SO_KEEPALIVE, reinterpret_cast<const char*>(&one), sizeof(one));
-    // keepaliveIdle 2 s, keepaliveInterval 1 s, keepaliveCount 3 (the phase 7 Swift NWProtocolTCP
+    // keepaliveIdle 2 s, keepaliveInterval 1 s, keepaliveCount 3 (the Swift NWProtocolTCP
     // options). TCP_KEEPCNT needs Windows 10 1703+; where it is refused, Windows probes 10 times.
     // The stream server's 5 s ping watchdog is what actually notices a dead phone in time.
     tcp_keepalive ka{1, 2000, 1000};

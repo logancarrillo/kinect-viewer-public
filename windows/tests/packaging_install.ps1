@@ -75,6 +75,19 @@ try {
         Check ((Test-Path -LiteralPath $copy) -and [Linq.Enumerable]::SequenceEqual([IO.File]::ReadAllBytes($copy), [IO.File]::ReadAllBytes((Join-Path $repoRoot $n)))) "$n is in the install folder, as the checkout has it"
         Check ($listed -contains $n) "$n is in the install record, so the uninstall removes it"
     }
+    # each bundled DLL's own licence texts beside it (windows\packaging\licences\<dll name>.*), the
+    # checkout's own, and in the record: every DLL the build has carries at least one
+    $licences = Join-Path $pkg 'licences'
+    foreach ($d in $dlls) {
+        $base = [IO.Path]::GetFileNameWithoutExtension($d)
+        $texts = @(Get-ChildItem -LiteralPath $licences -File -Filter "$base.*" -ErrorAction SilentlyContinue | ForEach-Object { $_.Name })
+        Check ($texts.Count -gt 0) "$d has its licence texts in windows\packaging\licences"
+        foreach ($t in $texts) {
+            $copy = Join-Path $root $t
+            Check ((Test-Path -LiteralPath $copy) -and [Linq.Enumerable]::SequenceEqual([IO.File]::ReadAllBytes($copy), [IO.File]::ReadAllBytes((Join-Path $licences $t)))) "$t is in the install folder beside $d"
+            Check ($listed -contains $t) "$t is in the install record, so the uninstall removes it"
+        }
+    }
     # (Bytes compared with .NET: run from pwsh 7, Windows PowerShell can't load Get-FileHash's module.)
     $same = [Linq.Enumerable]::SequenceEqual([IO.File]::ReadAllBytes($installed), [IO.File]::ReadAllBytes($exe))
     Check $same 'the installed exe is the build''s'

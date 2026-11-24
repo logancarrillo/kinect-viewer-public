@@ -423,7 +423,7 @@ std::string withValue(const std::string& j, const char* key, const std::string& 
 
 KV_TEST(v3_message_types_are_known_only_to_v3_readers) {
     KV_CHECK(kProtocolV3 == 3);
-    KV_CHECK(kHostProtocolVersion == 3); // W6: the stream server speaks v3
+    KV_CHECK(kHostProtocolVersion == 3); // the stream server speaks v3
     KV_CHECK(static_cast<uint8_t>(MsgType::PetCameraState) == 0x0B && static_cast<uint8_t>(MsgType::PetCameraCmd) == 0x0C &&
              static_cast<uint8_t>(MsgType::CommandResult) == 0x0D && static_cast<uint8_t>(MsgType::LiveViewReq) == 0x0E &&
              static_cast<uint8_t>(MsgType::SessionNotice) == 0x0F);
@@ -431,14 +431,14 @@ KV_TEST(v3_message_types_are_known_only_to_v3_readers) {
         const uint8_t b = static_cast<uint8_t>(raw);
         const bool v1 = (raw >= 0x01 && raw <= 0x06) || raw == 0x10 || raw == 0x11;
         const bool v2 = v1 || (raw >= 0x07 && raw <= 0x0A);
-        // W7 adds the camera roll's 0x12-0x19 (§1 rule 7); 0x1A and up stay free.
+        // The camera roll adds 0x12-0x19 (§1 rule 7); 0x1A and up stay free.
         const bool v3 = v2 || (raw >= 0x0B && raw <= 0x0F) || (raw >= 0x12 && raw <= 0x19);
         KV_CHECK_MSG(isKnownMsgType(b, 1) == v1, std::to_string(raw));
         KV_CHECK_MSG(isKnownMsgType(b, 2) == v2, std::to_string(raw));
         KV_CHECK_MSG(isKnownMsgType(b, 3) == v3, std::to_string(raw));
     }
     KV_CHECK(isKnownMsgType(0x12, 3) && isKnownMsgType(0x19, 3) && !isKnownMsgType(0x1A, 3) && !isKnownMsgType(0x7E, 3));
-    // The default is the host's version, v3 since W6: it knows them all.
+    // The default is the host's version, v3 since multi-viewer and roles: it knows them all.
     KV_CHECK(isKnownMsgType(0x0B) && isKnownMsgType(0x0F) && isKnownMsgType(0x0A) && isKnownMsgType(0x12));
 
     MsgType t;
@@ -489,7 +489,7 @@ KV_TEST(v3_hello_with_pet_camera_and_old_readers_still_decode_it) {
     m.allowPhoneModeSwitch = false; // a viewer-role device
     m.width = 1280;
     m.height = 424;
-    m.petCamera = PetCameraHello{}; // what a W6 host sends
+    m.petCamera = PetCameraHello{}; // what a host without the roll or outside access sends
     const std::string j = toJson(m);
     KV_CHECK_MSG(j == "{\"protocolVersion\":3,\"modeRaw\":3,\"sbsLayoutRaw\":1,\"allowPhoneModeSwitch\":false,\"width\":1280,"
                       "\"height\":424,\"codecRaw\":0,\"petCamera\":{\"specVersion\":1,\"maxWatchers\":4,\"cameraRoll\":false,"
@@ -664,7 +664,7 @@ KV_TEST(v3_enums_round_trip_and_decode_leniently) {
 }
 
 namespace {
-// A viewer's 0x0B from a W6 host: no optional key at all.
+// A viewer's 0x0B from a host without the roll or outside access: no optional key at all.
 PetCameraStateMessage viewerState() {
     PetCameraStateMessage m;
     m.stateSeq = 42;
@@ -691,7 +691,7 @@ const char* const kViewerStateJson =
 KV_TEST(v3_pet_camera_state_viewer_json_and_required_keys) {
     const std::string j = toJson(viewerState());
     KV_CHECK_MSG(j == kViewerStateJson, j);
-    // The W6 defaults (§5.1 "Before W7 and W8").
+    // The defaults of a host without the roll or outside access (§5.1).
     PetCameraStateMessage d;
     KV_CHECK(d.protocolVersion == 3 && !d.rollAvailable && !d.playbackAvailable && !d.rollEnabled && !d.motionEnabled &&
              !d.motionAvailable && !d.scheduleEnabled && !d.clipRecording && !d.clipManualActive &&
@@ -1025,7 +1025,7 @@ KV_TEST(v3_session_notice_json_and_reasons) {
     bare.reason = notice_reason::kReplaced;
     KV_CHECK(toJson(bare) == "{\"reason\":\"replaced\",\"closing\":true}");
 
-    // §5.5: every reason closes except address_changed, and each has its §9 sentence.
+    // §5.5: every reason closes except address_changed, and each has its user-facing sentence from v3 §9.
     const std::pair<const char*, const char*> reasons[] = {
         {notice_reason::kRevoked, text::kRevoked},
         {notice_reason::kTooManySessions, text::kTooManySessions},
@@ -1088,7 +1088,7 @@ KV_TEST(v3_sentences_match_the_spec) {
     KV_CHECK(std::string(text::kInviteExpiredOrUsed) == "This invite has expired or was already used. Ask for a new one.");
     KV_CHECK(std::string(text::kInviteWrongCode) == "That invite didn't match. It can't be used again; ask for a new one.");
     KV_CHECK(std::string(text::kInviteDidntMatch) == "That invite didn't match. Check that you used the whole link you were sent.");
-    KV_CHECK(std::string(text::kInviteClosed) == "This invite was closed. Ask for a new one."); // W8
+    KV_CHECK(std::string(text::kInviteClosed) == "This invite was closed. Ask for a new one."); // outside invites
 
     // The sentence for each code that has one: every liveUnavailableReason, every rollBlockedReason
     // (the start_clip error) and every 0x0F reason.
@@ -1278,7 +1278,7 @@ KV_TEST(host_state_power_settings_persist_and_default_for_older_files) {
     KV_REQUIRE(fromJson(j, back));
     KV_CHECK(!back.allowPhoneSensorPowerControl && back.turnOffKinectOnPhoneDisconnect);
 
-    // A pairing.json written before phase 7 has neither key: power control on, turn-off off.
+    // A pairing.json written before the phone power settings has neither key: power control on, turn-off off.
     const std::string before = "{\"serverIdentity\":{\"privateKeyRaw\":\"QkJC\",\"certificateDER\":\"MAMCAf8=\"},"
                                "\"serviceId\":\"0a1b2c3d4e5f\",\"allowPhoneModeSwitch\":false}";
     HostPersistedState old;

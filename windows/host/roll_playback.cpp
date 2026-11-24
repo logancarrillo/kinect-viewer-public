@@ -178,7 +178,7 @@ void RollPlayback::threadMain() {
         auto fail = [&]() {
             if (stop_ || state_ == PlaybackState::Stopped || state_ == PlaybackState::Error) return;
             state_ = PlaybackState::Error; // frees the stream (§5.9)
-            // A host-side failure: the §9 sentence, with no path or system detail.
+            // A host-side failure: its user-facing sentence (v3 §9), with no path or system detail.
             sendStateLocked(std::nullopt, std::string(text::kClipUnreadable));
             freed_self = true;
         };

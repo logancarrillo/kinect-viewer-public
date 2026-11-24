@@ -384,7 +384,7 @@ KV_TEST(motion_needs_three_consecutive_frames) {
     }
 }
 
-// W7: a depth frame after a dropped frame never counts as motion with the
+// A depth frame after a dropped frame never counts as motion with the
 // frames before the drop. Each case feeds a moving box with explicit sequence numbers, 33 ms apart.
 namespace {
 std::vector<bool> boxRun(const std::vector<uint64_t>& seqs) {
@@ -650,7 +650,7 @@ KV_TEST(motion_sensitivity_extremes) {
     KV_CHECK(det.sensitivity() == 10);
 }
 
-// W7: over 60 % of the cells changing at once, for 3 consecutive frames, is the
+// Over 60 % of the cells changing at once, for 3 consecutive frames, is the
 // camera moving or the scene changing, not a pet: the whole background is re-learned instead of firing.
 namespace {
 // '.' quiet, 'M' motion, 'R' whole-background re-learn.
@@ -861,7 +861,7 @@ KV_TEST(triggers_manual_start_and_stop) {
 }
 
 KV_TEST(triggers_stop_clip_answers_by_what_is_recording) {
-    // W7: not recording -> Ok (a no-op); recording with a manual trigger -> Ok,
+    // Not recording -> Ok (a no-op); recording with a manual trigger -> Ok,
     // and only the manual trigger goes; recording with no manual trigger -> Busy.
     StopClipResult sr;
     {

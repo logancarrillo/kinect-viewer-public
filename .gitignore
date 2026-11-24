@@ -27,6 +27,8 @@ tmp/
 !design/icon-sheet.png
 !macos/Assets.xcassets/**/*.png
 !ios/Assets.xcassets/**/*.png
+!docs/assets/banner.png
+!docs/screens/windows-viewer.png
 *.nosync
 *.nosync/
 kinect-viewer-recordings/

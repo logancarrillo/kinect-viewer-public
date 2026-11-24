@@ -1,4 +1,4 @@
-// The pairing window's QR drawing, shared with the outside invite and re-share windows (W8): ECC M, as
+// The pairing window's QR drawing, shared with the outside invite and re-share windows: ECC M, as
 // CIQRCodeGenerator "M" on the Mac, with a 4-module quiet zone, black modules on whatever the caller painted.
 #pragma once
 

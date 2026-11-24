@@ -51,7 +51,7 @@ void PointCloudCamera::orbit(float dy, float dp) {
     if (std::isfinite(dy)) {
         dy = std::clamp(dy, -64.0f * kPi, 64.0f * kPi); // turns past this are the same turn, and fmod stays exact
         const float two_pi = 2.0f * kPi;
-        float w = std::fmod(yaw + dy + kPi, two_pi); // wraps fully (phase 7 nit: modulo)
+        float w = std::fmod(yaw + dy + kPi, two_pi); // wraps fully (by modulo)
         if (w < 0.0f) w += two_pi;
         yaw = w - kPi;
     }

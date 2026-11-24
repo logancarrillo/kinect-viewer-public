@@ -1,4 +1,4 @@
-# W8 (pet-camera.md §4, the outside rows; protocol v3 §8, §10): the Pet camera panel's "Outside the home" section and
+# The outside rows (pet-camera.md §4; protocol v3 §8, §10): the Pet camera panel's "Outside the home" section and
 # its windows, synthetic only. The one launch passes --synthetic and a --state-dir under the build tree, so
 # pet-camera.json, the invite and the connection log stay there; it binds every listener on loopback
 # (--test-outside implies --loopback-only), and the host gets the viewer's fake router through

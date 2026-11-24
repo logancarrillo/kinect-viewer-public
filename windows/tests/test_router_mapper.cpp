@@ -1,4 +1,4 @@
-// W8 Phase A: the router port mapping (v3 §8.2) and the public address it reads (§8.3), against a fake router
+// The router port mapping (v3 §8.2) and the public address it reads (§8.3), against a fake router
 // behind the RouterSession seam. No test reaches NATUPnP or the real router, not even to read.
 #include "kv_test.hpp"
 

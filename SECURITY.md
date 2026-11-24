@@ -125,13 +125,13 @@ list, and the host's and devices' private keys.
   block that address for an hour. A recently paired device keeps reserved slots.
 - **Keys at rest.** On Windows the host's private key is wrapped with DPAPI in machine scope, so any program
   on the same PC that can read the file can unwrap it. On that PC, the host-state folder's owner-only ACL keeps
-  non-admin users out; an administrator can read the file. A folder written by a build from before the wrap
-  holds the key plain until the first start migrates it, and so does one saved while DPAPI isn't working (the
+  non-admin users out; an administrator can read the file. A folder saved while DPAPI isn't working
+  holds the key plain until the next start migrates it (the
   save keeps a plain file plain, so pairing still works; over a wrap another start of the host on the same
   folder makes meanwhile, it puts the wrap back and fails. Only if putting it back fails too, with both files
   left, is the key plain in `pairing.json` beside the wrapped `pairing.json.prev`, until the next start wraps
-  it again). A `pairing.json.bad` kept by such a build is left as it
-  is and still holds it plain, as may disk space those older writes freed. The running host holds the key in
+  it again). A `pairing.json.bad` copy of such a file is left as it
+  is and still holds it plain, as may disk space those plain writes freed. The running host holds the key in
   memory, so a memory dump or a crash dump of it holds the key too. On macOS and iOS keys are kept in the
   Keychain.
 - **Copies an interrupted save leaves (Windows).** A save that Windows fails midway can leave a
@@ -140,10 +140,6 @@ list, and the host's and devices' private keys.
   `pairing.json.prev.bad` even when it is the same identity, and that copy may hold the key plain. A file's `.bad`
   copies rotate (five are kept, and the oldest goes first), so a kept copy of another identity can eventually
   rotate out.
-- **Going back to a build from before the key wrap loses the identity.** Such a build can't read a wrapped key.
-  One from `df8af2c` (2026-11-19) on refuses to start the host, and running it means resetting the PC's identity.
-  One from before `df8af2c` makes a new identity over the file it can't parse. Either way, every device must pair
-  again.
 - **No relay.** Outside viewing can't work behind carrier-grade NAT or a second router; the host says so.
 - **Listening ports aren't held exclusively.** The Windows host's listeners don't set `SO_EXCLUSIVEADDRUSE`, so a
   program running as the same user (or an administrator) could bind the same port. It's left off for now because
