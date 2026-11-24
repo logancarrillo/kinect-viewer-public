@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <title>Sensor and Beam Mark</title>
+  <desc>Original mark: a plain rounded sensor bar with one lens, casting near (amber) to far (blue) depth bands. Shapes and one linear gradient only, so Direct2D renders it.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#14284F"/><stop offset="1" stop-color="#081530"/></linearGradient>
+  </defs>
+  <rect x="64.00" y="64.00" width="896.00" height="896.00" rx="201.60" ry="201.60" fill="url(#bg)"/>
+  <rect x="189.44" y="225.28" width="645.12" height="152.32" rx="76.16" ry="76.16" fill="#E9EEF7"/>
+  <circle cx="512.00" cy="301.44" r="49.28" fill="#0B1530"/>
+  <circle cx="512.00" cy="301.44" r="19.71" fill="#22B8CF"/>
+  <circle cx="288.00" cy="301.44" r="16.13" fill="#FF5E57"/>
+  <polygon points="440.32,431.36 583.68,431.36 650.98,547.84 373.02,547.84" fill="#FFB238"/>
+  <polygon points="354.90,579.20 669.10,579.20 736.40,695.68 287.60,695.68" fill="#22B8CF"/>
+  <polygon points="269.48,727.04 754.52,727.04 816.64,834.56 207.36,834.56" fill="#3D63DD"/>
+</svg>

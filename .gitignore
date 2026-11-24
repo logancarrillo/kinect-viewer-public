@@ -1,0 +1,42 @@
+# Build & IDE artifacts
+build/
+.build/
+DerivedData/
+vendor/
+.host-state/
+*.xcodeproj/project.xcworkspace/
+*.xcodeproj/xcuserdata/
+xcuserdata/
+*.ipa
+*.dSYM.zip
+*.dSYM/
+
+# macOS metadata
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Temporary test outputs
+tmp/
+*.tmp
+
+# Recordings and captures (must stay on the host)
+*.mkv
+*.mp4
+*.png
+!design/icon-sheet.png
+!macos/Assets.xcassets/**/*.png
+!ios/Assets.xcassets/**/*.png
+*.nosync
+*.nosync/
+kinect-viewer-recordings/
+
+# Signing material and keys
+*.p12
+*.mobileprovision
+*.cer
+*.key
+*.pem
+
+# Local build settings (team ID, bundle-ID prefix, paths); see Config/Local.xcconfig.example
+Config/Local.xcconfig

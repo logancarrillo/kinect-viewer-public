@@ -1,0 +1,14 @@
+// Build settings shared by every target and configuration (project level).
+// Defaults here are placeholders so a fresh clone builds as-is. Put your own values in
+// Config/Local.xcconfig (gitignored): copy Config/Local.xcconfig.example and fill it in.
+
+// Bundle IDs are $(KV_BUNDLE_ID_PREFIX).host, .host.tests, .pocket, .pocket.tests and .kinect-cli.
+KV_BUNDLE_ID_PREFIX = com.example.kinectviewer
+
+// Apple developer team for signing the iPhone app (empty: simulator builds only). Only the iPhone app uses it.
+KV_DEVELOPMENT_TEAM =
+
+// Where libfreenect2 is installed (include/ and lib/ under it).
+LIBFREENECT2_PREFIX = $(HOME)/libfreenect2
+
+#include? "Local.xcconfig"

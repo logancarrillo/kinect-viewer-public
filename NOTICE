@@ -1,0 +1,19 @@
+Kinect Viewer
+Copyright 2026 The Kinect Viewer Authors
+
+This product is licensed under the Apache License, Version 2.0 (see LICENSE).
+
+This product includes the Turbo colormap polynomial approximation (core/src/colormaps.cpp),
+Copyright 2019 Google LLC, licensed under the Apache License, Version 2.0: colour map design by
+Anton Mikhailov, polynomial approximation by Ruofei Du, ported here from GLSL to C++.
+
+This product includes the Viridis and Inferno colormap reference values (core/src/colormaps.cpp)
+by Nathaniel J. Smith, Stefan van der Walt and Eric Firing, dedicated to the public domain under CC0 1.0.
+
+This repository does not include libfreenect2, libusb, libjpeg-turbo, GLFW, OpenSSL, the Nayuki
+QR Code generator or FFmpeg. They are obtained separately when building, and binaries built from
+this repository may incorporate or ship them. See THIRD_PARTY_NOTICES.md for their licences and
+for the obligations that apply when distributing binaries.
+
+Kinect and Xbox are trademarks of Microsoft Corporation. This project is not affiliated with or
+endorsed by Microsoft.

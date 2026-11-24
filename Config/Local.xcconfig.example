@@ -1,0 +1,11 @@
+// Copy to Config/Local.xcconfig (gitignored) and fill in your own values.
+// Anything set here overrides Config/Base.xcconfig.
+
+// Your reverse-DNS prefix; the apps become <prefix>.host and <prefix>.pocket.
+KV_BUNDLE_ID_PREFIX = com.example.kinectviewer
+
+// Your Apple developer team ID (10 characters), needed to run the iPhone app on a device.
+KV_DEVELOPMENT_TEAM = ABCDE12345
+
+// Only if libfreenect2 isn't at ~/libfreenect2.
+// LIBFREENECT2_PREFIX = /opt/libfreenect2

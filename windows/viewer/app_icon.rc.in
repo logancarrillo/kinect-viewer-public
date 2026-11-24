@@ -1,0 +1,33 @@
+// The app icon (resource 1), made at build time from design/logo.svg by kv-render-icon, and the
+// version info Explorer shows under Properties > Details (one .rc per program, configured by CMake).
+#include <winver.h>
+
+1 ICON "@KV_APP_ICON_RC@"
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION @KV_APP_VERSION_MAJOR@,@KV_APP_VERSION_MINOR@,0,@KV_APP_BUILD@
+ PRODUCTVERSION @KV_APP_VERSION_MAJOR@,@KV_APP_VERSION_MINOR@,0,@KV_APP_BUILD@
+ FILEFLAGSMASK VS_FFI_FILEFLAGSMASK
+ FILEFLAGS 0x0L
+ FILEOS VOS_NT_WINDOWS32
+ FILETYPE VFT_APP
+ FILESUBTYPE VFT2_UNKNOWN
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904B0"
+        BEGIN
+            VALUE "CompanyName", "The Kinect Viewer Authors"
+            VALUE "FileDescription", "@KV_RC_DESCRIPTION@"
+            VALUE "FileVersion", "@KV_APP_VERSION@.0.@KV_APP_BUILD@"
+            VALUE "InternalName", "@KV_RC_NAME@"
+            VALUE "OriginalFilename", "@KV_RC_NAME@.exe"
+            VALUE "ProductName", "Kinect Viewer"
+            VALUE "ProductVersion", "@KV_APP_VERSION@"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END

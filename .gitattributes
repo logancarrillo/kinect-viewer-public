@@ -1,0 +1,4 @@
+# The open-source export is a snapshot made with `git archive` (GitHub's source downloads honour this too). It leaves
+# out docs/internal/: the private repository's process notes. windows/tests/export_leaves_out_internal.cmake pins it.
+docs/internal export-ignore
+docs/internal/** export-ignore

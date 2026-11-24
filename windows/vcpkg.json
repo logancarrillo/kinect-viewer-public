@@ -1,0 +1,10 @@
+{
+  "name": "kinect-viewer-windows-host",
+  "version-string": "0.1.0",
+  "description": "Windows host dependencies (W3 iPhone streaming): OpenSSL 3.x for mutual TLS 1.3, QR code for pairing.",
+  "dependencies": [
+    "openssl",
+    "nayuki-qr-code-generator"
+  ],
+  "builtin-baseline": "b58529e33332fbb6dfe20317a82009b78ceeab36"
+}

@@ -1,0 +1,1187 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0534ECE982F2CAAC19DDB1D7 /* MacCameraViewerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D292CC29DE186C69D801DC8 /* MacCameraViewerController.swift */; };
+		06F3088684D711BB79D7BB41 /* MetalPointCloudRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD7AF1C0720C367008CE70F /* MetalPointCloudRenderer.swift */; };
+		0BC5759381561821AD1FFF22 /* MacCameraRollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC76B89647A3D38F5F986AE2 /* MacCameraRollView.swift */; };
+		0CCA706763D49D9BD3C098B3 /* PocketStreamClientCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF279EACA237A5F184D9E15F /* PocketStreamClientCore.swift */; };
+		0EE9B39909E732EA75345C70 /* CryptoIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DFDF768FABAEAC109832F01 /* CryptoIdentity.swift */; };
+		1206F43111D5F0B3F472886C /* KinectTestCLI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CF3669D635E220B179D05FF /* KinectTestCLI.swift */; };
+		1703E6A22D9C93F73034EF34 /* Phase9APetCameraLiveTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA254F0EEFC70CC6320AE721 /* Phase9APetCameraLiveTests.swift */; };
+		17AD5D95DE82E1511C53BBC5 /* Phase5PhoneControlAndPowerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FEFDDC24EB6BA703E17DC0F /* Phase5PhoneControlAndPowerTests.swift */; };
+		2388CBDE11FA0E187CCF6916 /* PairingPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1622D84029385F3C34204CDA /* PairingPayload.swift */; };
+		23F07911DA8E6E5A1CAE7EB2 /* RecordingLibraryAndPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F8D59ED1C55F47A2EC0633 /* RecordingLibraryAndPlayer.swift */; };
+		27FAF375BA7F91C513F13537 /* colormaps.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C258E038FAEE47932C24AE45 /* colormaps.cpp */; };
+		2F122EB8BFDEC25DDACE8B48 /* PocketViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 999EE4BE5503E8D46A22BB4E /* PocketViewModel.swift */; };
+		2FCEFB973D84DAF541D862D0 /* Phase0ColourRecordingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 833961B6655B0B7DF2A707F7 /* Phase0ColourRecordingTests.swift */; };
+		39AD53693C3451A73B452FDC /* VideoSampleDisplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8D6B71AE03E6596AE541F77 /* VideoSampleDisplayView.swift */; };
+		3FCA0AC672FFACE6EE291052 /* synthetic_source.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7CE42C77A2AC4CED9F8427EE /* synthetic_source.cpp */; };
+		4129B76A55EE2CE3E5C801FE /* SecondDisplayOutputController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 398485084D9C951BAFD32F9C /* SecondDisplayOutputController.swift */; };
+		42D1994CA86C4FDB8B2927E6 /* MainContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03946C028EF4D01E8CBB597E /* MainContentView.swift */; };
+		45342237C9401C73449399A0 /* frame_mapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91DCAAD2D91558562A562D6B /* frame_mapper.cpp */; };
+		460A77B2A0F90E960B95A7D9 /* SampleBufferDisplayBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E7A266BA1BF182A264A7169 /* SampleBufferDisplayBridge.swift */; };
+		46DB90D13A922BF4C1C0706C /* SampleBufferDisplayBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E7A266BA1BF182A264A7169 /* SampleBufferDisplayBridge.swift */; };
+		4BC586CC7C562E1D191676F5 /* KeychainPrefixAndPairingCertificateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 871286C116ECB1A13004D23B /* KeychainPrefixAndPairingCertificateTests.swift */; };
+		4FE7A5819C75ABA48B68C4C9 /* kinect_core_c.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 80450F665845B0BEA6C03BBA /* kinect_core_c.cpp */; };
+		4FFEEB9CF85AAA9DFA3C4646 /* HostController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8B163D61C4143DBD9E32434 /* HostController.swift */; };
+		5017C151DCE9EFB01691D6E0 /* Phase3PointCloudAndEffectsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB43487017C170BDE3ED4AAF /* Phase3PointCloudAndEffectsTests.swift */; };
+		54FE38A5A43784C61538EF39 /* OutsideCandidatesRaceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD8992ABDAD290A7B08997AF /* OutsideCandidatesRaceTests.swift */; };
+		58179CF20FB8265B3B768688 /* VideoToolboxEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7101DC471E55927FBB032589 /* VideoToolboxEncoder.swift */; };
+		58E9929932AF317E4B6E0917 /* CameraRollController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC75D73B31759904E8043AE /* CameraRollController.swift */; };
+		620E70FA3C7ACFCB074716C4 /* CGPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 392A8ABFEE5CEF10CA8F345B /* CGPreviewView.swift */; };
+		66C18981FEB543021601F259 /* CameraRollController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC75D73B31759904E8043AE /* CameraRollController.swift */; };
+		696EF6CB97805743F6ADBAC3 /* kinect_core_c.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 80450F665845B0BEA6C03BBA /* kinect_core_c.cpp */; };
+		6A78107FB2FC89969771E2C1 /* CryptoIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DFDF768FABAEAC109832F01 /* CryptoIdentity.swift */; };
+		6ADB160F1BA92BE56C67BC3A /* synthetic_source.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7CE42C77A2AC4CED9F8427EE /* synthetic_source.cpp */; };
+		6B5EE87D9F9AD9FE29411757 /* QRScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 389C4F8617DCA3E7CB0F898C /* QRScannerView.swift */; };
+		6FA98BABB5539E5143391409 /* WireProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38BF33B5D3B376821A763437 /* WireProtocol.swift */; };
+		71F247E5DED66D920F7DF360 /* PocketViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 999EE4BE5503E8D46A22BB4E /* PocketViewModel.swift */; };
+		77A9F119AB2AE20BF7384D6F /* HardwareLifecycleMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8279953CD6745F87654BB07D /* HardwareLifecycleMonitor.swift */; };
+		7AFCFEB6FE704172A9C684F6 /* KeychainServicePrefix.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD4738219786432A08F63006 /* KeychainServicePrefix.swift */; };
+		824B95C80FE7ECBABDA224B9 /* MacCameraViewerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 329235B85116DC04A7267A38 /* MacCameraViewerView.swift */; };
+		82D432FA0CEF29FF0716C1E4 /* HostStreamServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5316B159A0A9842B0307959 /* HostStreamServer.swift */; };
+		8561D1B74F918AD0248AA696 /* PairingPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1622D84029385F3C34204CDA /* PairingPayload.swift */; };
+		8A979FE368A029745650D5B1 /* KinectHostApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 367A6A595A96866764541103 /* KinectHostApp.swift */; };
+		90913E030A3800861AF5F125 /* Phase1InspectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE6BDEA03BF288623AF2E31D /* Phase1InspectionTests.swift */; };
+		90BDD2B9C70C033101BC299D /* RecordingLibraryAndPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F8D59ED1C55F47A2EC0633 /* RecordingLibraryAndPlayer.swift */; };
+		90D7925D8CE3189719C4BDED /* VideoToolboxEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7101DC471E55927FBB032589 /* VideoToolboxEncoder.swift */; };
+		92D0769FA62D36883D5BC41F /* EndpointProbeInviteAndThumbnailTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7105BFB01DDBFB8F5F5B0184 /* EndpointProbeInviteAndThumbnailTests.swift */; };
+		98A02A4F60D9117772EBAA4D /* lock_guard_file.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 65EA837DD95711D05B82FDEF /* lock_guard_file.cpp */; };
+		9C0C59B0B0A5A0AE28C3B768 /* Phase2RecordingsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5CDC4146F996416CA1B42F /* Phase2RecordingsTests.swift */; };
+		A5758D9575142FD1AA895F94 /* lock_guard_file.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 65EA837DD95711D05B82FDEF /* lock_guard_file.cpp */; };
+		A83F10D89590CEEFF324B2EA /* PocketStreamClientCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF279EACA237A5F184D9E15F /* PocketStreamClientCore.swift */; };
+		AB3D0CD9F40859E1A9295D33 /* VisionSkeletonEstimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CA5B9B8AAAE262820B3E59E /* VisionSkeletonEstimator.swift */; };
+		ABAC61850FB62115BB2403F1 /* PocketKeychainPrefixTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4111A20C63F073167B783E1 /* PocketKeychainPrefixTests.swift */; };
+		AC1C3D714C2730778B5628EB /* KinectPocketApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD0530DBF7A050E050E4F5AF /* KinectPocketApp.swift */; };
+		AC24AAD9D5111B0AB12B3CEC /* SampleBufferDisplayBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E7A266BA1BF182A264A7169 /* SampleBufferDisplayBridge.swift */; };
+		ADD41CBAF71F6719922A1D0D /* colormaps.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C258E038FAEE47932C24AE45 /* colormaps.cpp */; };
+		AFA0CFCA98096516D6A7D018 /* InteractiveSensorCanvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9463EB3EED0794B71A18B574 /* InteractiveSensorCanvas.swift */; };
+		AFAD0AA1CBD8938183A6F844 /* frame_mapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91DCAAD2D91558562A562D6B /* frame_mapper.cpp */; };
+		B3AEEB04D44C7C726BFF7549 /* freenect2_source.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D4E86672894FABA967A83530 /* freenect2_source.cpp */; };
+		B3E294C3326B01A5AAEC12F1 /* HostRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = A225D2C4270DCFABAA797A3B /* HostRecorder.swift */; };
+		BBE90641E7ACD117F0701175 /* Phase6IconAssetsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8934FDB25068F7EF801A75C4 /* Phase6IconAssetsTests.swift */; };
+		BC01C98A1C9A29AFD10EAE69 /* KeychainServicePrefix.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD4738219786432A08F63006 /* KeychainServicePrefix.swift */; };
+		C075DA31C79670DBC581B4CF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 117B2E3AF2C09D3C86B037CC /* Assets.xcassets */; };
+		C5B922473B4B532C669FC0F0 /* Phase9BCameraRollAndInvitesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83EDB1331C099D72871D9DE5 /* Phase9BCameraRollAndInvitesTests.swift */; };
+		C79ED5A823B583732A422969 /* PocketAppSnapshotAndSandboxTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27227D20FC9C434E6AE51542 /* PocketAppSnapshotAndSandboxTests.swift */; };
+		C9E4F4AD8BB71CEEC25E865F /* WireProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38BF33B5D3B376821A763437 /* WireProtocol.swift */; };
+		CC05DA5DEA3960E2C657B879 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B7C0388E86FC27B6CDD5AC6 /* ContentView.swift */; };
+		CE9B496E556C530CDAF43FF0 /* CameraRollController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC75D73B31759904E8043AE /* CameraRollController.swift */; };
+		D08C20D95A9ECFE0ADA537D3 /* freenect2_source.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D4E86672894FABA967A83530 /* freenect2_source.cpp */; };
+		D5A77BBD3986DF3DBE642A51 /* ProbeInterruptionAndPlaybackCoverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26B04157AB67A72B1FA710F4 /* ProbeInterruptionAndPlaybackCoverTests.swift */; };
+		D93579BD556D622387B8B94B /* HostStreamServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5316B159A0A9842B0307959 /* HostStreamServer.swift */; };
+		D9ACED19F64938E8C520DCC2 /* Phase4VisionAndDisplayTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23265724426A5EF8542692A1 /* Phase4VisionAndDisplayTests.swift */; };
+		DA891886B12D82C65D8BE997 /* RecordingsCompatibilityAndPowerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5090B884298BB33099E668D2 /* RecordingsCompatibilityAndPowerTests.swift */; };
+		DC4A743680F3A27679B0CBD0 /* PointCloud3DCanvasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C431FEC1D36DA24424258582 /* PointCloud3DCanvasView.swift */; };
+		DEA97EB3CCD0ACB51EF8210F /* KeychainServicePrefix.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD4738219786432A08F63006 /* KeychainServicePrefix.swift */; };
+		E39F3D7B8860657E370635AF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0CE7BE2366885AB936D52925 /* Assets.xcassets */; };
+		E42DBEE02771F6B0BAAF7A7C /* PairingPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1622D84029385F3C34204CDA /* PairingPayload.swift */; };
+		E5F3885C30B490560C17EFA3 /* CameraRollSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44F17BA0EE5994F7C0E2DF45 /* CameraRollSheetView.swift */; };
+		EF7AF3FA595471E7C0635E96 /* CryptoIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DFDF768FABAEAC109832F01 /* CryptoIdentity.swift */; };
+		EFEA038CD33058A757002350 /* WireProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38BF33B5D3B376821A763437 /* WireProtocol.swift */; };
+		F0DBA8E75ED3112E360DD29E /* PocketStreamClientCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF279EACA237A5F184D9E15F /* PocketStreamClientCore.swift */; };
+		F254FDC8A52C06A5D099113E /* InspectionModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD67628F5A84EFE5CC8A5ED /* InspectionModels.swift */; };
+		FBCDEE485D2BB27626C36DAF /* PresetsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9203CD4D293C61EFA3BD4E46 /* PresetsStore.swift */; };
+		FCB3F3A4361B1619F3DA8D6D /* OutsideAwayFromHomeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C98B557B181B512F2D84BC /* OutsideAwayFromHomeTests.swift */; };
+		FCEE104B01A56979C57FA054 /* HostRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = A225D2C4270DCFABAA797A3B /* HostRecorder.swift */; };
+		FDCE3EFD300D39B8137FFFF2 /* PlaybackWakeAndKeychainIdentityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 749013E7253247E2EC2468EF /* PlaybackWakeAndKeychainIdentityTests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		65A3AF73708C233AA0CEDD77 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 921F342E8685AB308EF89E22 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8599D624EF20007F79645BA9;
+			remoteInfo = KinectPocketViewer;
+		};
+		E159EF3D278A7DB27C62AC80 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 921F342E8685AB308EF89E22 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9391263E6861D7881A83F8E6;
+			remoteInfo = KinectHostApp;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		03946C028EF4D01E8CBB597E /* MainContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainContentView.swift; sourceTree = "<group>"; };
+		0CE7BE2366885AB936D52925 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		117B2E3AF2C09D3C86B037CC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		1622D84029385F3C34204CDA /* PairingPayload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PairingPayload.swift; sourceTree = "<group>"; };
+		1CA5B9B8AAAE262820B3E59E /* VisionSkeletonEstimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisionSkeletonEstimator.swift; sourceTree = "<group>"; };
+		1D292CC29DE186C69D801DC8 /* MacCameraViewerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacCameraViewerController.swift; sourceTree = "<group>"; };
+		23265724426A5EF8542692A1 /* Phase4VisionAndDisplayTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Phase4VisionAndDisplayTests.swift; sourceTree = "<group>"; };
+		260653A5448C3289FDD2513B /* Base.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Base.xcconfig; sourceTree = "<group>"; };
+		26B04157AB67A72B1FA710F4 /* ProbeInterruptionAndPlaybackCoverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProbeInterruptionAndPlaybackCoverTests.swift; sourceTree = "<group>"; };
+		27227D20FC9C434E6AE51542 /* PocketAppSnapshotAndSandboxTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PocketAppSnapshotAndSandboxTests.swift; sourceTree = "<group>"; };
+		2DC75D73B31759904E8043AE /* CameraRollController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraRollController.swift; sourceTree = "<group>"; };
+		329235B85116DC04A7267A38 /* MacCameraViewerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacCameraViewerView.swift; sourceTree = "<group>"; };
+		367A6A595A96866764541103 /* KinectHostApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KinectHostApp.swift; sourceTree = "<group>"; };
+		389C4F8617DCA3E7CB0F898C /* QRScannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRScannerView.swift; sourceTree = "<group>"; };
+		38BF33B5D3B376821A763437 /* WireProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WireProtocol.swift; sourceTree = "<group>"; };
+		392A8ABFEE5CEF10CA8F345B /* CGPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CGPreviewView.swift; sourceTree = "<group>"; };
+		398485084D9C951BAFD32F9C /* SecondDisplayOutputController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecondDisplayOutputController.swift; sourceTree = "<group>"; };
+		3B7C0388E86FC27B6CDD5AC6 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		3E7A266BA1BF182A264A7169 /* SampleBufferDisplayBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleBufferDisplayBridge.swift; sourceTree = "<group>"; };
+		44F17BA0EE5994F7C0E2DF45 /* CameraRollSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraRollSheetView.swift; sourceTree = "<group>"; };
+		5090B884298BB33099E668D2 /* RecordingsCompatibilityAndPowerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingsCompatibilityAndPowerTests.swift; sourceTree = "<group>"; };
+		56B7E8B00EBE9FDF5BF4C0A6 /* kinect-cli */ = {isa = PBXFileReference; includeInIndex = 0; path = "kinect-cli"; sourceTree = BUILT_PRODUCTS_DIR; };
+		5B5CDC4146F996416CA1B42F /* Phase2RecordingsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Phase2RecordingsTests.swift; sourceTree = "<group>"; };
+		65EA837DD95711D05B82FDEF /* lock_guard_file.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = lock_guard_file.cpp; sourceTree = "<group>"; };
+		6CF3669D635E220B179D05FF /* KinectTestCLI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KinectTestCLI.swift; sourceTree = "<group>"; };
+		6DFDF768FABAEAC109832F01 /* CryptoIdentity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CryptoIdentity.swift; sourceTree = "<group>"; };
+		6FEFDDC24EB6BA703E17DC0F /* Phase5PhoneControlAndPowerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Phase5PhoneControlAndPowerTests.swift; sourceTree = "<group>"; };
+		7101DC471E55927FBB032589 /* VideoToolboxEncoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoToolboxEncoder.swift; sourceTree = "<group>"; };
+		7105BFB01DDBFB8F5F5B0184 /* EndpointProbeInviteAndThumbnailTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndpointProbeInviteAndThumbnailTests.swift; sourceTree = "<group>"; };
+		749013E7253247E2EC2468EF /* PlaybackWakeAndKeychainIdentityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaybackWakeAndKeychainIdentityTests.swift; sourceTree = "<group>"; };
+		7CE42C77A2AC4CED9F8427EE /* synthetic_source.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = synthetic_source.cpp; sourceTree = "<group>"; };
+		80450F665845B0BEA6C03BBA /* kinect_core_c.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = kinect_core_c.cpp; sourceTree = "<group>"; };
+		81F8D59ED1C55F47A2EC0633 /* RecordingLibraryAndPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingLibraryAndPlayer.swift; sourceTree = "<group>"; };
+		8279953CD6745F87654BB07D /* HardwareLifecycleMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HardwareLifecycleMonitor.swift; sourceTree = "<group>"; };
+		833961B6655B0B7DF2A707F7 /* Phase0ColourRecordingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Phase0ColourRecordingTests.swift; sourceTree = "<group>"; };
+		83EDB1331C099D72871D9DE5 /* Phase9BCameraRollAndInvitesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Phase9BCameraRollAndInvitesTests.swift; sourceTree = "<group>"; };
+		84FE424851E847ECC2F39727 /* KinectHostApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KinectHostApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		871286C116ECB1A13004D23B /* KeychainPrefixAndPairingCertificateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainPrefixAndPairingCertificateTests.swift; sourceTree = "<group>"; };
+		8934FDB25068F7EF801A75C4 /* Phase6IconAssetsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Phase6IconAssetsTests.swift; sourceTree = "<group>"; };
+		8EE6D3F2FAFD66C67C7B4628 /* KinectPocketViewer.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = KinectPocketViewer.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		91DCAAD2D91558562A562D6B /* frame_mapper.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = frame_mapper.cpp; sourceTree = "<group>"; };
+		9203CD4D293C61EFA3BD4E46 /* PresetsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresetsStore.swift; sourceTree = "<group>"; };
+		9463EB3EED0794B71A18B574 /* InteractiveSensorCanvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InteractiveSensorCanvas.swift; sourceTree = "<group>"; };
+		999EE4BE5503E8D46A22BB4E /* PocketViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PocketViewModel.swift; sourceTree = "<group>"; };
+		A225D2C4270DCFABAA797A3B /* HostRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostRecorder.swift; sourceTree = "<group>"; };
+		A5316B159A0A9842B0307959 /* HostStreamServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostStreamServer.swift; sourceTree = "<group>"; };
+		AB43487017C170BDE3ED4AAF /* Phase3PointCloudAndEffectsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Phase3PointCloudAndEffectsTests.swift; sourceTree = "<group>"; };
+		AD4738219786432A08F63006 /* KeychainServicePrefix.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainServicePrefix.swift; sourceTree = "<group>"; };
+		AD8992ABDAD290A7B08997AF /* OutsideCandidatesRaceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutsideCandidatesRaceTests.swift; sourceTree = "<group>"; };
+		B4111A20C63F073167B783E1 /* PocketKeychainPrefixTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PocketKeychainPrefixTests.swift; sourceTree = "<group>"; };
+		BAD7AF1C0720C367008CE70F /* MetalPointCloudRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalPointCloudRenderer.swift; sourceTree = "<group>"; };
+		BF279EACA237A5F184D9E15F /* PocketStreamClientCore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PocketStreamClientCore.swift; sourceTree = "<group>"; };
+		C258E038FAEE47932C24AE45 /* colormaps.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = colormaps.cpp; sourceTree = "<group>"; };
+		C431FEC1D36DA24424258582 /* PointCloud3DCanvasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PointCloud3DCanvasView.swift; sourceTree = "<group>"; };
+		CA254F0EEFC70CC6320AE721 /* Phase9APetCameraLiveTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Phase9APetCameraLiveTests.swift; sourceTree = "<group>"; };
+		CC76B89647A3D38F5F986AE2 /* MacCameraRollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacCameraRollView.swift; sourceTree = "<group>"; };
+		D4E86672894FABA967A83530 /* freenect2_source.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = freenect2_source.cpp; sourceTree = "<group>"; };
+		DBD67628F5A84EFE5CC8A5ED /* InspectionModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InspectionModels.swift; sourceTree = "<group>"; };
+		DE6BDEA03BF288623AF2E31D /* Phase1InspectionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Phase1InspectionTests.swift; sourceTree = "<group>"; };
+		E8D6B71AE03E6596AE541F77 /* VideoSampleDisplayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoSampleDisplayView.swift; sourceTree = "<group>"; };
+		E94ACBE874142D642E77AE32 /* KinectPocketTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = KinectPocketTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		EF0657FA447AF85BBFD3BD0D /* KinectHostTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KinectHostTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		EF1CDAC6323C2C5E4099D864 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		F7C98B557B181B512F2D84BC /* OutsideAwayFromHomeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutsideAwayFromHomeTests.swift; sourceTree = "<group>"; };
+		F8B163D61C4143DBD9E32434 /* HostController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostController.swift; sourceTree = "<group>"; };
+		FD0530DBF7A050E050E4F5AF /* KinectPocketApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KinectPocketApp.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		0936D51EA5C26CFE97E89527 /* Vision */ = {
+			isa = PBXGroup;
+			children = (
+				1CA5B9B8AAAE262820B3E59E /* VisionSkeletonEstimator.swift */,
+			);
+			path = Vision;
+			sourceTree = "<group>";
+		};
+		2F4F3C83FF78560AAF42C2D9 /* Display */ = {
+			isa = PBXGroup;
+			children = (
+				398485084D9C951BAFD32F9C /* SecondDisplayOutputController.swift */,
+			);
+			path = Display;
+			sourceTree = "<group>";
+		};
+		36D0F9C3C318D6C30F4A1464 /* macos */ = {
+			isa = PBXGroup;
+			children = (
+				117B2E3AF2C09D3C86B037CC /* Assets.xcassets */,
+				7B332D6B8D1C59A942AD8C5B /* App */,
+				75132664D5576302C76A5900 /* CLI */,
+				2F4F3C83FF78560AAF42C2D9 /* Display */,
+				AD151BE5B146A10AA7AC2886 /* Recording */,
+				3B4CA4B82726777183E86615 /* Rendering3D */,
+				F58DBC75950759EF05DF0DDC /* Streaming */,
+				966D5385DA2F793FA7E9C38A /* Tests */,
+				0936D51EA5C26CFE97E89527 /* Vision */,
+			);
+			path = macos;
+			sourceTree = "<group>";
+		};
+		3B4CA4B82726777183E86615 /* Rendering3D */ = {
+			isa = PBXGroup;
+			children = (
+				BAD7AF1C0720C367008CE70F /* MetalPointCloudRenderer.swift */,
+				C431FEC1D36DA24424258582 /* PointCloud3DCanvasView.swift */,
+			);
+			path = Rendering3D;
+			sourceTree = "<group>";
+		};
+		6BB9CB77A7383F9A86E4DFF5 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				C258E038FAEE47932C24AE45 /* colormaps.cpp */,
+				91DCAAD2D91558562A562D6B /* frame_mapper.cpp */,
+				D4E86672894FABA967A83530 /* freenect2_source.cpp */,
+				80450F665845B0BEA6C03BBA /* kinect_core_c.cpp */,
+				65EA837DD95711D05B82FDEF /* lock_guard_file.cpp */,
+				7CE42C77A2AC4CED9F8427EE /* synthetic_source.cpp */,
+			);
+			path = src;
+			sourceTree = "<group>";
+		};
+		75132664D5576302C76A5900 /* CLI */ = {
+			isa = PBXGroup;
+			children = (
+				6CF3669D635E220B179D05FF /* KinectTestCLI.swift */,
+			);
+			path = CLI;
+			sourceTree = "<group>";
+		};
+		78ED4AE29D43470551AA5948 /* core */ = {
+			isa = PBXGroup;
+			children = (
+				6BB9CB77A7383F9A86E4DFF5 /* src */,
+			);
+			path = core;
+			sourceTree = "<group>";
+		};
+		7B332D6B8D1C59A942AD8C5B /* App */ = {
+			isa = PBXGroup;
+			children = (
+				392A8ABFEE5CEF10CA8F345B /* CGPreviewView.swift */,
+				8279953CD6745F87654BB07D /* HardwareLifecycleMonitor.swift */,
+				F8B163D61C4143DBD9E32434 /* HostController.swift */,
+				DBD67628F5A84EFE5CC8A5ED /* InspectionModels.swift */,
+				9463EB3EED0794B71A18B574 /* InteractiveSensorCanvas.swift */,
+				367A6A595A96866764541103 /* KinectHostApp.swift */,
+				CC76B89647A3D38F5F986AE2 /* MacCameraRollView.swift */,
+				1D292CC29DE186C69D801DC8 /* MacCameraViewerController.swift */,
+				329235B85116DC04A7267A38 /* MacCameraViewerView.swift */,
+				03946C028EF4D01E8CBB597E /* MainContentView.swift */,
+				9203CD4D293C61EFA3BD4E46 /* PresetsStore.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		811536507AED0A73D63DF856 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				56B7E8B00EBE9FDF5BF4C0A6 /* kinect-cli */,
+				84FE424851E847ECC2F39727 /* KinectHostApp.app */,
+				EF0657FA447AF85BBFD3BD0D /* KinectHostTests.xctest */,
+				E94ACBE874142D642E77AE32 /* KinectPocketTests.xctest */,
+				8EE6D3F2FAFD66C67C7B4628 /* KinectPocketViewer.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		966D5385DA2F793FA7E9C38A /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				7105BFB01DDBFB8F5F5B0184 /* EndpointProbeInviteAndThumbnailTests.swift */,
+				871286C116ECB1A13004D23B /* KeychainPrefixAndPairingCertificateTests.swift */,
+				F7C98B557B181B512F2D84BC /* OutsideAwayFromHomeTests.swift */,
+				AD8992ABDAD290A7B08997AF /* OutsideCandidatesRaceTests.swift */,
+				833961B6655B0B7DF2A707F7 /* Phase0ColourRecordingTests.swift */,
+				DE6BDEA03BF288623AF2E31D /* Phase1InspectionTests.swift */,
+				5B5CDC4146F996416CA1B42F /* Phase2RecordingsTests.swift */,
+				AB43487017C170BDE3ED4AAF /* Phase3PointCloudAndEffectsTests.swift */,
+				23265724426A5EF8542692A1 /* Phase4VisionAndDisplayTests.swift */,
+				6FEFDDC24EB6BA703E17DC0F /* Phase5PhoneControlAndPowerTests.swift */,
+				8934FDB25068F7EF801A75C4 /* Phase6IconAssetsTests.swift */,
+				CA254F0EEFC70CC6320AE721 /* Phase9APetCameraLiveTests.swift */,
+				83EDB1331C099D72871D9DE5 /* Phase9BCameraRollAndInvitesTests.swift */,
+				749013E7253247E2EC2468EF /* PlaybackWakeAndKeychainIdentityTests.swift */,
+				26B04157AB67A72B1FA710F4 /* ProbeInterruptionAndPlaybackCoverTests.swift */,
+				5090B884298BB33099E668D2 /* RecordingsCompatibilityAndPowerTests.swift */,
+			);
+			path = Tests;
+			sourceTree = "<group>";
+		};
+		98CCC7035E65AFEAB8430855 /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				27227D20FC9C434E6AE51542 /* PocketAppSnapshotAndSandboxTests.swift */,
+				B4111A20C63F073167B783E1 /* PocketKeychainPrefixTests.swift */,
+			);
+			path = Tests;
+			sourceTree = "<group>";
+		};
+		9E8EAB1C2DB5369D52FBA995 /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				260653A5448C3289FDD2513B /* Base.xcconfig */,
+			);
+			path = Config;
+			sourceTree = "<group>";
+		};
+		A1EA7DA0E1DEB135BCF4BB38 /* ios */ = {
+			isa = PBXGroup;
+			children = (
+				0CE7BE2366885AB936D52925 /* Assets.xcassets */,
+				44F17BA0EE5994F7C0E2DF45 /* CameraRollSheetView.swift */,
+				3B7C0388E86FC27B6CDD5AC6 /* ContentView.swift */,
+				EF1CDAC6323C2C5E4099D864 /* Info.plist */,
+				FD0530DBF7A050E050E4F5AF /* KinectPocketApp.swift */,
+				999EE4BE5503E8D46A22BB4E /* PocketViewModel.swift */,
+				389C4F8617DCA3E7CB0F898C /* QRScannerView.swift */,
+				E8D6B71AE03E6596AE541F77 /* VideoSampleDisplayView.swift */,
+				98CCC7035E65AFEAB8430855 /* Tests */,
+			);
+			path = ios;
+			sourceTree = "<group>";
+		};
+		A6E5CA6625CF02ED52395C07 /* shared */ = {
+			isa = PBXGroup;
+			children = (
+				2DC75D73B31759904E8043AE /* CameraRollController.swift */,
+				6DFDF768FABAEAC109832F01 /* CryptoIdentity.swift */,
+				AD4738219786432A08F63006 /* KeychainServicePrefix.swift */,
+				1622D84029385F3C34204CDA /* PairingPayload.swift */,
+				BF279EACA237A5F184D9E15F /* PocketStreamClientCore.swift */,
+				3E7A266BA1BF182A264A7169 /* SampleBufferDisplayBridge.swift */,
+				38BF33B5D3B376821A763437 /* WireProtocol.swift */,
+			);
+			path = shared;
+			sourceTree = "<group>";
+		};
+		AD151BE5B146A10AA7AC2886 /* Recording */ = {
+			isa = PBXGroup;
+			children = (
+				A225D2C4270DCFABAA797A3B /* HostRecorder.swift */,
+				81F8D59ED1C55F47A2EC0633 /* RecordingLibraryAndPlayer.swift */,
+			);
+			path = Recording;
+			sourceTree = "<group>";
+		};
+		BF1499AEE8F33CF10F8F55DD = {
+			isa = PBXGroup;
+			children = (
+				9E8EAB1C2DB5369D52FBA995 /* Config */,
+				78ED4AE29D43470551AA5948 /* core */,
+				A1EA7DA0E1DEB135BCF4BB38 /* ios */,
+				36D0F9C3C318D6C30F4A1464 /* macos */,
+				A6E5CA6625CF02ED52395C07 /* shared */,
+				811536507AED0A73D63DF856 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		F58DBC75950759EF05DF0DDC /* Streaming */ = {
+			isa = PBXGroup;
+			children = (
+				A5316B159A0A9842B0307959 /* HostStreamServer.swift */,
+				7101DC471E55927FBB032589 /* VideoToolboxEncoder.swift */,
+			);
+			path = Streaming;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		474E5460B2020113CE8CBA9E /* KinectPocketTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 51276EB3D226660E808D7097 /* Build configuration list for PBXNativeTarget "KinectPocketTests" */;
+			buildPhases = (
+				A118C35E86B6EC5705FEE748 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				28BC6A63178E1B9275591016 /* PBXTargetDependency */,
+			);
+			name = KinectPocketTests;
+			packageProductDependencies = (
+			);
+			productName = KinectPocketTests;
+			productReference = E94ACBE874142D642E77AE32 /* KinectPocketTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		7862768EC70120C266B135EA /* kinect-cli */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 35009B4F79B1137E2C30A1CF /* Build configuration list for PBXNativeTarget "kinect-cli" */;
+			buildPhases = (
+				74FD49D4117078BF2DB4234C /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "kinect-cli";
+			packageProductDependencies = (
+			);
+			productName = "kinect-cli";
+			productReference = 56B7E8B00EBE9FDF5BF4C0A6 /* kinect-cli */;
+			productType = "com.apple.product-type.tool";
+		};
+		78B8E8A517A1513A1508BF6F /* KinectHostTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6EBAC3FF4A2029C2A35A670B /* Build configuration list for PBXNativeTarget "KinectHostTests" */;
+			buildPhases = (
+				ADBAEC8BFDAD9D201757E794 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				1CAE649275CDC91FC082C8B4 /* PBXTargetDependency */,
+			);
+			name = KinectHostTests;
+			packageProductDependencies = (
+			);
+			productName = KinectHostTests;
+			productReference = EF0657FA447AF85BBFD3BD0D /* KinectHostTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		8599D624EF20007F79645BA9 /* KinectPocketViewer */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 595C20A80268286F6344E079 /* Build configuration list for PBXNativeTarget "KinectPocketViewer" */;
+			buildPhases = (
+				F247ECFA8CE7FA8581200471 /* Sources */,
+				004C4EDDAC83E160316E4394 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = KinectPocketViewer;
+			packageProductDependencies = (
+			);
+			productName = KinectPocketViewer;
+			productReference = 8EE6D3F2FAFD66C67C7B4628 /* KinectPocketViewer.app */;
+			productType = "com.apple.product-type.application";
+		};
+		9391263E6861D7881A83F8E6 /* KinectHostApp */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 570ACC0040F73B01A4231F25 /* Build configuration list for PBXNativeTarget "KinectHostApp" */;
+			buildPhases = (
+				7925DBB196F747F2B821D2B0 /* Sources */,
+				F7BD5E5238BBC5A2510966C8 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = KinectHostApp;
+			packageProductDependencies = (
+			);
+			productName = KinectHostApp;
+			productReference = 84FE424851E847ECC2F39727 /* KinectHostApp.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		921F342E8685AB308EF89E22 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					8599D624EF20007F79645BA9 = {
+						DevelopmentTeam = "$(KV_DEVELOPMENT_TEAM)";
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 99DD2F6D99383BD03D500970 /* Build configuration list for PBXProject "KinectViewer" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = BF1499AEE8F33CF10F8F55DD;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 811536507AED0A73D63DF856 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				9391263E6861D7881A83F8E6 /* KinectHostApp */,
+				78B8E8A517A1513A1508BF6F /* KinectHostTests */,
+				7862768EC70120C266B135EA /* kinect-cli */,
+				8599D624EF20007F79645BA9 /* KinectPocketViewer */,
+				474E5460B2020113CE8CBA9E /* KinectPocketTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		004C4EDDAC83E160316E4394 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E39F3D7B8860657E370635AF /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F7BD5E5238BBC5A2510966C8 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C075DA31C79670DBC581B4CF /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		74FD49D4117078BF2DB4234C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				66C18981FEB543021601F259 /* CameraRollController.swift in Sources */,
+				6A78107FB2FC89969771E2C1 /* CryptoIdentity.swift in Sources */,
+				B3E294C3326B01A5AAEC12F1 /* HostRecorder.swift in Sources */,
+				82D432FA0CEF29FF0716C1E4 /* HostStreamServer.swift in Sources */,
+				DEA97EB3CCD0ACB51EF8210F /* KeychainServicePrefix.swift in Sources */,
+				1206F43111D5F0B3F472886C /* KinectTestCLI.swift in Sources */,
+				E42DBEE02771F6B0BAAF7A7C /* PairingPayload.swift in Sources */,
+				0CCA706763D49D9BD3C098B3 /* PocketStreamClientCore.swift in Sources */,
+				23F07911DA8E6E5A1CAE7EB2 /* RecordingLibraryAndPlayer.swift in Sources */,
+				AC24AAD9D5111B0AB12B3CEC /* SampleBufferDisplayBridge.swift in Sources */,
+				90D7925D8CE3189719C4BDED /* VideoToolboxEncoder.swift in Sources */,
+				EFEA038CD33058A757002350 /* WireProtocol.swift in Sources */,
+				ADD41CBAF71F6719922A1D0D /* colormaps.cpp in Sources */,
+				45342237C9401C73449399A0 /* frame_mapper.cpp in Sources */,
+				B3AEEB04D44C7C726BFF7549 /* freenect2_source.cpp in Sources */,
+				696EF6CB97805743F6ADBAC3 /* kinect_core_c.cpp in Sources */,
+				98A02A4F60D9117772EBAA4D /* lock_guard_file.cpp in Sources */,
+				6ADB160F1BA92BE56C67BC3A /* synthetic_source.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7925DBB196F747F2B821D2B0 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				620E70FA3C7ACFCB074716C4 /* CGPreviewView.swift in Sources */,
+				58E9929932AF317E4B6E0917 /* CameraRollController.swift in Sources */,
+				EF7AF3FA595471E7C0635E96 /* CryptoIdentity.swift in Sources */,
+				77A9F119AB2AE20BF7384D6F /* HardwareLifecycleMonitor.swift in Sources */,
+				4FFEEB9CF85AAA9DFA3C4646 /* HostController.swift in Sources */,
+				FCEE104B01A56979C57FA054 /* HostRecorder.swift in Sources */,
+				D93579BD556D622387B8B94B /* HostStreamServer.swift in Sources */,
+				F254FDC8A52C06A5D099113E /* InspectionModels.swift in Sources */,
+				AFA0CFCA98096516D6A7D018 /* InteractiveSensorCanvas.swift in Sources */,
+				7AFCFEB6FE704172A9C684F6 /* KeychainServicePrefix.swift in Sources */,
+				8A979FE368A029745650D5B1 /* KinectHostApp.swift in Sources */,
+				0BC5759381561821AD1FFF22 /* MacCameraRollView.swift in Sources */,
+				0534ECE982F2CAAC19DDB1D7 /* MacCameraViewerController.swift in Sources */,
+				824B95C80FE7ECBABDA224B9 /* MacCameraViewerView.swift in Sources */,
+				42D1994CA86C4FDB8B2927E6 /* MainContentView.swift in Sources */,
+				06F3088684D711BB79D7BB41 /* MetalPointCloudRenderer.swift in Sources */,
+				8561D1B74F918AD0248AA696 /* PairingPayload.swift in Sources */,
+				F0DBA8E75ED3112E360DD29E /* PocketStreamClientCore.swift in Sources */,
+				DC4A743680F3A27679B0CBD0 /* PointCloud3DCanvasView.swift in Sources */,
+				FBCDEE485D2BB27626C36DAF /* PresetsStore.swift in Sources */,
+				90BDD2B9C70C033101BC299D /* RecordingLibraryAndPlayer.swift in Sources */,
+				46DB90D13A922BF4C1C0706C /* SampleBufferDisplayBridge.swift in Sources */,
+				4129B76A55EE2CE3E5C801FE /* SecondDisplayOutputController.swift in Sources */,
+				58179CF20FB8265B3B768688 /* VideoToolboxEncoder.swift in Sources */,
+				AB3D0CD9F40859E1A9295D33 /* VisionSkeletonEstimator.swift in Sources */,
+				C9E4F4AD8BB71CEEC25E865F /* WireProtocol.swift in Sources */,
+				27FAF375BA7F91C513F13537 /* colormaps.cpp in Sources */,
+				AFAD0AA1CBD8938183A6F844 /* frame_mapper.cpp in Sources */,
+				D08C20D95A9ECFE0ADA537D3 /* freenect2_source.cpp in Sources */,
+				4FE7A5819C75ABA48B68C4C9 /* kinect_core_c.cpp in Sources */,
+				A5758D9575142FD1AA895F94 /* lock_guard_file.cpp in Sources */,
+				3FCA0AC672FFACE6EE291052 /* synthetic_source.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A118C35E86B6EC5705FEE748 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C79ED5A823B583732A422969 /* PocketAppSnapshotAndSandboxTests.swift in Sources */,
+				ABAC61850FB62115BB2403F1 /* PocketKeychainPrefixTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		ADBAEC8BFDAD9D201757E794 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				92D0769FA62D36883D5BC41F /* EndpointProbeInviteAndThumbnailTests.swift in Sources */,
+				4BC586CC7C562E1D191676F5 /* KeychainPrefixAndPairingCertificateTests.swift in Sources */,
+				FCB3F3A4361B1619F3DA8D6D /* OutsideAwayFromHomeTests.swift in Sources */,
+				54FE38A5A43784C61538EF39 /* OutsideCandidatesRaceTests.swift in Sources */,
+				2FCEFB973D84DAF541D862D0 /* Phase0ColourRecordingTests.swift in Sources */,
+				90913E030A3800861AF5F125 /* Phase1InspectionTests.swift in Sources */,
+				9C0C59B0B0A5A0AE28C3B768 /* Phase2RecordingsTests.swift in Sources */,
+				5017C151DCE9EFB01691D6E0 /* Phase3PointCloudAndEffectsTests.swift in Sources */,
+				D9ACED19F64938E8C520DCC2 /* Phase4VisionAndDisplayTests.swift in Sources */,
+				17AD5D95DE82E1511C53BBC5 /* Phase5PhoneControlAndPowerTests.swift in Sources */,
+				BBE90641E7ACD117F0701175 /* Phase6IconAssetsTests.swift in Sources */,
+				1703E6A22D9C93F73034EF34 /* Phase9APetCameraLiveTests.swift in Sources */,
+				C5B922473B4B532C669FC0F0 /* Phase9BCameraRollAndInvitesTests.swift in Sources */,
+				FDCE3EFD300D39B8137FFFF2 /* PlaybackWakeAndKeychainIdentityTests.swift in Sources */,
+				71F247E5DED66D920F7DF360 /* PocketViewModel.swift in Sources */,
+				D5A77BBD3986DF3DBE642A51 /* ProbeInterruptionAndPlaybackCoverTests.swift in Sources */,
+				DA891886B12D82C65D8BE997 /* RecordingsCompatibilityAndPowerTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F247ECFA8CE7FA8581200471 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CE9B496E556C530CDAF43FF0 /* CameraRollController.swift in Sources */,
+				E5F3885C30B490560C17EFA3 /* CameraRollSheetView.swift in Sources */,
+				CC05DA5DEA3960E2C657B879 /* ContentView.swift in Sources */,
+				0EE9B39909E732EA75345C70 /* CryptoIdentity.swift in Sources */,
+				BC01C98A1C9A29AFD10EAE69 /* KeychainServicePrefix.swift in Sources */,
+				AC1C3D714C2730778B5628EB /* KinectPocketApp.swift in Sources */,
+				2388CBDE11FA0E187CCF6916 /* PairingPayload.swift in Sources */,
+				A83F10D89590CEEFF324B2EA /* PocketStreamClientCore.swift in Sources */,
+				2F122EB8BFDEC25DDACE8B48 /* PocketViewModel.swift in Sources */,
+				6B5EE87D9F9AD9FE29411757 /* QRScannerView.swift in Sources */,
+				460A77B2A0F90E960B95A7D9 /* SampleBufferDisplayBridge.swift in Sources */,
+				39AD53693C3451A73B452FDC /* VideoSampleDisplayView.swift in Sources */,
+				6FA98BABB5539E5143391409 /* WireProtocol.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		1CAE649275CDC91FC082C8B4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9391263E6861D7881A83F8E6 /* KinectHostApp */;
+			targetProxy = E159EF3D278A7DB27C62AC80 /* PBXContainerItemProxy */;
+		};
+		28BC6A63178E1B9275591016 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8599D624EF20007F79645BA9 /* KinectPocketViewer */;
+			targetProxy = 65A3AF73708C233AA0CEDD77 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		0316CEBCF1FEA6DDCD93D46A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "$(KV_DEVELOPMENT_TEAM)";
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = ios/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(KV_BUNDLE_ID_PREFIX).pocket";
+				PRODUCT_NAME = KinectPocketViewer;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		03A2F39F9B9AD127CC2AA613 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "-";
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_HARDENED_RUNTIME = NO;
+				HEADER_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/core/include",
+					"$(LIBFREENECT2_PREFIX)/include",
+				);
+				INFOPLIST_FILE = macos/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(LIBFREENECT2_PREFIX)/lib",
+				);
+				OTHER_LDFLAGS = (
+					"-lfreenect2",
+					"-Wl,-rpath,$(LIBFREENECT2_PREFIX)/lib",
+					"-framework",
+					IOKit,
+					"-framework",
+					CoreFoundation,
+					"-framework",
+					VideoToolbox,
+					"-framework",
+					CoreMedia,
+					"-framework",
+					CoreVideo,
+					"-framework",
+					Network,
+					"-framework",
+					Security,
+					"-framework",
+					AVFoundation,
+					"-framework",
+					Metal,
+					"-framework",
+					MetalKit,
+					"-framework",
+					QuartzCore,
+					"-framework",
+					Vision,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "$(KV_BUNDLE_ID_PREFIX).host";
+				PRODUCT_NAME = KinectViewer;
+				SDKROOT = macosx;
+				SWIFT_OBJC_BRIDGING_HEADER = "macos/KinectHost-Bridging-Header.h";
+			};
+			name = Debug;
+		};
+		2B47B257DE550BCE7B986E1F /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 260653A5448C3289FDD2513B /* Base.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+		3792ABE536AFA4D0A0012D94 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 260653A5448C3289FDD2513B /* Base.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		7C53007CD9B814BFD6FFEEE6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_IDENTITY = "-";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "$(KV_BUNDLE_ID_PREFIX).pocket.tests";
+				PRODUCT_NAME = KinectPocketTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/KinectPocketViewer.app/KinectPocketViewer";
+			};
+			name = Debug;
+		};
+		837687EC1B5E60791AE89057 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "-";
+				COMBINE_HIDPI_IMAGES = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/core/include",
+					"$(LIBFREENECT2_PREFIX)/include",
+				);
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(LIBFREENECT2_PREFIX)/lib",
+				);
+				OTHER_LDFLAGS = (
+					"-lfreenect2",
+					"-Wl,-rpath,$(LIBFREENECT2_PREFIX)/lib",
+					"-framework",
+					IOKit,
+					"-framework",
+					CoreFoundation,
+					"-framework",
+					VideoToolbox,
+					"-framework",
+					CoreMedia,
+					"-framework",
+					CoreVideo,
+					"-framework",
+					Network,
+					"-framework",
+					Security,
+					"-framework",
+					AVFoundation,
+					"-framework",
+					Metal,
+					"-framework",
+					MetalKit,
+					"-framework",
+					QuartzCore,
+					"-framework",
+					Vision,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "$(KV_BUNDLE_ID_PREFIX).kinect-cli";
+				PRODUCT_NAME = "kinect-cli";
+				SDKROOT = macosx;
+				SWIFT_OBJC_BRIDGING_HEADER = "macos/KinectHost-Bridging-Header.h";
+			};
+			name = Release;
+		};
+		85EA97EFC9362FBCF25869E2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "-";
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_HARDENED_RUNTIME = NO;
+				HEADER_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/core/include",
+					"$(LIBFREENECT2_PREFIX)/include",
+				);
+				INFOPLIST_FILE = macos/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(LIBFREENECT2_PREFIX)/lib",
+				);
+				OTHER_LDFLAGS = (
+					"-lfreenect2",
+					"-Wl,-rpath,$(LIBFREENECT2_PREFIX)/lib",
+					"-framework",
+					IOKit,
+					"-framework",
+					CoreFoundation,
+					"-framework",
+					VideoToolbox,
+					"-framework",
+					CoreMedia,
+					"-framework",
+					CoreVideo,
+					"-framework",
+					Network,
+					"-framework",
+					Security,
+					"-framework",
+					AVFoundation,
+					"-framework",
+					Metal,
+					"-framework",
+					MetalKit,
+					"-framework",
+					QuartzCore,
+					"-framework",
+					Vision,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "$(KV_BUNDLE_ID_PREFIX).host";
+				PRODUCT_NAME = KinectViewer;
+				SDKROOT = macosx;
+				SWIFT_OBJC_BRIDGING_HEADER = "macos/KinectHost-Bridging-Header.h";
+			};
+			name = Release;
+		};
+		A7864C09157EF43E59D11C64 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_IDENTITY = "-";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/core/include",
+					"$(LIBFREENECT2_PREFIX)/include",
+				);
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "$(KV_BUNDLE_ID_PREFIX).host.tests";
+				PRODUCT_NAME = KinectHostTests;
+				SDKROOT = macosx;
+				SWIFT_OBJC_BRIDGING_HEADER = "macos/KinectHost-Bridging-Header.h";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/KinectViewer.app/Contents/MacOS/KinectViewer";
+			};
+			name = Release;
+		};
+		A813612CB5F5B3AC8CCF719F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_IDENTITY = "-";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/core/include",
+					"$(LIBFREENECT2_PREFIX)/include",
+				);
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "$(KV_BUNDLE_ID_PREFIX).host.tests";
+				PRODUCT_NAME = KinectHostTests;
+				SDKROOT = macosx;
+				SWIFT_OBJC_BRIDGING_HEADER = "macos/KinectHost-Bridging-Header.h";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/KinectViewer.app/Contents/MacOS/KinectViewer";
+			};
+			name = Debug;
+		};
+		A8FE138361D7C4A47CD11011 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "-";
+				COMBINE_HIDPI_IMAGES = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/core/include",
+					"$(LIBFREENECT2_PREFIX)/include",
+				);
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(LIBFREENECT2_PREFIX)/lib",
+				);
+				OTHER_LDFLAGS = (
+					"-lfreenect2",
+					"-Wl,-rpath,$(LIBFREENECT2_PREFIX)/lib",
+					"-framework",
+					IOKit,
+					"-framework",
+					CoreFoundation,
+					"-framework",
+					VideoToolbox,
+					"-framework",
+					CoreMedia,
+					"-framework",
+					CoreVideo,
+					"-framework",
+					Network,
+					"-framework",
+					Security,
+					"-framework",
+					AVFoundation,
+					"-framework",
+					Metal,
+					"-framework",
+					MetalKit,
+					"-framework",
+					QuartzCore,
+					"-framework",
+					Vision,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "$(KV_BUNDLE_ID_PREFIX).kinect-cli";
+				PRODUCT_NAME = "kinect-cli";
+				SDKROOT = macosx;
+				SWIFT_OBJC_BRIDGING_HEADER = "macos/KinectHost-Bridging-Header.h";
+			};
+			name = Debug;
+		};
+		CC1124928A86479658709E1D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "$(KV_DEVELOPMENT_TEAM)";
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = ios/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(KV_BUNDLE_ID_PREFIX).pocket";
+				PRODUCT_NAME = KinectPocketViewer;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		E1F2465368CF14323C96573C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_IDENTITY = "-";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "$(KV_BUNDLE_ID_PREFIX).pocket.tests";
+				PRODUCT_NAME = KinectPocketTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/KinectPocketViewer.app/KinectPocketViewer";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		35009B4F79B1137E2C30A1CF /* Build configuration list for PBXNativeTarget "kinect-cli" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A8FE138361D7C4A47CD11011 /* Debug */,
+				837687EC1B5E60791AE89057 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		51276EB3D226660E808D7097 /* Build configuration list for PBXNativeTarget "KinectPocketTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7C53007CD9B814BFD6FFEEE6 /* Debug */,
+				E1F2465368CF14323C96573C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		570ACC0040F73B01A4231F25 /* Build configuration list for PBXNativeTarget "KinectHostApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				03A2F39F9B9AD127CC2AA613 /* Debug */,
+				85EA97EFC9362FBCF25869E2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		595C20A80268286F6344E079 /* Build configuration list for PBXNativeTarget "KinectPocketViewer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0316CEBCF1FEA6DDCD93D46A /* Debug */,
+				CC1124928A86479658709E1D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		6EBAC3FF4A2029C2A35A670B /* Build configuration list for PBXNativeTarget "KinectHostTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A813612CB5F5B3AC8CCF719F /* Debug */,
+				A7864C09157EF43E59D11C64 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		99DD2F6D99383BD03D500970 /* Build configuration list for PBXProject "KinectViewer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3792ABE536AFA4D0A0012D94 /* Debug */,
+				2B47B257DE550BCE7B986E1F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 921F342E8685AB308EF89E22 /* Project object */;
+}

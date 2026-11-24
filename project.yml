@@ -1,0 +1,244 @@
+name: KinectViewer
+options:
+  bundleIdPrefix: com.example.kinectviewer
+  deploymentTarget:
+    macOS: "26.0"
+    iOS: "26.0"
+  createIntermediateGroups: true
+
+configFiles:
+  Debug: Config/Base.xcconfig
+  Release: Config/Base.xcconfig
+
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    CLANG_CXX_LANGUAGE_STANDARD: "gnu++20"
+
+targets:
+  KinectHostApp:
+    type: application
+    platform: macOS
+    sources:
+      - path: core/src
+      - path: shared
+      - path: macos/Streaming
+      - path: macos/Recording
+      - path: macos/Rendering3D
+      - path: macos/Vision
+      - path: macos/Display
+      - path: macos/App
+      - path: macos/Assets.xcassets
+    info:
+      path: macos/Info.plist
+      properties:
+        CFBundleName: Kinect Viewer
+        CFBundleDisplayName: Kinect Viewer
+        CFBundleShortVersionString: "1.0"
+        CFBundleVersion: "1"
+        LSMinimumSystemVersion: "$(MACOSX_DEPLOYMENT_TARGET)"
+        NSHighResolutionCapable: true
+        NSHumanReadableCopyright: "© 2026 The Kinect Viewer Authors"
+        # The Keychain service names' prefix (shared/KeychainServicePrefix.swift).
+        KVBundleIDPrefix: "$(KV_BUNDLE_ID_PREFIX)"
+        NSLocalNetworkUsageDescription: "Streams live encrypted Kinect v2 video over home Wi-Fi to your single paired iPhone."
+        NSBonjourServices:
+          - "_kv2s._tcp"
+          - "_kv2p._tcp"
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: $(KV_BUNDLE_ID_PREFIX).host
+        PRODUCT_NAME: KinectViewer
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        SWIFT_OBJC_BRIDGING_HEADER: macos/KinectHost-Bridging-Header.h
+        HEADER_SEARCH_PATHS:
+          - $(PROJECT_DIR)/core/include
+          - $(LIBFREENECT2_PREFIX)/include
+        LIBRARY_SEARCH_PATHS:
+          - $(LIBFREENECT2_PREFIX)/lib
+        OTHER_LDFLAGS:
+          - -lfreenect2
+          - -Wl,-rpath,$(LIBFREENECT2_PREFIX)/lib
+          - -framework
+          - IOKit
+          - -framework
+          - CoreFoundation
+          - -framework
+          - VideoToolbox
+          - -framework
+          - CoreMedia
+          - -framework
+          - CoreVideo
+          - -framework
+          - Network
+          - -framework
+          - Security
+          - -framework
+          - AVFoundation
+          - -framework
+          - Metal
+          - -framework
+          - MetalKit
+          - -framework
+          - QuartzCore
+          - -framework
+          - Vision
+        CODE_SIGN_IDENTITY: "-"
+        ENABLE_HARDENED_RUNTIME: NO
+
+  KinectHostTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - path: macos/Tests
+      - path: ios/PocketViewModel.swift
+    dependencies:
+      - target: KinectHostApp
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: $(KV_BUNDLE_ID_PREFIX).host.tests
+        PRODUCT_NAME: KinectHostTests
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/KinectViewer.app/Contents/MacOS/KinectViewer"
+        BUNDLE_LOADER: "$(TEST_HOST)"
+        SWIFT_OBJC_BRIDGING_HEADER: macos/KinectHost-Bridging-Header.h
+        HEADER_SEARCH_PATHS:
+          - $(PROJECT_DIR)/core/include
+          - $(LIBFREENECT2_PREFIX)/include
+        CODE_SIGN_IDENTITY: "-"
+        GENERATE_INFOPLIST_FILE: YES
+
+  kinect-cli:
+    type: tool
+    platform: macOS
+    sources:
+      - path: core/src
+      - path: shared
+      - path: macos/Streaming
+      - path: macos/Recording
+      - path: macos/CLI
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: $(KV_BUNDLE_ID_PREFIX).kinect-cli
+        PRODUCT_NAME: kinect-cli
+        SWIFT_OBJC_BRIDGING_HEADER: macos/KinectHost-Bridging-Header.h
+        HEADER_SEARCH_PATHS:
+          - $(PROJECT_DIR)/core/include
+          - $(LIBFREENECT2_PREFIX)/include
+        LIBRARY_SEARCH_PATHS:
+          - $(LIBFREENECT2_PREFIX)/lib
+        OTHER_LDFLAGS:
+          - -lfreenect2
+          - -Wl,-rpath,$(LIBFREENECT2_PREFIX)/lib
+          - -framework
+          - IOKit
+          - -framework
+          - CoreFoundation
+          - -framework
+          - VideoToolbox
+          - -framework
+          - CoreMedia
+          - -framework
+          - CoreVideo
+          - -framework
+          - Network
+          - -framework
+          - Security
+          - -framework
+          - AVFoundation
+          - -framework
+          - Metal
+          - -framework
+          - MetalKit
+          - -framework
+          - QuartzCore
+          - -framework
+          - Vision
+        CODE_SIGN_IDENTITY: "-"
+
+  KinectPocketViewer:
+    type: application
+    platform: iOS
+    sources:
+      - path: shared
+      - path: ios
+        excludes:
+          - "Tests/**"
+    info:
+      path: ios/Info.plist
+      properties:
+        CFBundleDisplayName: Kinect Viewer
+        CFBundleShortVersionString: "$(MARKETING_VERSION)"
+        CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
+        NSHumanReadableCopyright: "© 2026 The Kinect Viewer Authors"
+        # The Keychain service names' prefix (shared/KeychainServicePrefix.swift).
+        KVBundleIDPrefix: "$(KV_BUNDLE_ID_PREFIX)"
+        ITSAppUsesNonExemptEncryption: false
+        LSRequiresIPhoneOS: true
+        UIRequiresFullScreen: true
+        UIFileSharingEnabled: false
+        LSSupportsOpeningDocumentsInPlace: false
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        UISupportedInterfaceOrientations~ipad:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        NSLocalNetworkUsageDescription: "Finds and connects to the camera computer you paired with on your home Wi-Fi, so you can watch its live view."
+        NSBonjourServices:
+          - "_kv2s._tcp"
+          - "_kv2p._tcp"
+        NSCameraUsageDescription: "Scans the one-time pairing QR code shown on the camera computer. Nothing the camera sees is saved."
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: $(KV_BUNDLE_ID_PREFIX).pocket
+        PRODUCT_NAME: KinectPocketViewer
+        # TestFlight: keep MARKETING_VERSION for a release, raise CURRENT_PROJECT_VERSION for every upload.
+        MARKETING_VERSION: "1.0"
+        CURRENT_PROJECT_VERSION: "1"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        DEVELOPMENT_TEAM: $(KV_DEVELOPMENT_TEAM)
+        CODE_SIGN_STYLE: Automatic
+        GENERATE_INFOPLIST_FILE: NO
+        TARGETED_DEVICE_FAMILY: "1,2"
+
+  KinectPocketTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: ios/Tests
+    dependencies:
+      - target: KinectPocketViewer
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: $(KV_BUNDLE_ID_PREFIX).pocket.tests
+        PRODUCT_NAME: KinectPocketTests
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/KinectPocketViewer.app/KinectPocketViewer"
+        BUNDLE_LOADER: "$(TEST_HOST)"
+        CODE_SIGN_IDENTITY: "-"
+        GENERATE_INFOPLIST_FILE: YES
+
+schemes:
+  KinectHostApp:
+    build:
+      targets:
+        KinectHostApp: all
+        KinectHostTests: [test]
+    test:
+      targets:
+        - KinectHostTests
+  kinect-cli:
+    build:
+      targets:
+        kinect-cli: all
+  KinectPocketViewer:
+    build:
+      targets:
+        KinectPocketViewer: all
+        KinectPocketTests: [test]
+    test:
+      targets:
+        - KinectPocketTests
